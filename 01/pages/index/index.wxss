@@ -119,19 +119,7 @@ page {
   display: flex;
   align-items: stretch;
   margin-top: -6px;
-  margin-bottom: 18px;
-}
-
-.mode-center-section {
-  width: 100%;
-  flex: 0 0 auto;
-  min-height: 88px;
-  margin-top: 0;
-  margin-bottom: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  margin-bottom: 26px;
 }
 
 .square-card {
@@ -220,79 +208,11 @@ page {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.segmented-section {
-  width: 100%;
-  flex: 0 0 auto;
-  min-height: 88px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #4b453d;
-  text-align: center;
-  transform: translateY(-8px);
-}
-
-.segmented-container {
-  width: 100%;
-  position: relative;
-  display: flex;
-  height: 48px;
-  padding: 3px;
-  box-sizing: border-box;
-  border-radius: 100px;
-  background: rgba(0, 0, 0, 0.04);
-  transform: translateY(-6px);
-}
-
-.segmented-slider {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 50%;
-  height: 42px;
-  border-radius: 100px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: left 0.28s cubic-bezier(0.23, 1, 0.32, 1);
-  z-index: 1;
-}
-
-.segmented-slider.slider-right {
-  left: calc(50% + 3px);
-}
-
-.segmented-item {
-  position: relative;
-  z-index: 2;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #848484;
-}
-
-.segmented-item.active {
-  color: #282521;
-}
-
-.segment-label {
-  font-size: 16px;
-  font-weight: 700;
-}
-
 .cta-section {
   width: 100%;
   flex: 0 0 auto;
   min-height: 72px;
-  margin-top: 10px;
+  margin-top: 8px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -321,8 +241,13 @@ page {
   justify-content: center;
 }
 
-.primary-button.cta-text-large {
+.primary-button.cta-text-zh {
+  width: 96%;
+  min-height: 68px;
+  padding: 0 20px;
   font-size: 18px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .primary-button.button-active,

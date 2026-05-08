@@ -1,0 +1,77 @@
+<view class="news-page" style="{{pageThemeStyle}}">
+  <scroll-view class="news-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="news-content">
+      <view class="back-fab" bindtap="onBackTap">
+        <view class="back-arrow"></view>
+      </view>
+
+      <view class="hero-card">
+        <text class="hero-eyebrow">LOCAL BRIEF</text>
+        <text class="hero-title">{{countryName}}本地资讯</text>
+        <text class="hero-subtitle">{{cityName}} · 城市脉搏、生活线索与安全观察</text>
+        <text class="hero-summary">{{summary}}</text>
+        <view class="hero-chip-row">
+          <text class="hero-chip">24h 更新</text>
+          <text class="hero-chip">生活观察</text>
+          <text class="hero-chip">安全优先</text>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <view>
+            <text class="section-title">今日脉搏</text>
+            <text class="section-subtitle">给初到当地的人一份先看什么的排序</text>
+          </view>
+        </view>
+
+        <block wx:for="{{pulseItems}}" wx:key="title">
+          <view class="pulse-card" bindtap="onActionTap" data-action="{{item.action}}" data-title="{{item.title}}">
+            <view class="pulse-tag">{{item.tag}}</view>
+            <text class="pulse-title">{{item.title}}</text>
+            <text class="pulse-desc">{{item.desc}}</text>
+          </view>
+        </block>
+      </view>
+
+      <view class="section-card service-card">
+        <view class="section-head">
+          <view>
+            <text class="section-title">联动服务</text>
+            <text class="section-subtitle">看到资讯后，直接跳到下一步动作</text>
+          </view>
+        </view>
+
+        <block wx:for="{{serviceItems}}" wx:key="title">
+          <view class="service-item" bindtap="onActionTap" data-action="{{item.action}}" data-title="{{item.title}}">
+            <view class="service-icon">{{item.icon}}</view>
+            <view class="service-copy">
+              <text class="service-title">{{item.title}}</text>
+              <text class="service-subtitle">{{item.subtitle}}</text>
+            </view>
+            <text class="service-arrow">›</text>
+          </view>
+        </block>
+      </view>
+
+      <view class="section-card tips-card">
+        <view class="section-head">
+          <view>
+            <text class="section-title">落地建议</text>
+            <text class="section-subtitle">不追求信息堆满，只保留最有用的三件事</text>
+          </view>
+        </view>
+
+        <block wx:for="{{livingTips}}" wx:key="title">
+          <view class="tip-row">
+            <view class="tip-dot"></view>
+            <view class="tip-copy">
+              <text class="tip-title">{{item.title}}</text>
+              <text class="tip-desc">{{item.desc}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </scroll-view>
+</view>

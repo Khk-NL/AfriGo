@@ -14,6 +14,7 @@
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
+    transform-origin: center;
 }
 
 .flow-one {
@@ -22,6 +23,7 @@
     width: 520rpx;
     height: 520rpx;
     background: radial-gradient(circle at 40% 40%, rgba(255, 183, 3, 0.92) 0%, rgba(255, 183, 3, 0.34) 40%, rgba(255, 183, 3, 0) 74%);
+    animation: halo-drift-a 7.2s ease-in-out infinite;
 }
 
 .flow-two {
@@ -30,6 +32,7 @@
     width: 420rpx;
     height: 420rpx;
     background: radial-gradient(circle at 50% 50%, rgba(231, 111, 81, 0.72) 0%, rgba(231, 111, 81, 0.24) 44%, rgba(231, 111, 81, 0) 78%);
+    animation: halo-drift-b 6.4s ease-in-out infinite;
 }
 
 .flow-three {
@@ -38,6 +41,7 @@
     width: 360rpx;
     height: 360rpx;
     background: radial-gradient(circle at 50% 50%, rgba(255, 239, 221, 0.94) 0%, rgba(255, 239, 221, 0.2) 50%, rgba(255, 239, 221, 0) 82%);
+    animation: halo-drift-c 5.8s ease-in-out infinite;
 }
 
 .ambient {
@@ -45,6 +49,7 @@
     border-radius: 50%;
     opacity: 0.88;
     pointer-events: none;
+    transform-origin: center;
 }
 
 .ambient-one {
@@ -53,6 +58,7 @@
     width: 360rpx;
     height: 360rpx;
     background: rgba(255, 240, 220, 0.62);
+    animation: ambient-pulse-a 4.6s ease-in-out infinite;
 }
 
 .ambient-two {
@@ -61,6 +67,7 @@
     width: 280rpx;
     height: 280rpx;
     background: rgba(255, 193, 130, 0.34);
+    animation: ambient-pulse-b 4.1s ease-in-out infinite;
 }
 
 .ambient-three {
@@ -69,6 +76,7 @@
     width: 240rpx;
     height: 240rpx;
     background: rgba(255, 248, 239, 0.84);
+    animation: ambient-pulse-c 5s ease-in-out infinite;
 }
 
 .light-ray {
@@ -77,6 +85,7 @@
     transform: rotate(-18deg);
     border-radius: 999rpx;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 243, 226, 0.1) 100%);
+    transform-origin: center;
 }
 
 .ray-one {
@@ -84,6 +93,7 @@
     left: 120rpx;
     width: 120rpx;
     height: 520rpx;
+    animation: ray-sway-a 6.8s ease-in-out infinite;
 }
 
 .ray-two {
@@ -92,6 +102,7 @@
     width: 86rpx;
     height: 420rpx;
     opacity: 0.7;
+    animation: ray-sway-b 5.4s ease-in-out infinite;
 }
 
 .ray-three {
@@ -100,6 +111,136 @@
     width: 66rpx;
     height: 320rpx;
     opacity: 0.44;
+    animation: ray-sway-c 4.8s ease-in-out infinite;
+}
+
+@keyframes halo-drift-a {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.88;
+    }
+    35% {
+        transform: translate(18rpx, 14rpx) scale(1.08);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-12rpx, 28rpx) scale(0.94);
+        opacity: 0.78;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.88;
+    }
+}
+
+@keyframes halo-drift-b {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.82;
+    }
+    30% {
+        transform: translate(-24rpx, 10rpx) scale(1.12);
+        opacity: 0.98;
+    }
+    68% {
+        transform: translate(16rpx, -20rpx) scale(0.92);
+        opacity: 0.68;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.82;
+    }
+}
+
+@keyframes halo-drift-c {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.76;
+    }
+    40% {
+        transform: translate(14rpx, -18rpx) scale(1.1);
+        opacity: 0.96;
+    }
+    75% {
+        transform: translate(-18rpx, 16rpx) scale(0.9);
+        opacity: 0.66;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.76;
+    }
+}
+
+@keyframes ambient-pulse-a {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.72;
+    }
+    50% {
+        transform: scale(1.16);
+        opacity: 0.98;
+    }
+}
+
+@keyframes ambient-pulse-b {
+    0%,
+    100% {
+        transform: scale(0.94) translate(0, 0);
+        opacity: 0.38;
+    }
+    50% {
+        transform: scale(1.18) translate(-10rpx, 12rpx);
+        opacity: 0.72;
+    }
+}
+
+@keyframes ambient-pulse-c {
+    0%,
+    100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.22) translate(10rpx, -10rpx);
+        opacity: 1;
+    }
+}
+
+@keyframes ray-sway-a {
+    0%,
+    100% {
+        transform: rotate(-18deg) translateY(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: rotate(-14deg) translateY(18rpx);
+        opacity: 0.84;
+    }
+}
+
+@keyframes ray-sway-b {
+    0%,
+    100% {
+        transform: rotate(-18deg) translateY(0);
+        opacity: 0.54;
+    }
+    50% {
+        transform: rotate(-22deg) translateY(-14rpx);
+        opacity: 0.82;
+    }
+}
+
+@keyframes ray-sway-c {
+    0%,
+    100% {
+        transform: rotate(-18deg) translateY(0);
+        opacity: 0.34;
+    }
+    50% {
+        transform: rotate(-11deg) translateY(12rpx);
+        opacity: 0.62;
+    }
 }
 
 .publish-scroll {

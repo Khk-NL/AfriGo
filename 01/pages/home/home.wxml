@@ -10,14 +10,18 @@
       <view class="ai-hero-container">
         <!-- 欢迎语与引导 -->
         <view class="hero-text-area">
-          <text class="hero-title">你好，我是你的{{welcomeCountryZh}}向导</text>
+          <text class="hero-title">欢迎来到{{welcomeCountryZh}}</text>
+          <view class="hero-subtitle-row">
+            <text class="hero-subtitle-icon">📍</text>
+            <text class="hero-subtitle">{{welcomeSubtitle}}</text>
+          </view>
         </view>
 
         <!-- 核心 Canvas 节点及交互气泡 -->
         <view class="elephant-interaction-area {{isElephantRevealed ? 'revealed' : 'hidden'}}">
           <view class="elephant-wrapper" bindtap="handleTapElephant">
-            <canvas id="lottie-canvas" type="2d" bindtap="handleTapElephant" style="width:160px;height:160px;margin:0 auto;" />
-            <!-- 由小象触发的右侧气泡 -->
+            <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:160px;height:160px;margin:0 auto;" />
+            <!-- 由小象触发的左侧气泡 -->
             <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}">
               <text>您可以尝试问我“签证”或“大使馆”</text>
               <view class="tooltip-arrow"></view>

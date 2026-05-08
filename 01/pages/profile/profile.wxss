@@ -1,135 +1,535 @@
-/* D:/Code/proj/小程序/01/pages/profile/profile.wxss */
 @import "../../templates/tabbar.wxss";
 
-.container {
-    padding-top: 70px; /* Adjust based on tabbar height (50px) + safe area inset + potential shadow */
-    padding-bottom: 20px; /* Add some bottom padding for overall content */
-    min-height: 100vh; /* Ensure container takes full height */
-    background-color: #f8f8f8; /* Light background for the page */
+page {
+    background:
+        radial-gradient(circle at top left, rgba(208, 240, 229, 0.9) 0, rgba(208, 240, 229, 0) 28%),
+        linear-gradient(180deg, #f5fbf8 0%, #f8fafb 48%, #ffffff 100%);
 }
 
-.profile-header {
-    background-color: #fff;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+.profile-page {
+    min-height: 100vh;
 }
 
-.user-info-card {
+.profile-scroll {
+    min-height: 100vh;
+}
+
+.profile-content {
+    padding: 40rpx 28rpx 220rpx;
+}
+
+.profile-hero,
+.section-card {
+    border-radius: 34rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.72);
+    box-shadow: 0 24rpx 54rpx rgba(31, 41, 55, 0.08);
+}
+
+.profile-hero {
+    padding: 34rpx 30rpx 30rpx;
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.8) 0, rgba(255, 255, 255, 0) 34%),
+        linear-gradient(140deg, #dff6ec 0%, #f6fbf8 44%, #fff8ed 100%);
+}
+
+.hero-topline {
     display: flex;
     align-items: center;
-    padding: 15px 0;
+    justify-content: space-between;
 }
 
-.login-btn {
-    display: flex;
-    flex-direction: column;
+.hero-badge,
+.hero-date,
+.section-pill,
+.journey-chip,
+.hero-status-pill {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 10px;
-    padding: 15px 20px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 16px;
-    border: none;
+    border-radius: 999rpx;
 }
 
-.avatar-placeholder {
-    font-size: 40px;
-    margin-bottom: 10px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
+.hero-badge {
+    padding: 10rpx 18rpx;
+    font-size: 20rpx;
+    color: #0f766e;
+    background: rgba(255, 255, 255, 0.86);
+    letter-spacing: 2rpx;
+}
+
+.hero-date {
+    padding: 10rpx 16rpx;
+    font-size: 20rpx;
+    color: #8a6d46;
+    background: rgba(255, 247, 232, 0.9);
+}
+
+.identity-row {
+    margin-top: 28rpx;
+    display: flex;
+    align-items: center;
+    gap: 24rpx;
+}
+
+.avatar-shell {
+    width: 132rpx;
+    height: 132rpx;
+    border-radius: 38rpx;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 2rpx 8rpx rgba(255, 255, 255, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #666;
-}
-
-.login-text {
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-.avatar-wrap {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
     overflow: hidden;
-    margin-right: 15px;
-    border: 2px solid #eee;
+    flex-shrink: 0;
 }
 
-.avatar-wrap image {
+.avatar-image {
     width: 100%;
     height: 100%;
 }
 
-.user-detail {
+.avatar-fallback {
+    width: 92rpx;
+    height: 92rpx;
+    border-radius: 28rpx;
+    background: linear-gradient(135deg, #6fcba8 0%, #3bb492 100%);
+    color: #ffffff;
+    font-size: 42rpx;
+    font-weight: 700;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.user-name {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
+.identity-copy {
+    flex: 1;
 }
 
-.user-id {
-    font-size: 14px;
-    color: #666;
-    margin-top: 5px;
+.hero-name {
+    display: block;
+    font-size: 44rpx;
+    line-height: 1.12;
+    font-weight: 800;
+    color: #1f2937;
 }
 
-.profile-section {
-    background-color: #fff;
-    margin: 0 15px 15px 15px;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+.hero-subcopy {
+    display: block;
+    margin-top: 12rpx;
+    font-size: 23rpx;
+    color: #5b6473;
+}
+
+.hero-note {
+    display: block;
+    margin-top: 14rpx;
+    font-size: 24rpx;
+    line-height: 1.65;
+    color: #5f6b7a;
+}
+
+.hero-login-btn,
+.ghost-logout-btn {
+    border: none;
+}
+
+.hero-login-btn::after,
+.ghost-logout-btn::after {
+    border: none;
+}
+
+.hero-login-btn {
+    margin-top: 26rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    border-radius: 999rpx;
+    background: linear-gradient(135deg, #53c39c 0%, #2ea37f 100%);
+    color: #ffffff;
+    font-size: 28rpx;
+    font-weight: 700;
+    box-shadow: 0 16rpx 34rpx rgba(56, 167, 128, 0.26);
+}
+
+.hero-status-pill {
+    margin-top: 24rpx;
+    padding: 14rpx 20rpx;
+    font-size: 22rpx;
+    color: #0f766e;
+    background: rgba(237, 255, 247, 0.92);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18rpx;
+    margin-top: 28rpx;
+}
+
+.stat-card {
+    padding: 24rpx;
+    border-radius: 26rpx;
+    background: rgba(255, 255, 255, 0.76);
+}
+
+.stat-emerald {
+    background: linear-gradient(135deg, #e8fbf3 0%, #f7fffb 100%);
+}
+
+.stat-sand {
+    background: linear-gradient(135deg, #fff5e6 0%, #fffdf9 100%);
+}
+
+.stat-sky {
+    background: linear-gradient(135deg, #ebf5ff 0%, #f8fbff 100%);
+}
+
+.stat-rose {
+    background: linear-gradient(135deg, #fff1f4 0%, #fffafb 100%);
+}
+
+.stat-gold {
+    background: linear-gradient(135deg, #fff7df 0%, #fffdf6 100%);
+}
+
+.stat-value {
+    display: block;
+    font-size: 32rpx;
+    line-height: 1.25;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.stat-label {
+    display: block;
+    margin-top: 10rpx;
+    font-size: 22rpx;
+    color: #6b7280;
+}
+
+.section-card {
+    margin-top: 24rpx;
+    padding: 30rpx;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+}
+
+.section-head {
+    margin-bottom: 22rpx;
+}
+
+.section-head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20rpx;
 }
 
 .section-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+    display: block;
+    font-size: 34rpx;
+    line-height: 1.25;
+    font-weight: 700;
+    color: #1f2937;
 }
 
-.bookmarks-list {
-    /* Styles for the list of bookmarks */
+.section-subtitle {
+    display: block;
+    margin-top: 8rpx;
+    font-size: 22rpx;
+    line-height: 1.6;
+    color: #8b93a1;
 }
 
-.empty-state {
+.section-pill {
+    padding: 12rpx 18rpx;
+    font-size: 22rpx;
+    color: #0f766e;
+    background: rgba(230, 250, 240, 0.9);
+    flex-shrink: 0;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18rpx;
+}
+
+.quick-item {
+    border-radius: 28rpx;
+    padding: 24rpx;
+    min-height: 176rpx;
+    box-sizing: border-box;
+}
+
+.quick-sky {
+    background: linear-gradient(135deg, #eef6ff 0%, #ffffff 100%);
+}
+
+.quick-emerald {
+    background: linear-gradient(135deg, #eafbf3 0%, #ffffff 100%);
+}
+
+.quick-sand {
+    background: linear-gradient(135deg, #fff7e9 0%, #ffffff 100%);
+}
+
+.quick-rose {
+    background: linear-gradient(135deg, #fff1f6 0%, #ffffff 100%);
+}
+
+.quick-icon {
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 24rpx;
+    background: rgba(255, 255, 255, 0.84);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+}
+
+.quick-label {
+    display: block;
+    margin-top: 18rpx;
+    font-size: 28rpx;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.quick-meta {
+    display: block;
+    margin-top: 10rpx;
+    font-size: 22rpx;
+    color: #7b8492;
+    line-height: 1.5;
+}
+
+.journey-banner {
+    padding: 26rpx;
+    border-radius: 28rpx;
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.68) 0, rgba(255, 255, 255, 0) 30%),
+        linear-gradient(135deg, #d8f4e8 0%, #f5fbf8 52%, #fff6e7 100%);
+}
+
+.journey-title {
+    display: block;
+    font-size: 34rpx;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.journey-desc {
+    display: block;
+    margin-top: 14rpx;
+    font-size: 24rpx;
+    color: #566170;
+    line-height: 1.7;
+}
+
+.journey-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12rpx;
+    margin-top: 18rpx;
+}
+
+.journey-chip {
+    padding: 12rpx 18rpx;
+    font-size: 22rpx;
+}
+
+.journey-chip-green {
+    color: #0f766e;
+    background: rgba(231, 251, 241, 0.92);
+}
+
+.journey-chip-amber {
+    color: #a16207;
+    background: rgba(255, 244, 212, 0.92);
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 18rpx;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid rgba(226, 232, 240, 0.76);
+}
+
+.service-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.service-icon {
+    width: 78rpx;
+    height: 78rpx;
+    border-radius: 24rpx;
+    background: linear-gradient(135deg, #eff7f3 0%, #fff8ef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34rpx;
+    flex-shrink: 0;
+}
+
+.service-copy {
+    flex: 1;
+}
+
+.service-title {
+    display: block;
+    font-size: 28rpx;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.service-subtitle {
+    display: block;
+    margin-top: 8rpx;
+    font-size: 22rpx;
+    color: #7b8492;
+    line-height: 1.5;
+}
+
+.service-arrow {
+    font-size: 36rpx;
+    color: #b7c0cb;
+}
+
+.empty-bookmarks {
+    padding: 34rpx 24rpx;
+    border-radius: 28rpx;
+    background: linear-gradient(180deg, #f9fbfc 0%, #ffffff 100%);
     text-align: center;
-    color: #999;
-    padding: 20px 0;
-    font-size: 14px;
+}
+
+.empty-icon {
+    width: 84rpx;
+    height: 84rpx;
+    margin: 0 auto;
+    border-radius: 28rpx;
+    background: linear-gradient(135deg, #e7fbf2 0%, #fff4df 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38rpx;
+    color: #158c75;
+}
+
+.empty-title {
+    display: block;
+    margin-top: 18rpx;
+    font-size: 28rpx;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.empty-desc {
+    display: block;
+    margin-top: 10rpx;
+    font-size: 22rpx;
+    color: #7b8492;
+    line-height: 1.65;
 }
 
 .bookmark-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #f5f5f5;
-    font-size: 15px;
-    color: #555;
+    gap: 18rpx;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid rgba(226, 232, 240, 0.76);
 }
 
 .bookmark-item:last-child {
     border-bottom: none;
+    padding-bottom: 0;
+}
+
+.bookmark-main {
+    flex: 1;
+}
+
+.bookmark-title {
+    display: block;
+    font-size: 28rpx;
+    color: #1f2937;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.bookmark-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 14rpx;
+    margin-top: 10rpx;
+    flex-wrap: wrap;
+}
+
+.bookmark-tag {
+    padding: 8rpx 14rpx;
+    border-radius: 999rpx;
+    font-size: 20rpx;
+    color: #0f766e;
+    background: rgba(230, 250, 240, 0.92);
 }
 
 .bookmark-date {
-    font-size: 13px;
-    color: #999;
+    font-size: 22rpx;
+    color: #8b93a1;
+}
+
+.bookmark-remove {
+    padding: 12rpx 18rpx;
+    border-radius: 999rpx;
+    background: rgba(255, 243, 245, 0.92);
+    color: #c2415d;
+    font-size: 22rpx;
+    flex-shrink: 0;
+}
+
+.support-row {
+    display: flex;
+    gap: 16rpx;
+}
+
+.support-action {
+    flex: 1;
+    padding: 24rpx;
+    border-radius: 26rpx;
+}
+
+.support-green {
+    background: linear-gradient(135deg, #e7fbf2 0%, #ffffff 100%);
+}
+
+.support-sand {
+    background: linear-gradient(135deg, #fff6e7 0%, #ffffff 100%);
+}
+
+.support-title {
+    display: block;
+    font-size: 28rpx;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.support-desc {
+    display: block;
+    margin-top: 8rpx;
+    font-size: 22rpx;
+    color: #7b8492;
+}
+
+.ghost-logout-btn {
+    margin-top: 22rpx;
+    height: 84rpx;
+    line-height: 84rpx;
+    border-radius: 999rpx;
+    background: rgba(247, 250, 252, 0.96);
+    color: #4b5563;
+    font-size: 26rpx;
+    font-weight: 600;
 }

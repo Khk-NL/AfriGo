@@ -1,45 +1,151 @@
 <import src="../../templates/tabbar.wxml" />
 
-<view class="container">
-    <view class="profile-header">
-        <view class="user-info-card">
-            <block wx:if="{{!isLogin}}">
-                <button class="login-btn" bindtap="getUserProfile">
-                    <view class="avatar-placeholder">👤</view>
-                    <text class="login-text">点击微信一键登录</text>
-                </button>
-            </block>
-
-            <block wx:else>
-                <view class="avatar-wrap">
-                    <image src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+<view class="profile-page">
+    <scroll-view class="profile-scroll" scroll-y="true" show-scrollbar="false">
+        <view class="profile-content">
+            <view class="profile-hero">
+                <view class="hero-topline">
+                    <text class="hero-badge">Traveler Portfolio</text>
+                    <text class="hero-date">Member Since {{memberSince}}</text>
                 </view>
-                <view class="user-detail">
-                    <text class="user-name">{{userInfo.nickName}}</text>
-                    <text class="user-id">当前国家：{{currentCountry}}</text>
-                </view>
-            </block>
-        </view>
-    </view>
 
-    <view class="profile-section">
-        <view class="section-title">我的收藏</view>
-        <view class="bookmarks-list">
-            <!-- Placeholder for bookmarks -->
-            <view wx:if="{{bookmarks.length === 0}}" class="empty-state">
-                <text>暂无收藏内容</text>
+                <view class="identity-row">
+                    <view class="avatar-shell">
+                        <image wx:if="{{isLogin && userInfo.avatarUrl}}" class="avatar-image" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+                        <view wx:else class="avatar-fallback">旅</view>
+                    </view>
+
+                    <view class="identity-copy">
+                        <text class="hero-name">{{isLogin ? userInfo.nickName : '开启你的专属档案'}}</text>
+                        <text class="hero-subcopy">{{currentCountry}} · {{currentCity}} · 安全同行账户</text>
+                        <text class="hero-note">{{companionNote}}</text>
+                    </view>
+                </view>
+
+                <button wx:if="{{!isLogin}}" class="hero-login-btn" bindtap="getUserProfile">微信一键登录</button>
+                <view wx:else class="hero-status-pill">已同步微信身份</view>
+
+                <view class="stats-grid">
+                    <block wx:for="{{profileStats}}" wx:key="label">
+                        <view class="stat-card stat-{{item.tone}}">
+                            <text class="stat-value">{{item.value}}</text>
+                            <text class="stat-label">{{item.label}}</text>
+                        </view>
+                    </block>
+                </view>
             </view>
-            <block wx:for="{{bookmarks}}" wx:key="id">
-                <view class="bookmark-item">
-                    <text>{{item.title}}</text>
-                    <text class="bookmark-date">{{item.date}}</text>
+
+            <view class="section-card quick-card">
+                <view class="section-head">
+                    <view>
+                        <text class="section-title">高频入口</text>
+                        <text class="section-subtitle">把最常用的四个动作收进这张旅途仪表盘</text>
+                    </view>
                 </view>
-            </block>
+
+                <view class="quick-grid">
+                    <block wx:for="{{quickActions}}" wx:key="key">
+                        <view class="quick-item quick-{{item.tone}}" bindtap="onQuickActionTap" data-key="{{item.key}}">
+                            <view class="quick-icon">{{item.icon}}</view>
+                            <text class="quick-label">{{item.label}}</text>
+                            <text class="quick-meta">{{item.meta}}</text>
+                        </view>
+                    </block>
+                </view>
+            </view>
+
+            <view class="section-card journey-card">
+                <view class="section-head">
+                    <view>
+                        <text class="section-title">旅途画像</text>
+                        <text class="section-subtitle">保持页面气质统一，但信息表达更像一张随身卡片</text>
+                    </view>
+                </view>
+
+                <view class="journey-banner">
+                    <text class="journey-title">{{currentCountry}} 驻留档案</text>
+                    <text class="journey-desc">{{destinationInsight}}</text>
+                    <view class="journey-chip-row">
+                        <text class="journey-chip journey-chip-green">重点：{{focusLabel}}</text>
+                        <text class="journey-chip journey-chip-amber">风险：{{riskLabel}}</text>
+                    </view>
+                </view>
+            </view>
+
+            <view class="section-card service-card">
+                <view class="section-head">
+                    <view>
+                        <text class="section-title">服务总览</text>
+                        <text class="section-subtitle">把签证、安全、资讯和设置串在一页里，不必来回找入口</text>
+                    </view>
+                </view>
+
+                <block wx:for="{{serviceEntries}}" wx:key="title">
+                    <view class="service-item" bindtap="onServiceTap" data-action="{{item.action}}" data-title="{{item.title}}">
+                        <view class="service-icon">{{item.icon}}</view>
+                        <view class="service-copy">
+                            <text class="service-title">{{item.title}}</text>
+                            <text class="service-subtitle">{{item.subtitle}}</text>
+                        </view>
+                        <text class="service-arrow">›</text>
+                    </view>
+                </block>
+            </view>
+
+            <view class="section-card bookmark-card">
+                <view class="section-head section-head-row">
+                    <view>
+                        <text class="section-title">收藏清单</text>
+                        <text class="section-subtitle">以后你在各页标记的重点内容，都可以回到这里统一回看</text>
+                    </view>
+                    <text class="section-pill">{{bookmarks.length}} 条</text>
+                </view>
+
+                <view wx:if="{{bookmarks.length === 0}}" class="empty-bookmarks">
+                    <view class="empty-icon">✦</view>
+                    <text class="empty-title">收藏夹还没有内容</text>
+                    <text class="empty-desc">去签证、词句或出行推荐页标记内容后，这里会自动归档。</text>
+                </view>
+
+                <block wx:else>
+                    <block wx:for="{{bookmarks}}" wx:key="id">
+                        <view class="bookmark-item" bindtap="onBookmarkTap" data-title="{{item.title}}">
+                            <view class="bookmark-main">
+                                <text class="bookmark-title">{{item.title}}</text>
+                                <view class="bookmark-meta-row">
+                                    <text class="bookmark-tag">{{item.category}}</text>
+                                    <text class="bookmark-date">{{item.date}}</text>
+                                </view>
+                            </view>
+                            <view class="bookmark-remove" catchtap="onRemoveBookmark" data-id="{{item.id}}">移除</view>
+                        </view>
+                    </block>
+                </block>
+            </view>
+
+            <view class="section-card support-card">
+                <view class="section-head">
+                    <view>
+                        <text class="section-title">收尾动作</text>
+                        <text class="section-subtitle">把应急入口和身份管理放在页面底部，逻辑更清晰</text>
+                    </view>
+                </view>
+
+                <view class="support-row">
+                    <view class="support-action support-green" bindtap="onServiceTap" data-action="security" data-title="安全出行提醒">
+                        <text class="support-title">安全中心</text>
+                        <text class="support-desc">应急提醒</text>
+                    </view>
+                    <view class="support-action support-sand" bindtap="onServiceTap" data-action="local-info" data-title="本地资讯摘要">
+                        <text class="support-title">本地资讯</text>
+                        <text class="support-desc">城市速览</text>
+                    </view>
+                </view>
+
+                <button wx:if="{{isLogin}}" class="ghost-logout-btn" bindtap="onLogout">退出当前账号</button>
+            </view>
         </view>
-    </view>
-
-    <!-- Add more profile sections as needed -->
-
+    </scroll-view>
 </view>
 
 <template is="tabbar" data="{{ activeTab: 'profile' }}" />

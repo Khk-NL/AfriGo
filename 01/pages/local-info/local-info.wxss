@@ -1,0 +1,241 @@
+page {
+  background: linear-gradient(180deg, var(--theme-start) 0%, #fffaf4 26%, #ffffff 100%);
+}
+
+.news-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.72) 0, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(180deg, var(--theme-start) 0%, #fffaf4 26%, #ffffff 100%);
+}
+
+.news-scroll {
+  min-height: 100vh;
+}
+
+.news-content {
+  padding: 48rpx 28rpx 56rpx;
+}
+
+.back-fab {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12rpx 28rpx rgba(155, 101, 36, 0.08);
+}
+
+.back-arrow {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid #2d3748;
+  border-bottom: 4rpx solid #2d3748;
+  transform: rotate(45deg);
+  margin-left: 8rpx;
+}
+
+.hero-card,
+.section-card {
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 20rpx 48rpx rgba(84, 70, 51, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.hero-card {
+  margin-top: 28rpx;
+  padding: 34rpx 30rpx 30rpx;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.68) 0, rgba(255, 255, 255, 0) 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 248, 239, 0.96) 100%);
+}
+
+.hero-eyebrow {
+  display: block;
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  color: #b7791f;
+}
+
+.hero-title {
+  display: block;
+  margin-top: 18rpx;
+  font-size: 54rpx;
+  line-height: 1.12;
+  color: #1f2937;
+  font-weight: 800;
+}
+
+.hero-subtitle {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: #7c674c;
+  line-height: 1.45;
+}
+
+.hero-summary {
+  display: block;
+  margin-top: 22rpx;
+  font-size: 26rpx;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.hero-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+
+.hero-chip {
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: #9a6a1b;
+  background: rgba(255, 240, 217, 0.88);
+}
+
+.section-card {
+  margin-top: 26rpx;
+  padding: 28rpx;
+}
+
+.section-head {
+  margin-bottom: 18rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.section-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8b7a67;
+  line-height: 1.5;
+}
+
+.pulse-card {
+  padding: 26rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(180deg, #fffaf3 0%, #ffffff 100%);
+  border: 1rpx solid rgba(240, 211, 172, 0.72);
+  margin-top: 18rpx;
+}
+
+.pulse-tag {
+  display: inline-flex;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  color: #af6f12;
+  background: rgba(255, 233, 196, 0.92);
+}
+
+.pulse-title {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  color: #202938;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.pulse-desc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid rgba(226, 232, 240, 0.72);
+}
+
+.service-item:last-child {
+  border-bottom: none;
+}
+
+.service-icon {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  background: linear-gradient(135deg, #fff4df 0%, #fff8ef 100%);
+}
+
+.service-copy {
+  flex: 1;
+}
+
+.service-title {
+  display: block;
+  font-size: 28rpx;
+  color: #202938;
+  font-weight: 700;
+}
+
+.service-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.service-arrow {
+  font-size: 36rpx;
+  color: #c18a3c;
+}
+
+.tip-row {
+  display: flex;
+  gap: 18rpx;
+  padding: 18rpx 0;
+}
+
+.tip-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5bf76 0%, #d99035 100%);
+  margin-top: 10rpx;
+  flex-shrink: 0;
+}
+
+.tip-copy {
+  flex: 1;
+}
+
+.tip-title {
+  display: block;
+  font-size: 28rpx;
+  color: #202938;
+  font-weight: 700;
+}
+
+.tip-desc {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: #6b7280;
+  line-height: 1.7;
+}

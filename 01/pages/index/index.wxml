@@ -32,24 +32,9 @@
       </view>
     </view>
 
-    <view class="mode-center-section">
-      <view class="segmented-section">
-        <text class="section-label">{{uiText.modeLabel}}</text>
-        <view class="segmented-container">
-          <view class="segmented-slider {{isWorkMode ? 'slider-right' : 'slider-left'}}"></view>
-          <view class="segmented-item {{!isWorkMode ? 'active' : ''}}" bindtap="onModeSelect" data-mode="travel">
-            <text class="segment-label">{{uiText.travelLabel}}</text>
-          </view>
-          <view class="segmented-item {{isWorkMode ? 'active' : ''}}" bindtap="onModeSelect" data-mode="business">
-            <text class="segment-label">{{uiText.businessLabel}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
     <view class="cta-section">
       <button
-        class="primary-button {{language !== 'fr' ? 'cta-text-large' : ''}} {{ctaPressed ? 'button-active' : ''}}"
+        class="primary-button {{language === 'zh' ? 'cta-text-zh' : ''}} {{ctaPressed ? 'button-active' : ''}}"
         bindtap="onStartJourney"
         bindtouchstart="onCTAPress"
         bindtouchend="onCTARelease"

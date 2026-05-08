@@ -2,7 +2,6 @@ import { ElephantRenderer } from '../../utils/elephant-renderer.js';
 
 Page({
   data: {
-    elephantRenderer: null,
     isAnimating: false,
     isChatOpen: false,
     isElephantRevealed: false,
@@ -64,23 +63,36 @@ Page({
 
   onReady() {
     wx.createSelectorQuery().select('#lottie-canvas').node(res => {
-      if (!res || !res.node) return;
-      const canvas = res.node;
-      const context = canvas.getContext('2d');
-      // 设置高分辨率防锯齿
-      const dpr = wx.getWindowInfo().pixelRatio;
-      const cssWidth = 160; 
-      const cssHeight = 160;
-      canvas.width = cssWidth * dpr;
-      canvas.height = cssHeight * dpr;
-      context.scale(dpr, dpr);
+      if (!res || !res.node) {
+        console.warn('home: lottie canvas node not found');
+        return;
+      }
 
-      // 使用自定义渲染引擎
-      const renderer = new ElephantRenderer(canvas, context);
-      renderer.setState('peek');
-      renderer.start();
-      
-      this.setData({ elephantRenderer: renderer });
+      try {
+        const canvas = res.node;
+        const context = canvas.getContext('2d');
+        if (!context) {
+          console.warn('home: canvas 2d context unavailable');
+          return;
+        }
+
+        // 设置高分辨率防锯齿
+        const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+        const dpr = windowInfo.pixelRatio || 1;
+        const cssWidth = 160;
+        const cssHeight = 160;
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
+        context.scale(dpr, dpr);
+
+        // 渲染器实例不要放入 data，避免 setData 序列化失败
+        const renderer = new ElephantRenderer(canvas, context);
+        renderer.setState('peek');
+        renderer.start();
+        this.elephantRenderer = renderer;
+      } catch (error) {
+        console.error('home: elephant renderer init failed', error);
+      }
     }).exec();
   },
 
@@ -93,7 +105,7 @@ Page({
     });
 
     const isRevealed = this.data.isElephantRevealed;
-    const renderer = this.data.elephantRenderer;
+    const renderer = this.elephantRenderer;
 
     if (!isRevealed) {
       // 从右侧出来，变成开心状态，打开气泡
@@ -126,10 +138,11 @@ Page({
   },
 
   onUnload() {
-    const renderer = this.data.elephantRenderer;
+    const renderer = this.elephantRenderer;
     if (renderer) {
       renderer.stop();
     }
+    this.elephantRenderer = null;
   },
 
   onFilterTap() {
@@ -166,7 +179,7 @@ Page({
 
     const featureRouteMap = {
       '签证指南': '/pages/logs/logs',
-      '本地资讯': '/pages/community/community',
+      '本地资讯': '/pages/local-info/local-info',
       '防疫健康': '/pages/home/health',
       '当地风俗': '/pages/customs/customs',
       '劳务合规': '/pages/labor/labor',
@@ -176,13 +189,6 @@ Page({
 
     const route = featureRouteMap[name];
     if (route) {
-      if (route === '/pages/community/community') {
-        wx.switchTab({
-          url: route
-        });
-        return;
-      }
-
       const url = `${route}?themeStart=${encodeURIComponent(themeStart || '')}&themeEnd=${encodeURIComponent(themeEnd || '')}`;
       wx.navigateTo({ url });
       return;

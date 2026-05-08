@@ -6,10 +6,7 @@ Page({
     i18n: {
       zh: {
         mainTitle: '开启你的中非安全之旅',
-        modeLabel: '选择你的出行方式',
-        travelLabel: '旅游探索',
-        businessLabel: '商务出行',
-        cta: '进入小程序',
+        cta: '开启您期待的非洲之旅',
         brandMotto: '真境 · 中非安全指南',
         sheetTitle: '选择您的目的地',
         sheetSubtitle: 'Select Your Destination',
@@ -18,10 +15,7 @@ Page({
       },
       en: {
         mainTitle: 'Start Your Safe Journey',
-        modeLabel: 'Select your travel mode',
-        travelLabel: 'Leisure',
-        businessLabel: 'Business',
-        cta: 'Get Started',
+        cta: 'Begin Your Dream African Journey',
         brandMotto: 'Authentic · Safety Guide',
         sheetTitle: 'Select Your Destination',
         sheetSubtitle: 'Choose your African destination',
@@ -30,10 +24,7 @@ Page({
       },
       fr: {
         mainTitle: 'Commencez votre voyage en toute sécurité',
-        modeLabel: 'Choisissez votre mode de voyage',
-        travelLabel: 'Loisir',
-        businessLabel: 'Affaires',
-        cta: 'Entrer dans le mini-programme',
+        cta: 'Commencez le voyage africain que vous attendez',
         brandMotto: 'Authentique · Guide de sécurité Afrique-Chine',
         sheetTitle: 'Choisissez votre destination',
         sheetSubtitle: 'Sélectionnez un pays africain',
@@ -46,7 +37,6 @@ Page({
     currentCountryEn: 'DR Congo',
     currentCountryImage: '/assets/images/congo-drc.png',
     currentCountryBg: 'radial-gradient(circle at 70% 20%, #cfdbef 0%, #b7c7e4 40%, #8ea8d4 100%)',
-    isWorkMode: false,
     ctaPressed: false,
     sheetVisible: false,
     countryKeyword: '',
@@ -256,25 +246,6 @@ Page({
   },
 
   /**
-   * 模式切换 - 药丸形分段器动画
-   */
-  onModeSelect(e) {
-    const mode = e.currentTarget.dataset.mode;
-    const isBusiness = mode === 'business';
-    
-    if (this.data.isWorkMode === isBusiness) return;
-    
-    this.setData({
-      isWorkMode: isBusiness
-    });
-    
-    this.triggerHaptic('light');
-    this.logEvent('mode_switched', { 
-      mode: isBusiness ? 'business' : 'travel' 
-    });
-  },
-
-  /**
    * CTA 按钮按下 - 深祖母绿阴影收缩
    */
   onCTAPress() {
@@ -312,8 +283,8 @@ Page({
         enName: this.data.currentCountryEn
       });
 
-      // 2. 【核心修改】将 navigateTo 改为 reLaunch
-      wx.reLaunch({
+      // 2. TabBar 页面必须使用 switchTab 进入
+      wx.switchTab({
         url: '/pages/home/home',
         success: () => {
           console.log("成功跳转至主页");
@@ -322,7 +293,7 @@ Page({
           console.error("跳转失败详情:", err);
           wx.showModal({
             title: '跳转提示',
-            content: '请确认 app.json 中 pages 数组的第一项或第二项包含 pages/home/home',
+            content: '请确认 app.json 的 tabBar.list 中已配置 pages/home/home',
             showCancel: false
           });
         }

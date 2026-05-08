@@ -85,7 +85,7 @@ export class ElephantRenderer {
     if (this.state === 'peek') {
       leftEarRot = Math.sin(t * Math.PI * 2 / 4) * 3;
       rightEarRot = -Math.sin(t * Math.PI * 2 / 4) * 3;
-      bodyTiltDeg = 7;
+      bodyTiltDeg = 11;
     } else if (this.state === 'idle') {
       leftEarRot = Math.sin(t * Math.PI * 2 / 4) * 3;
       rightEarRot = -Math.sin(t * Math.PI * 2 / 4) * 3;
