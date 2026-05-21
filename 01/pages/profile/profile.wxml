@@ -5,25 +5,25 @@
         <view class="profile-content">
             <view class="profile-hero">
                 <view class="hero-topline">
-                    <text class="hero-badge">Traveler Portfolio</text>
-                    <text class="hero-date">Member Since {{memberSince}}</text>
+                    <text class="hero-badge">{{uiText.heroBadge}}</text>
+                    <text class="hero-date">{{uiText.memberSince}} {{memberSince}}</text>
                 </view>
 
                 <view class="identity-row">
                     <view class="avatar-shell">
                         <image wx:if="{{isLogin && userInfo.avatarUrl}}" class="avatar-image" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
-                        <view wx:else class="avatar-fallback">旅</view>
+                        <view wx:else class="avatar-fallback">{{language === 'en' ? 'T' : language === 'fr' ? 'V' : '旅'}}</view>
                     </view>
 
                     <view class="identity-copy">
-                        <text class="hero-name">{{isLogin ? userInfo.nickName : '开启你的专属档案'}}</text>
-                        <text class="hero-subcopy">{{currentCountry}} · {{currentCity}} · 安全同行账户</text>
-                        <text class="hero-note">{{companionNote}}</text>
+                        <text class="hero-name">{{isLogin ? userInfo.nickName : uiText.guestName}}</text>
+                        <text class="hero-subcopy">{{currentCountryLabel}} · {{currentCity}} · {{uiText.heroSubcopy}}</text>
+                        <text class="hero-note">{{isLogin ? uiText.loggedInNote : uiText.guestSubcopy}}</text>
                     </view>
                 </view>
 
-                <button wx:if="{{!isLogin}}" class="hero-login-btn" bindtap="getUserProfile">微信一键登录</button>
-                <view wx:else class="hero-status-pill">已同步微信身份</view>
+                <view wx:if="{{isLogin}}" class="hero-status-pill">{{uiText.loggedInStatus}}</view>
+                <view wx:else class="hero-status-pill hero-status-guest">{{uiText.guestStatus}}</view>
 
                 <view class="stats-grid">
                     <block wx:for="{{profileStats}}" wx:key="label">
@@ -38,8 +38,8 @@
             <view class="section-card quick-card">
                 <view class="section-head">
                     <view>
-                        <text class="section-title">高频入口</text>
-                        <text class="section-subtitle">把最常用的四个动作收进这张旅途仪表盘</text>
+                        <text class="section-title">{{uiText.quickTitle}}</text>
+                        <text class="section-subtitle">{{uiText.quickSubtitle}}</text>
                     </view>
                 </view>
 
@@ -57,17 +57,17 @@
             <view class="section-card journey-card">
                 <view class="section-head">
                     <view>
-                        <text class="section-title">旅途画像</text>
-                        <text class="section-subtitle">保持页面气质统一，但信息表达更像一张随身卡片</text>
+                        <text class="section-title">{{uiText.journeyTitle}}</text>
+                        <text class="section-subtitle">{{uiText.journeySubtitle}}</text>
                     </view>
                 </view>
 
                 <view class="journey-banner">
-                    <text class="journey-title">{{currentCountry}} 驻留档案</text>
+                    <text class="journey-title">{{currentCountryLabel}} {{uiText.journeyBadgePrefix}}</text>
                     <text class="journey-desc">{{destinationInsight}}</text>
                     <view class="journey-chip-row">
-                        <text class="journey-chip journey-chip-green">重点：{{focusLabel}}</text>
-                        <text class="journey-chip journey-chip-amber">风险：{{riskLabel}}</text>
+                        <text class="journey-chip journey-chip-green">{{uiText.focusPrefix}}{{focusLabel}}</text>
+                        <text class="journey-chip journey-chip-amber">{{uiText.riskPrefix}}{{riskLabel}}</text>
                     </view>
                 </view>
             </view>
@@ -75,8 +75,8 @@
             <view class="section-card service-card">
                 <view class="section-head">
                     <view>
-                        <text class="section-title">服务总览</text>
-                        <text class="section-subtitle">把签证、安全、资讯和设置串在一页里，不必来回找入口</text>
+                        <text class="section-title">{{uiText.serviceTitle}}</text>
+                        <text class="section-subtitle">{{uiText.serviceSubtitle}}</text>
                     </view>
                 </view>
 
@@ -95,16 +95,16 @@
             <view class="section-card bookmark-card">
                 <view class="section-head section-head-row">
                     <view>
-                        <text class="section-title">收藏清单</text>
-                        <text class="section-subtitle">以后你在各页标记的重点内容，都可以回到这里统一回看</text>
+                        <text class="section-title">{{uiText.bookmarkTitle}}</text>
+                        <text class="section-subtitle">{{uiText.bookmarkSubtitle}}</text>
                     </view>
                     <text class="section-pill">{{bookmarks.length}} 条</text>
                 </view>
 
                 <view wx:if="{{bookmarks.length === 0}}" class="empty-bookmarks">
                     <view class="empty-icon">✦</view>
-                    <text class="empty-title">收藏夹还没有内容</text>
-                    <text class="empty-desc">去签证、词句或出行推荐页标记内容后，这里会自动归档。</text>
+                    <text class="empty-title">{{uiText.bookmarkEmptyTitle}}</text>
+                    <text class="empty-desc">{{uiText.bookmarkEmptyDesc}}</text>
                 </view>
 
                 <block wx:else>
@@ -117,7 +117,7 @@
                                     <text class="bookmark-date">{{item.date}}</text>
                                 </view>
                             </view>
-                            <view class="bookmark-remove" catchtap="onRemoveBookmark" data-id="{{item.id}}">移除</view>
+                            <view class="bookmark-remove" catchtap="onRemoveBookmark" data-id="{{item.id}}">{{language === 'zh' ? '移除' : language === 'en' ? 'Remove' : 'Retirer'}}</view>
                         </view>
                     </block>
                 </block>
@@ -126,26 +126,34 @@
             <view class="section-card support-card">
                 <view class="section-head">
                     <view>
-                        <text class="section-title">收尾动作</text>
-                        <text class="section-subtitle">把应急入口和身份管理放在页面底部，逻辑更清晰</text>
+                        <text class="section-title">{{uiText.supportTitle}}</text>
+                        <text class="section-subtitle">{{uiText.supportSubtitle}}</text>
                     </view>
                 </view>
 
                 <view class="support-row">
-                    <view class="support-action support-green" bindtap="onServiceTap" data-action="security" data-title="安全出行提醒">
-                        <text class="support-title">安全中心</text>
-                        <text class="support-desc">应急提醒</text>
+                    <view class="support-action support-green" bindtap="onServiceTap" data-action="security" data-title="{{uiText.supportSecurityTitle}}">
+                        <text class="support-title">{{uiText.supportSecurityTitle}}</text>
+                        <text class="support-desc">{{uiText.supportSecurityDesc}}</text>
                     </view>
-                    <view class="support-action support-sand" bindtap="onServiceTap" data-action="local-info" data-title="本地资讯摘要">
-                        <text class="support-title">本地资讯</text>
-                        <text class="support-desc">城市速览</text>
+                    <view class="support-action support-sand" bindtap="onServiceTap" data-action="local-info" data-title="{{uiText.supportLocalInfoTitle}}">
+                        <text class="support-title">{{uiText.supportLocalInfoTitle}}</text>
+                        <text class="support-desc">{{uiText.supportLocalInfoDesc}}</text>
                     </view>
                 </view>
 
-                <button wx:if="{{isLogin}}" class="ghost-logout-btn" bindtap="onLogout">退出当前账号</button>
+                <button wx:if="{{isLogin}}" class="ghost-logout-btn" bindtap="onLogout">{{uiText.logout}}</button>
+
+                <view wx:if="{{isAdmin}}" class="admin-entry-card" bindtap="onAdminCenterTap">
+                    <view class="admin-entry-copy">
+                        <text class="admin-entry-title">{{uiText.adminEntrance}}</text>
+                        <text class="admin-entry-desc">{{uiText.adminEntranceDesc}}</text>
+                    </view>
+                    <text class="admin-entry-arrow">›</text>
+                </view>
             </view>
         </view>
     </scroll-view>
 </view>
 
-<template is="tabbar" data="{{ activeTab: 'profile' }}" />
+<template is="tabbar" data="{{ activeTab: 'profile', tabTexts: uiText.tabLabels }}" />

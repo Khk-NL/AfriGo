@@ -1,5 +1,32 @@
 const phraseLib = require('../../data/phrases.js');
 
+const buildFallbackPhrases = (countryName) => ([
+  {
+    id: 'fallback-1',
+    type: '示例',
+    cn: `${countryName}暂无同步语句`,
+    foreign: 'No synced phrase yet',
+    konger: '展示用占位内容',
+    audio: ''
+  },
+  {
+    id: 'fallback-2',
+    type: '示例',
+    cn: '请在云端配置实用语句',
+    foreign: 'Please configure phrases in cloud data',
+    konger: '后续自动替换',
+    audio: ''
+  },
+  {
+    id: 'fallback-3',
+    type: '示例',
+    cn: '这里会显示同样的卡片组件',
+    foreign: 'The same card component will render here',
+    konger: 'UI 先行展示',
+    audio: ''
+  }
+]);
+
 Page({
   data: {
     currentCountry: "",
@@ -17,7 +44,7 @@ Page({
 
     // 2. 从你的 js 结构中精准提取数组
     // phraseLib.phrases["肯尼亚"] -> 拿到那个 [ {id:1...} ] 数组
-    const list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : [];
+    const list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : buildFallbackPhrases(countryName);
 
     console.log("当前载入国家:", countryName, "数据量:", list.length);
 

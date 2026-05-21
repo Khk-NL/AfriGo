@@ -10,10 +10,10 @@
       <view class="ai-hero-container">
         <!-- 欢迎语与引导 -->
         <view class="hero-text-area">
-          <text class="hero-title">欢迎来到{{welcomeCountryZh}}</text>
+          <text class="hero-title">{{uiText.welcomeTitle}}</text>
           <view class="hero-subtitle-row">
             <text class="hero-subtitle-icon">📍</text>
-            <text class="hero-subtitle">{{welcomeSubtitle}}</text>
+            <text class="hero-subtitle">{{uiText.welcomeSubtitle}}</text>
           </view>
         </view>
 
@@ -23,7 +23,7 @@
             <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:160px;height:160px;margin:0 auto;" />
             <!-- 由小象触发的左侧气泡 -->
             <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}">
-              <text>您可以尝试问我“签证”或“大使馆”</text>
+              <text>{{uiText.tooltip}}</text>
               <view class="tooltip-arrow"></view>
             </view>
           </view>
@@ -32,30 +32,31 @@
 
       <view class="safety-card" bindtap="onOpenSecurityGuide">
         <view class="safety-header">
-          <text class="safety-title">旅行安全出行</text>
-          <text class="safety-more" bindtap="onMoreTap">更多 ></text>
+            <text class="safety-title">{{uiText.safetyTitle}}</text>
+            <text class="safety-more" bindtap="onMoreTap">{{uiText.safetyMore}}</text>
         </view>
         <view class="safety-level-row">
-          <text class="safety-level">安全等级：中等风险</text>
+          <text class="safety-level">{{uiText.safetyLevel}}</text>
           <text class="shield-icon">🛡</text>
         </view>
-        <text class="safety-text">外交部预警：请遵守当地法律法规，避免夜间单独出行</text>
-        <text class="safety-date">最近更新：2026年3月3日</text>
+        <text class="safety-text">{{uiText.safetyText}}</text>
+        <text class="safety-date">{{uiText.safetyDate}}</text>
       </view>
 
       <view class="feature-block">
-        <text class="feature-title">功能专标</text>
+        <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">
-          <block wx:for="{{features}}" wx:key="label">
+          <block wx:for="{{uiText.features}}" wx:key="key">
             <view
               class="feature-item"
               bindtap="onFeatureTap"
+              data-key="{{item.key}}"
               data-name="{{item.label}}"
               data-theme-start="{{item.themeStart}}"
               data-theme-end="{{item.themeEnd}}"
             >
               <view class="feature-icon-shell" style="background: {{item.bg}};">
-                <view wx:if="{{item.label === '防疫健康'}}" class="health-cross-mark">
+                <view wx:if="{{item.key === 'health'}}" class="health-cross-mark">
                   <view class="health-cross-fill">
                     <view class="health-cross-h"></view>
                     <view class="health-cross-v"></view>
@@ -73,13 +74,13 @@
       <view class="emergency-row">
         <view class="emergency-card embassy" bindtap="onEmergencyTap" data-type="embassy">
           <view class="emergency-icon">🏛</view>
-          <text class="en-text">Call Embassy</text>
-          <text class="zh-text">致电大使馆</text>
+          <text class="en-text">{{uiText.embassySubLabel}}</text>
+          <text class="zh-text">{{uiText.embassyLabel}}</text>
         </view>
         <view class="emergency-card hotline" bindtap="onEmergencyTap" data-type="hotline">
           <view class="emergency-icon">🚨</view>
-          <text class="en-text">Emergency Numbers</text>
-          <text class="zh-text">紧急电话</text>
+          <text class="en-text">{{uiText.hotlineSubLabel}}</text>
+          <text class="zh-text">{{uiText.hotlineLabel}}</text>
         </view>
       </view>
     </view>
@@ -89,23 +90,23 @@
     <view class="tab-pill">
       <view class="tab-item active" bindtap="onTabTap" data-tab="home">
         <text class="tab-icon">🏠</text>
-        <text class="tab-text">首页</text>
+        <text class="tab-text">{{uiText.tabLabels.home}}</text>
       </view>
       <view class="tab-item" bindtap="onTabTap" data-tab="community">
         <text class="tab-icon">💬</text>
-        <text class="tab-text">华人社区</text>
+        <text class="tab-text">{{uiText.tabLabels.community}}</text>
       </view>
       <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish">
         <view class="publish-btn"><text class="publish-plus">+</text></view>
-        <text class="publish-text">发布</text>
+        <text class="publish-text">{{uiText.tabLabels.publish}}</text>
       </view>
       <view class="tab-item" bindtap="onTabTap" data-tab="message">
         <text class="tab-icon">🗨</text>
-        <text class="tab-text">消息</text>
+        <text class="tab-text">{{uiText.tabLabels.message}}</text>
       </view>
       <view class="tab-item" bindtap="onTabTap" data-tab="profile">
         <text class="tab-icon">👤</text>
-        <text class="tab-text">个人中心</text>
+        <text class="tab-text">{{uiText.tabLabels.profile}}</text>
       </view>
     </view>
   </view>

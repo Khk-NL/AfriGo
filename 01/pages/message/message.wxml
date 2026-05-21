@@ -9,9 +9,9 @@
             <view class="message-header-padding"></view>
 
             <view class="header-block">
-                <text class="title">消息通知</text>
+                <text class="title">{{uiText.title}}</text>
                 <view class="sub-row">
-                    <text class="subtitle">实时获取当地预警与办事动态</text>
+                    <text class="subtitle">{{uiText.subtitle}}</text>
                 </view>
             </view>
 
@@ -34,11 +34,11 @@
             </view>
 
             <view wx:if="{{notices.length === 0}}" class="empty-box">
-                <text>暂无新消息</text>
+                <text>{{uiText.empty}}</text>
             </view>
         </view>
     </scroll-view>
 
 </view>
 
-<template is="tabbar" data="{{activeTab: 'message'}}"/>
+<template is="tabbar" data="{{activeTab: 'message', tabTexts: uiText.tabLabels}}"/>

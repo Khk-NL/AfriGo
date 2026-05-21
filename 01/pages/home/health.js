@@ -1,7 +1,11 @@
+import { buildHealthText, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
+
 Page({
   data: {
+    language: getStoredLanguage(),
     countryName: '刚果(金)',
-    tickerText: '⚠️ 刚果(金)核心疫情预警：霍乱（全境极高风险） | 猴痘（持续上升） | 麻疹（局部爆发）',
+    uiText: buildHealthText(getStoredLanguage(), '刚果(金)'),
+    tickerText: '',
     emergencyPhone: '112',
     hospitals: [
       {
@@ -16,7 +20,25 @@ Page({
       }
     ],
     malariaOpen: false,
-    malariaTips: ['阿托伐醌（按医嘱行前启动）', '多西环素（注意防晒与胃部反应）', '驱蚊剂（DEET）+ 长袖衣裤 + 蚊帐']
+    malariaTips: []
+  },
+
+  applyLanguage(language, countryName = this.data.countryName) {
+    const nextLanguage = normalizeLanguage(language);
+    const localeText = buildHealthText(nextLanguage, countryName);
+    this.setData({
+      language: nextLanguage,
+      uiText: localeText,
+      tickerText: localeText.tickerText,
+      malariaTips: localeText.malariaTips
+    });
+  },
+
+  onLoad() {
+    const cached = wx.getStorageSync('selectedDestination') || {};
+    const countryName = cached.zhName || '刚果(金)';
+    this.setData({ countryName });
+    this.applyLanguage(getStoredLanguage(), countryName);
   },
 
   onGoBack() {
@@ -34,7 +56,7 @@ Page({
       phoneNumber: this.data.emergencyPhone,
       fail: () => {
         wx.showToast({
-          title: '拨号失败，请稍后重试',
+          title: this.data.uiText.emergencyToast,
           icon: 'none'
         });
       }
@@ -49,7 +71,7 @@ Page({
       phoneNumber: phone,
       fail: () => {
         wx.showToast({
-          title: '拨号失败，请稍后重试',
+          title: this.data.uiText.emergencyToast,
           icon: 'none'
         });
       }

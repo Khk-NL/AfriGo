@@ -3,27 +3,27 @@
         <view class="tab-pill">
             <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="onTabTap" data-tab="home">
                 <text class="tab-icon">🏠</text>
-                <text class="tab-text">首页</text>
+                <text class="tab-text">{{tabTexts.home || '首页'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'community' ? 'active' : ''}}" bindtap="onTabTap" data-tab="community">
                 <text class="tab-icon">💬</text>
-                <text class="tab-text">社区</text>
+                <text class="tab-text">{{tabTexts.community || '社区'}}</text>
             </view>
 
             <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish">
                 <view class="publish-btn"><text class="publish-plus">+</text></view>
-                <text class="publish-text">发布</text>
+                <text class="publish-text">{{tabTexts.publish || '发布'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'message' ? 'active' : ''}}" bindtap="onTabTap" data-tab="message">
                 <text class="tab-icon">🗨</text>
-                <text class="tab-text">消息</text>
+                <text class="tab-text">{{tabTexts.message || '消息'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile">
                 <text class="tab-icon">👤</text>
-                <text class="tab-text">个人中心</text>
+                <text class="tab-text">{{tabTexts.profile || '个人中心'}}</text>
             </view>
         </view>
     </view>

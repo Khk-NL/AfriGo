@@ -1,26 +1,105 @@
 import { ElephantRenderer } from '../../utils/elephant-renderer.js';
+import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
+
+const { attractions: localAttractionsData } = require('../../data/attractions.js');
+const { recommend: localRecommendData } = require('../../data/recommend.js');
+
+const DEFAULT_COUNTRY = '肯尼亚';
+
+const getCloudDatabase = () => {
+  if (!wx.cloud || typeof wx.cloud.database !== 'function') {
+    return null;
+  }
+
+  try {
+    return wx.cloud.database();
+  } catch (error) {
+    console.warn('home: cloud database unavailable', error);
+    return null;
+  }
+};
+
+const getCountryCandidates = (countryZh) => {
+  const candidates = [];
+  const rawCountry = typeof countryZh === 'string' ? countryZh.trim() : '';
+
+  if (rawCountry) {
+    candidates.push(rawCountry);
+  }
+
+  const aliasCountry = rawCountry.replace(/[()]/g, '');
+  if (aliasCountry && aliasCountry !== rawCountry) {
+    candidates.push(aliasCountry);
+  }
+
+  if (!candidates.includes(DEFAULT_COUNTRY)) {
+    candidates.push(DEFAULT_COUNTRY);
+  }
+
+  return candidates;
+};
+
+const pickLocalCountryList = (sourceMap, countryZh) => {
+  if (!sourceMap) {
+    return [];
+  }
+
+  const candidates = getCountryCandidates(countryZh);
+  for (const candidate of candidates) {
+    if (Array.isArray(sourceMap[candidate])) {
+      return sourceMap[candidate];
+    }
+  }
+
+  return [];
+};
+
+const pickCloudCountryList = (docs, countryZh) => {
+  if (!Array.isArray(docs)) {
+    return [];
+  }
+
+  const candidates = getCountryCandidates(countryZh);
+  const withCountryField = docs.filter(item => {
+    const docCountry = item.countryZh || item.country || item.destination || item.region || item.area;
+    return docCountry && candidates.includes(docCountry);
+  });
+
+  const matchedList = withCountryField.length ? withCountryField : docs.filter(item => !item.countryZh && !item.country && !item.destination && !item.region && !item.area);
+  const finalList = matchedList.length ? matchedList : docs;
+
+  return finalList.map(item => ({
+    ...item,
+    id: item.id || item._id
+  }));
+};
 
 Page({
   data: {
+    language: getStoredLanguage(),
     isAnimating: false,
     isChatOpen: false,
     isElephantRevealed: false,
-    welcomeCountryZh: '肯尼亚',
-    welcomeSubtitle: '肯尼亚，内罗毕',
-    tags: ['#内罗毕', '#签证', '#历史', '#马赛马拉', '#摩...'],
-    features: [
-      { label: '签证指南', icon: '🛂', bg: '#dceeff', themeStart: '#dceeff', themeEnd: '#ffffff' },
-      { label: '防疫健康', icon: '✚', bg: 'linear-gradient(135deg, #FDFDFD 0%, #FFF8E1 100%)', themeStart: '#FDFDFD', themeEnd: '#FFF8E1' },
-      { label: '当地风俗', icon: '🎭', bg: 'linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%)', themeStart: '#FCE4EC', themeEnd: '#F8BBD0' },
-      { label: '本地资讯', icon: '📰', bg: 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)', themeStart: '#FFF3E0', themeEnd: '#FFE0B2' },
-      { label: '出行推荐', icon: '🧭', bg: 'linear-gradient(135deg, #FFFDE7 0%, #FFECB3 100%)', themeStart: '#FFFDE7', themeEnd: '#FFECB3' },
-      { label: '劳务合规', icon: '🤝', bg: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)', themeStart: '#E3F2FD', themeEnd: '#BBDEFB' },
-      { label: '实用词句', icon: '🗨️', bg: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)', themeStart: '#F3E5F5', themeEnd: '#E1BEE7' },
-      { label: '景点攻略', icon: '🗺️', bg: 'linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 100%)', themeStart: '#E0F7FA', themeEnd: '#B2EBF2' }
-    ]
+    currentCountryZh: '肯尼亚',
+    uiText: buildHomeText(getStoredLanguage(), '肯尼亚'),
+    attractionsList: [],
+    recommendList: []
+  },
+
+  applyLanguage(language, countryZh = this.data.currentCountryZh) {
+    const nextLanguage = normalizeLanguage(language);
+    this.setData({
+      language: nextLanguage,
+      currentCountryZh: countryZh,
+      uiText: buildHomeText(nextLanguage, countryZh)
+    });
   },
 
   onLoad() {
+    const language = getStoredLanguage();
+    const cached = wx.getStorageSync('selectedDestination') || {};
+    const countryZh = cached.zhName || '肯尼亚';
+
     wx.setNavigationBarColor({
       frontColor: '#000000',
       backgroundColor: '#f8f9fa',
@@ -29,35 +108,83 @@ Page({
         timingFunc: 'easeIn'
       }
     });
+
+    this.applyLanguage(language, countryZh);
+    this.loadHomeCollections(countryZh);
   },
 
   onShow() {
     const cached = wx.getStorageSync('selectedDestination');
-    const subtitleMap = {
-      '刚果(金)': '刚果(金)，金沙萨',
-      '加纳': '加纳，阿克拉',
-      '埃及': '埃及，开罗',
-      '安哥拉': '安哥拉，罗安达',
-      '尼日利亚': '尼日利亚，阿布贾',
-      '南非': '南非，约翰内斯堡',
-      '马达加斯加': '马达加斯加，塔那那利佛',
-      '坦桑尼亚': '坦桑尼亚，达累斯萨拉姆',
-      '肯尼亚': '肯尼亚，内罗毕',
-      '科特迪瓦': '科特迪瓦，阿比让',
-      '赞比亚': '赞比亚，卢萨卡'
-    };
+    const countryZh = cached && cached.zhName ? cached.zhName : '肯尼亚';
 
     if (cached && cached.zhName) {
-      this.setData({
-        welcomeCountryZh: cached.zhName,
-        welcomeSubtitle: subtitleMap[cached.zhName] || `${cached.zhName}，签证与出行`
-      });
+      this.applyLanguage(this.data.language, cached.zhName);
+      if (this._homeCollectionsCountry !== cached.zhName) {
+        this.loadHomeCollections(cached.zhName);
+      }
       return;
     }
 
-    this.setData({
-      welcomeCountryZh: '肯尼亚',
-      welcomeSubtitle: '肯尼亚，内罗毕'
+    this.applyLanguage(this.data.language, countryZh);
+    if (this._homeCollectionsCountry !== countryZh) {
+      this.loadHomeCollections(countryZh);
+    }
+  },
+
+  async loadCollectionData(collectionName, localSource, countryZh, targetKey) {
+    const localFallback = pickLocalCountryList(localSource, countryZh);
+    const db = getCloudDatabase();
+
+    try {
+      if (!db) {
+        console.warn(`home: ${collectionName} fallback to local data because cloud db is unavailable`);
+        this.setData({ [targetKey]: localFallback });
+        return localFallback;
+      }
+
+      const result = await db.collection(collectionName).get();
+      const cloudList = pickCloudCountryList(result && result.data, countryZh);
+
+      if (cloudList.length) {
+        this.setData({ [targetKey]: cloudList });
+        return cloudList;
+      }
+
+      console.warn(`home: ${collectionName} cloud result empty, fallback to local data`);
+      this.setData({ [targetKey]: localFallback });
+      return localFallback;
+    } catch (error) {
+      console.error(`home: failed to load ${collectionName} from cloud`, error);
+      this.setData({ [targetKey]: localFallback });
+      return localFallback;
+    }
+  },
+
+  async loadHomeCollections(countryZh) {
+    this._homeCollectionsCountry = countryZh;
+
+    await Promise.all([
+      this.loadCollectionData('attractions', localAttractionsData, countryZh, 'attractionsList'),
+      this.loadCollectionData('recommend', localRecommendData, countryZh, 'recommendList')
+    ]);
+  },
+
+  async uploadPost(content) {
+    const trimmedContent = typeof content === 'string' ? content.trim() : '';
+    if (!trimmedContent) {
+      throw new Error('帖子内容不能为空');
+    }
+
+    const db = getCloudDatabase();
+    if (!db) {
+      throw new Error('云数据库不可用，无法发布帖子');
+    }
+
+    return db.collection('posts').add({
+      data: {
+        content: trimmedContent,
+        createTime: db.serverDate()
+      }
     });
   },
 
@@ -147,7 +274,7 @@ Page({
 
   onFilterTap() {
     wx.showToast({
-      title: '筛选功能开发中',
+      title: this.data.language === 'zh' ? '筛选功能开发中' : this.data.language === 'en' ? 'Filter feature coming soon' : 'Fonction de filtre bientôt disponible',
       icon: 'none'
     });
   },
@@ -155,14 +282,14 @@ Page({
   onTagTap(e) {
     const { tag } = e.currentTarget.dataset;
     wx.showToast({
-      title: `已选择${tag}`,
+      title: this.data.language === 'zh' ? `已选择${tag}` : this.data.language === 'en' ? `Selected ${tag}` : `Sélectionné ${tag}`,
       icon: 'none',
     });
   },
 
   onMoreTap() {
     wx.showToast({
-      title: '更多安全资讯开发中',
+      title: this.data.language === 'zh' ? '更多安全资讯开发中' : this.data.language === 'en' ? 'More safety content coming soon' : 'Plus de contenu sécurité bientôt',
       icon: 'none'
     });
   },
@@ -174,20 +301,21 @@ Page({
   },
 
   onFeatureTap(e) {
-    const { name, themeStart, themeEnd } = e.currentTarget.dataset;
-    if (name === '景点攻略') return;
+    const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
+    if (key === 'attractions') return;
 
     const featureRouteMap = {
-      '签证指南': '/pages/logs/logs',
-      '本地资讯': '/pages/local-info/local-info',
-      '防疫健康': '/pages/home/health',
-      '当地风俗': '/pages/customs/customs',
-      '劳务合规': '/pages/labor/labor',
-      '实用词句': '/pages/phrases/phrases',
-      '出行推荐': '/pages/recommend/recommend'
+      visa: '/pages/logs/logs',
+      localInfo: '/pages/local-info/local-info',
+      health: '/pages/home/health',
+      customs: '/pages/customs/customs',
+      labor: '/pages/labor/labor',
+      phrases: '/pages/phrases/phrases',
+      recommend: '/pages/recommend/recommend',
+      attractions: '/pages/attractions/attractions'
     };
 
-    const route = featureRouteMap[name];
+    const route = featureRouteMap[key || name];
     if (route) {
       const url = `${route}?themeStart=${encodeURIComponent(themeStart || '')}&themeEnd=${encodeURIComponent(themeEnd || '')}`;
       wx.navigateTo({ url });
@@ -202,7 +330,7 @@ Page({
 
   onEmergencyTap(e) {
     const { type } = e.currentTarget.dataset;
-    const title = type === 'embassy' ? '致电大使馆' : '紧急电话';
+    const title = this.data.uiText[type === 'embassy' ? 'embassyLabel' : 'hotlineLabel'];
     wx.showToast({
       title,
       icon: 'none'
@@ -246,7 +374,7 @@ Page({
       url,
       fail: () => {
         wx.showToast({
-          title: '跳转失败，请稍后重试',
+          title: this.data.language === 'zh' ? '跳转失败，请稍后重试' : this.data.language === 'en' ? 'Navigation failed, please try again' : 'Échec de navigation, réessayez',
           icon: 'none'
         });
       }

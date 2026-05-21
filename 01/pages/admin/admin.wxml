@@ -1,0 +1,45 @@
+﻿<view class="admin-page">
+  <view class="admin-header">
+    <text class="admin-title">管理员后台</text>
+    <text class="admin-status">{{statusText}}</text>
+  </view>
+  <view wx:if="{{!isAdmin}}" class="admin-denied">
+    <text class="admin-denied-title">仅管理员可访问</text>
+    <text class="admin-denied-desc">请使用管理员身份登录后，再进入增删改后台。</text>
+  </view>
+  <view wx:else>
+    <view class="collection-strip">
+      <block wx:for="{{collectionOptions}}" wx:key="key">
+        <view class="collection-pill {{activeCollection === item.key ? 'active' : ''}}" bindtap="onCollectionTap" data-collection="{{item.key}}">
+          <text class="collection-pill-text">{{item.label}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="doc-panel">
+      <view class="doc-list-head">
+        <text class="doc-list-title">当前集合记录</text>
+        <text class="doc-list-count">{{docs.length}} 条</text>
+      </view>
+      <scroll-view class="doc-list" scroll-y="true" show-scrollbar="false">
+        <block wx:for="{{docs}}" wx:key="_id">
+          <view class="doc-item {{selectedDocId === item._id ? 'active' : ''}}" bindtap="onDocTap" data-id="{{item._id}}">
+            <text class="doc-item-title">{{item.nickName || item.authorName || item.name || item.title || item._id}}</text>
+            <text class="doc-item-subtitle">{{item.role || item.category || item.countryZh || item.status || '记录'}}</text>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+    <view class="editor-panel">
+      <text class="editor-title">JSON 编辑器</text>
+      <textarea class="editor-textarea" value="{{editorText}}" bindinput="onEditorInput" placeholder="在这里编辑 JSON 对象" auto-height="true" />
+      <view class="action-row">
+        <view class="action-btn action-add" bindtap="onAddTap">新增</view>
+        <view class="action-btn action-update" bindtap="onUpdateTap">修改</view>
+        <view class="action-btn action-delete" bindtap="onDeleteTap">删除</view>
+      </view>
+    </view>
+  </view>
+  <view class="back-bar" bindtap="onBackTap">
+    <text class="back-bar-text">返回</text>
+  </view>
+</view>

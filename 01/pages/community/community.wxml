@@ -12,16 +12,16 @@
   <scroll-view class="community-scroll" scroll-y="true" show-scrollbar="false">
     <view class="page-shell">
       <view class="hero-copy">
-        <text class="eyebrow">Community Feed</text>
-        <text class="hero-title">你好，{{welcomeCountryZh}}</text>
-        <text class="hero-subtitle">{{subtitle}}</text>
-        <text class="hero-desc">{{description}}</text>
+        <text class="eyebrow">{{uiText.eyebrow}}</text>
+        <text class="hero-title">{{uiText.title}}</text>
+        <text class="hero-subtitle">{{uiText.subtitle}}</text>
+        <text class="hero-desc">{{uiText.description}}</text>
 
         <view class="journey-pill">
           <view class="journey-dot dot-home"></view>
           <view class="journey-dot dot-community"></view>
           <view class="journey-dot dot-publish"></view>
-          <text class="journey-text">{{journeyNote}}</text>
+          <text class="journey-text">{{uiText.journeyNote}}</text>
         </view>
       </view>
 
@@ -36,8 +36,8 @@
 
       <view class="avatar-shell acrylic-card">
         <view class="avatar-shell-head">
-          <text class="avatar-shell-title">旅人头像</text>
-          <text class="avatar-shell-meta">soft online glow</text>
+          <text class="avatar-shell-title">{{uiText.avatarShellTitle}}</text>
+          <text class="avatar-shell-meta">{{uiText.avatarShellMeta}}</text>
         </view>
 
         <scroll-view class="avatar-strip" scroll-x="true" show-scrollbar="false">
@@ -64,8 +64,8 @@
             <text class="feature-author-name">{{featuredPost.author}}</text>
             <text class="feature-author-meta">{{featuredPost.role}} · {{featuredPost.time}}</text>
           </view>
-          <view class="compose-button" bindtap="onComposeTap">
-            <text class="compose-button-text">发布</text>
+            <view class="compose-button" bindtap="onComposeTap">
+            <text class="compose-button-text">{{uiText.composeButton}}</text>
           </view>
         </view>
 
@@ -106,7 +106,7 @@
 
           <view class="feature-action feature-action-secondary" bindtap="onActionTap" data-action="share">
             <text class="feature-action-icon secondary-icon">↗</text>
-            <text class="feature-action-text secondary-text">Share</text>
+            <text class="feature-action-text secondary-text">{{uiText.actionTexts.share}}</text>
           </view>
         </view>
       </view>
@@ -115,5 +115,5 @@
     </view>
   </scroll-view>
 
-  <template is="tabbar" data="{{ activeTab: 'community' }}" />
+  <template is="tabbar" data="{{ activeTab: 'community', tabTexts: uiText.tabLabels }}" />
 </view>

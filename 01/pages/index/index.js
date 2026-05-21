@@ -1,40 +1,18 @@
+import { buildIndexText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
+import { getStoredCurrentUser, isAdminUser, isLoggedIn, logoutCurrentUser, syncWeChatLogin } from '../../utils/cloud-service.js';
+
 Page({
   data: {
-    language: 'zh',
+    language: getStoredLanguage(),
     languageOrder: ['ZH', 'EN', 'FR'],
-    uiText: {},
-    i18n: {
-      zh: {
-        mainTitle: '开启你的中非安全之旅',
-        cta: '开启您期待的非洲之旅',
-        brandMotto: '真境 · 中非安全指南',
-        sheetTitle: '选择您的目的地',
-        sheetSubtitle: 'Select Your Destination',
-        searchPlaceholder: '搜索非洲国家... / Search African countries...',
-        confirmSelection: '确认选择'
-      },
-      en: {
-        mainTitle: 'Start Your Safe Journey',
-        cta: 'Begin Your Dream African Journey',
-        brandMotto: 'Authentic · Safety Guide',
-        sheetTitle: 'Select Your Destination',
-        sheetSubtitle: 'Choose your African destination',
-        searchPlaceholder: 'Search African countries...',
-        confirmSelection: 'Confirm Selection'
-      },
-      fr: {
-        mainTitle: 'Commencez votre voyage en toute sécurité',
-        cta: 'Commencez le voyage africain que vous attendez',
-        brandMotto: 'Authentique · Guide de sécurité Afrique-Chine',
-        sheetTitle: 'Choisissez votre destination',
-        sheetSubtitle: 'Sélectionnez un pays africain',
-        searchPlaceholder: 'Rechercher des pays africains...',
-        confirmSelection: 'Confirmer'
-      }
-    },
+    uiText: buildIndexText(getStoredLanguage()),
+    currentUser: null,
+    isLogin: false,
+    isAdmin: false,
     currentCountryId: 'drc',
     currentCountryZh: '刚果(金)',
     currentCountryEn: 'DR Congo',
+    currentCountryLabel: getCountryName('刚果(金)', getStoredLanguage()),
     currentCountryImage: '/assets/images/congo-drc.png',
     currentCountryBg: 'radial-gradient(circle at 70% 20%, #cfdbef 0%, #b7c7e4 40%, #8ea8d4 100%)',
     ctaPressed: false,
@@ -125,18 +103,74 @@ Page({
     filteredCountries: []
   },
 
+  applyLanguage(language) {
+    const nextLanguage = normalizeLanguage(language);
+    this.setData({
+      language: nextLanguage,
+      uiText: buildIndexText(nextLanguage),
+      currentCountryLabel: getCountryName(this.data.currentCountryZh, nextLanguage)
+    });
+  },
+
+  refreshAuthState() {
+    const currentUser = getStoredCurrentUser();
+    this.setData({
+      currentUser,
+      isLogin: isLoggedIn(currentUser),
+      isAdmin: isAdminUser(currentUser)
+    });
+  },
+
+  async onAuthTap() {
+    if (this.data.isLogin) {
+      this.onLogoutTap();
+      return;
+    }
+
+    try {
+      const currentUser = await syncWeChatLogin({
+        desc: '用于在非常行中完成微信登录与身份同步'
+      });
+
+      this.setData({
+        currentUser,
+        isLogin: true,
+        isAdmin: isAdminUser(currentUser)
+      });
+
+      wx.showToast({
+        title: this.data.language === 'zh' ? '登录成功' : this.data.language === 'en' ? 'Logged in' : 'Connexion réussie',
+        icon: 'success'
+      });
+    } catch (error) {
+      console.error('index: login failed', error);
+      wx.showToast({
+        title: this.data.language === 'zh' ? '登录失败，请稍后重试' : this.data.language === 'en' ? 'Login failed, please try again' : 'Échec de la connexion, veuillez réessayer',
+        icon: 'none'
+      });
+    }
+  },
+
+  onLogoutTap() {
+    logoutCurrentUser();
+    this.refreshAuthState();
+
+    wx.showToast({
+      title: this.data.language === 'zh' ? '已退出登录' : this.data.language === 'en' ? 'Signed out' : 'Déconnecté',
+      icon: 'none'
+    });
+  },
+
   onFlipLanguage() {
     const rotatedOrder = this.data.languageOrder.slice();
     const firstLanguage = rotatedOrder.shift();
     rotatedOrder.push(firstLanguage);
 
     const nextLanguage = rotatedOrder[0].toLowerCase();
+    setStoredLanguage(nextLanguage);
 
-    this.setData({
-      languageOrder: rotatedOrder,
-      language: nextLanguage,
-      uiText: this.data.i18n[nextLanguage]
-    });
+    this.setData({ languageOrder: rotatedOrder });
+    this.applyLanguage(nextLanguage);
 
     this.triggerHaptic('light');
   },
@@ -152,10 +186,16 @@ Page({
     // 页面加载触觉反馈
     this.triggerHaptic('medium');
 
+    this.applyLanguage(this.data.language);
+    this.refreshAuthState();
     this.setData({
       filteredCountries: this.data.countries,
-      uiText: this.data.i18n[this.data.language]
+      currentCountryLabel: getCountryName(this.data.currentCountryZh, this.data.language)
     });
+  },
+
+  onShow() {
+    this.refreshAuthState();
   },
 
   /**
@@ -221,6 +261,8 @@ Page({
       return;
     }
 
+    const selectedCountryLabel = getCountryName(selectedCountry.zhName, this.data.language);
+
     this.setData({
       isCountryTransition: true
     });
@@ -230,6 +272,7 @@ Page({
         currentCountryId: selectedCountry.id,
         currentCountryZh: selectedCountry.zhName,
         currentCountryEn: selectedCountry.enName,
+        currentCountryLabel: selectedCountryLabel,
         currentCountryImage: selectedCountry.image || '',
         currentCountryBg: selectedCountry.bg
       });
@@ -280,7 +323,8 @@ Page({
       wx.setStorageSync('selectedDestination', {
         id: this.data.currentCountryId,
         zhName: this.data.currentCountryZh,
-        enName: this.data.currentCountryEn
+        enName: this.data.currentCountryEn,
+        label: this.data.currentCountryLabel
       });
 
       // 2. TabBar 页面必须使用 switchTab 进入

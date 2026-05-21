@@ -1,44 +1,74 @@
 <view class="page-root">
-        <view class="home-back-wrap" bindtap="onBackTap"><view class="home-back-arrow"></view></view>
+  <view class="page-back-btn" bindtap="onGoHomeTap">
+    <view class="page-back-icon"></view>
+    <text class="page-back-text">返回主界面</text>
+  </view>
 
-        <scroll-view class="page-scroll" scroll-y="true">
-                <view class="page-content">
-                        <view class="header-block">
-                                <text class="title">{{currentCountry}}·出行推荐</text>
-                                <view class="sub-row">
-                                        <text class="pin-icon">🍴</text>
-                                        <text class="subtitle">美食/住宿/交通一站式本地化推荐</text>
-                                </view>
-                        </view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card">
+        <text class="hero-eyebrow">TRAVEL PICKS</text>
+        <text class="hero-title">{{currentCountry}}·出行推荐</text>
+        <text class="hero-subtitle">围绕美食、住宿、交通与购物，给你一份更适合落地使用的本地建议。</text>
+        <view class="hero-chip-row">
+          <text class="hero-chip">共 {{summaryCount}} 条</text>
+          <text class="hero-chip">安全优先</text>
+          <text class="hero-chip">可直接参考</text>
+        </view>
+      </view>
 
-                        <scroll-view class="tag-scroll" scroll-x="true">
-                                <view class="tag-row">
-                                        <block wx:for="{{categories}}" wx:key="*this">
-                                                <view class="tag-pill {{activeCategory === item ? 'active-pill' : ''}}"
-                                                            bindtap="onTagTap" data-tag="{{item}}">
-                                                        <text class="tag-text">{{item}}</text>
-                                                </view>
-                                        </block>
-                                </view>
-                        </scroll-view>
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">按类别筛选</text>
+          <text class="section-subtitle">点选标签后只看你最需要的推荐内容</text>
+        </view>
 
-                        <view class="recommend-list" style="margin-top: 30rpx;">
-                                <block wx:for="{{displayList}}" wx:key="id">
-                                        <view class="emergency-card hotline" style="margin-bottom: 24rpx; align-items: flex-start; padding: 30rpx;">
-                                                <view style="display: flex; justify-content: space-between; width: 100%;">
-                                                        <text class="en-text" style="color: #5f24b6; font-weight: bold;">[{{item.category}}]</text>
-                                                        <text style="font-size: 24rpx; color: #ff9800;">{{item.rating}}</text>
-                                                </view>
-                                                <text class="zh-text" style="font-size: 32rpx; margin-top: 10rpx;">{{item.name}}</text>
-                                                <text class="en-text" style="font-size: 24rpx; line-height: 1.4; margin-top: 8rpx;">{{item.desc}}</text>
-
-                                                <view style="margin-top: 20rpx; padding: 15rpx; background: rgba(255,255,255,0.5); border-radius: 12rpx; border-left: 6rpx solid #58c796;">
-                                                        <text class="en-text" style="font-size: 20rpx; color: #111827; display: block;">💡 安全避坑：</text>
-                                                        <text class="en-text" style="font-size: 20rpx; color: #4b5563;">{{item.safetyTip}}</text>
-                                                </view>
-                                        </view>
-                                </block>
-                        </view>
-                </view>
+        <scroll-view class="tag-scroll" scroll-x="true" show-scrollbar="false">
+          <view class="tag-row">
+            <block wx:for="{{categories}}" wx:key="*this">
+              <view class="tag-pill {{activeCategory === item ? 'active-pill' : ''}}" bindtap="onTagTap" data-tag="{{item}}">
+                <text class="tag-text">{{item}}</text>
+              </view>
+            </block>
+          </view>
         </scroll-view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">本地推荐清单</text>
+          <text class="section-subtitle">点击卡片查看地址与安全提示</text>
+        </view>
+
+        <block wx:if="{{displayList.length}}">
+          <block wx:for="{{displayList}}" wx:key="id">
+            <view class="item-card recommend-card" bindtap="onCardTap" data-name="{{item.name}}" data-address="{{item.address}}" data-desc="{{item.desc}}" data-safety-tip="{{item.safetyTip}}">
+              <view class="item-head">
+                <text class="item-title">{{item.name}}</text>
+                <text class="recommend-rating">{{item.rating}}</text>
+              </view>
+
+              <view class="item-meta">
+                <text class="recommend-category">{{item.category}}</text>
+                <text class="recommend-address">{{item.address}}</text>
+              </view>
+
+              <text class="item-desc">{{item.desc}}</text>
+
+              <view class="item-note">
+                <text class="recommend-note-label">💡 安全避坑：</text>
+                <text class="recommend-note-text">{{item.safetyTip}}</text>
+              </view>
+            </view>
+          </block>
+        </block>
+
+        <view wx:else class="empty-state">
+          <text class="empty-icon">🧭</text>
+          <text class="empty-title">当前分类暂时没有内容</text>
+          <text class="empty-desc">试试切换到“全部”或其他类别，看看有没有更多可用推荐。</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
 </view>

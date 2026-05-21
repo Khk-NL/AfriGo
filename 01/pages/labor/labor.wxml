@@ -1,40 +1,56 @@
 <view class="page-root">
-        <view class="home-back-wrap" bindtap="onBackTap">
-                <view class="home-back-arrow"></view>
+  <view class="page-back-btn" bindtap="onGoHomeTap">
+    <view class="page-back-icon"></view>
+    <text class="page-back-text">返回主界面</text>
+  </view>
+
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card">
+        <text class="hero-eyebrow">COMPLIANCE CHECK</text>
+        <text class="hero-title">{{currentCountry}}·劳务合规</text>
+        <text class="hero-subtitle">从用工、签证到健康证明，先把高风险项说清楚，再决定下一步。</text>
+        <view class="hero-chip-row">
+          <text class="hero-chip">共 {{policyCount}} 条</text>
+          <text class="hero-chip">优先看强制项</text>
+          <text class="hero-chip">建议结合当地法规</text>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">合规清单</text>
+          <text class="section-subtitle">点击条目可查看更完整的提醒和使用建议</text>
         </view>
 
-        <scroll-view class="page-scroll" scroll-y="true">
-                <view class="page-content">
-                        <view class="header-block">
-                                <text class="title">{{currentCountry}}·劳务合规</text>
-                                <view class="sub-row">
-                                        <text class="pin-icon">⚖️</text>
-                                        <text class="subtitle">劳工法摘要与用工合规指南</text>
-                                </view>
-                        </view>
-
-                        <view class="labor-list">
-                                <block wx:for="{{policyList}}" wx:key="id">
-                                        <view class="safety-card" style="margin-bottom: 30rpx; background: {{item.level === '强制' ? 'linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)' : ''}}" bindtap="onPolicyTap" data-title="{{item.title}}">
-                                                <view class="safety-header">
-                                                        <text class="safety-title">{{item.title}}</text>
-                                                        <view class="tag-pill" style="background: rgba(255,255,255,0.2); padding: 4rpx 12rpx;">
-                                                                <text class="tag-text" style="color: #fff; font-size: 20rpx;">{{item.tag}}</text>
-                                                        </view>
-                                                </view>
-                                                <view class="safety-level-row">
-                                                        <text class="safety-level">重要性：{{item.level}}</text>
-                                                        <text class="shield-icon">📜</text>
-                                                </view>
-                                                <text class="safety-text">{{item.content}}</text>
-                                        </view>
-                                </block>
-                        </view>
-
-                        <view class="emergency-card hotline" style="margin-top: 40rpx;">
-                                <text class="zh-text">⚠️ 提示</text>
-                                <text class="en-text" style="text-align: center; padding: 0 20rpx;">非洲各国劳工政策变动频繁，请以当地官方最新公告为准。</text>
-                        </view>
+        <block wx:if="{{policyList.length}}">
+          <block wx:for="{{policyList}}" wx:key="id">
+            <view class="item-card labor-card {{item.level === '强制' ? 'labor-card--strict' : ''}}" bindtap="onPolicyTap" data-title="{{item.title}}" data-content="{{item.content}}" data-tag="{{item.tag}}" data-level="{{item.level}}">
+              <view class="item-head">
+                <text class="item-title">{{item.title}}</text>
+                <view class="labor-pill-row">
+                  <text class="labor-tag">{{item.tag}}</text>
+                  <text class="labor-level {{item.level === '强制' ? 'labor-level--strict' : ''}}">{{item.level}}</text>
                 </view>
-        </scroll-view>
+              </view>
+              <text class="item-desc">{{item.content}}</text>
+            </view>
+          </block>
+        </block>
+
+        <view wx:else class="empty-state">
+          <text class="empty-icon">⚖️</text>
+          <text class="empty-title">当前地区暂无合规条目</text>
+          <text class="empty-desc">你可以先返回主界面切换目的地，再查看对应国家的劳务合规信息。</text>
+        </view>
+      </view>
+
+      <view class="section-card labor-tip-card">
+        <view class="section-head">
+          <text class="section-title">使用提醒</text>
+        </view>
+        <text class="labor-tip-text">非洲各国劳工政策变动较快，签证类型、雇佣关系和健康证明等要求请以当地官方最新公告为准。</text>
+      </view>
+    </view>
+  </scroll-view>
 </view>

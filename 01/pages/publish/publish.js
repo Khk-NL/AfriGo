@@ -1,3 +1,5 @@
+import { createPost, getStoredCurrentUser, isLoggedIn } from '../../utils/cloud-service.js';
+
 const MAX_MEDIA_COUNT = 4;
 
 function createMediaSlots(mediaList) {
@@ -28,7 +30,9 @@ Page({
         activeTab: 'publish',
         content: '',
         mediaList: [],
-        mediaSlots: createMediaSlots([])
+        mediaSlots: createMediaSlots([]),
+        currentUser: null,
+        isLogin: false
     },
 
     onLoad() {
@@ -39,6 +43,20 @@ Page({
                 duration: 180,
                 timingFunc: 'easeIn'
             }
+        });
+
+        this.refreshAuthState();
+    },
+
+    onShow() {
+        this.refreshAuthState();
+    },
+
+    refreshAuthState() {
+        const currentUser = getStoredCurrentUser();
+        this.setData({
+            currentUser,
+            isLogin: isLoggedIn(currentUser)
         });
     },
 
@@ -86,7 +104,15 @@ Page({
         });
     },
 
-    onPublishTap() {
+    async onPublishTap() {
+        if (!this.data.isLogin) {
+            wx.showToast({
+                title: '请先在欢迎页登录',
+                icon: 'none'
+            });
+            return;
+        }
+
         if (!this.data.content.trim() && !this.data.mediaList.length) {
             wx.showToast({
                 title: 'Add text or photos first',
@@ -95,10 +121,32 @@ Page({
             return;
         }
 
-        wx.showToast({
-            title: 'Publishing soon',
-            icon: 'none'
-        });
+        try {
+            await createPost({
+                content: this.data.content,
+                mediaList: this.data.mediaList,
+                extra: {
+                    sourcePage: 'publish'
+                }
+            });
+
+            this.setData({
+                content: '',
+                mediaList: [],
+                mediaSlots: createMediaSlots([])
+            });
+
+            wx.showToast({
+                title: '发布成功',
+                icon: 'success'
+            });
+        } catch (error) {
+            console.error('publish: create post failed', error);
+            wx.showToast({
+                title: '发布失败，请稍后重试',
+                icon: 'none'
+            });
+        }
     },
 
     onSOSTap() {

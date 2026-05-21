@@ -25,7 +25,7 @@
         <view class="square-mask"></view>
         <view class="square-glass-info" bindtap="openCountrySheet">
           <view class="square-country-row {{isCountryTransition ? 'country-fade' : ''}}">
-            <text class="square-country">{{language === 'zh' ? currentCountryZh : currentCountryEn}}</text>
+            <text class="square-country">{{currentCountryLabel}}</text>
             <text class="square-country-arrow">▼</text>
           </view>
         </view>
@@ -41,11 +41,30 @@
         bindtouchcancel="onCTARelease"
       >{{uiText.cta}}</button>
     </view>
+
+    <view class="auth-card">
+      <view class="auth-copy">
+        <text class="auth-title">{{uiText.authTitle}}</text>
+        <text class="auth-subtitle">{{uiText.authSubtitle}}</text>
+      </view>
+
+      <view class="auth-status-row">
+        <text class="auth-status {{isLogin ? 'status-live' : 'status-off'}}">
+          {{isLogin ? uiText.loginStatus : uiText.guestStatus}}
+        </text>
+        <text wx:if="{{isAdmin}}" class="auth-admin-badge">{{uiText.adminBadge}}</text>
+      </view>
+
+      <view wx:if="{{isLogin}}" class="auth-user-name">{{currentUser.nickName || 'WeChat User'}}</view>
+
+      <button wx:if="{{!isLogin}}" class="auth-action auth-action-login" bindtap="onAuthTap">{{uiText.loginButton}}</button>
+      <button wx:else class="auth-action auth-action-logout" bindtap="onLogoutTap">{{uiText.logoutButton}}</button>
+    </view>
   </view>
 
   <view class="bottom-footer">
     <view class="brand-section">
-      <text class="brand-name">非常行</text>
+      <text class="brand-name">{{uiText.brandName}}</text>
       <text class="brand-motto">{{uiText.brandMotto}}</text>
     </view>
   </view>

@@ -1,3 +1,6 @@
+import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
+import { getStoredCurrentUser, isAdminUser, isLoggedIn, logoutCurrentUser } from '../../utils/cloud-service.js';
+
 const COUNTRY_CITY_MAP = {
     '刚果(金)': '金沙萨',
     '加纳': '阿克拉',
@@ -14,19 +17,33 @@ const COUNTRY_CITY_MAP = {
 
 Page({
     data: {
+        language: getStoredLanguage(),
         isLogin: false,
+        isAdmin: false,
+        currentUser: null,
         userInfo: {},
         currentCountry: '肯尼亚',
         currentCity: '内罗毕',
         memberSince: '',
-        companionNote: '',
-        destinationInsight: '',
-        focusLabel: '',
-        riskLabel: '',
+        currentCountryLabel: getCountryName('肯尼亚', getStoredLanguage()),
+        destinationInsight: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false).destinationInsight,
+        focusLabel: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false).focusLabel,
+        riskLabel: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false).riskLabel,
+        uiText: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false),
         bookmarks: [],
         quickActions: [],
         serviceEntries: [],
         profileStats: []
+    },
+
+    applyLanguage(language, currentCountry = this.data.currentCountry, bookmarksCount = this.data.bookmarks.length, isLogin = this.data.isLogin) {
+        const nextLanguage = normalizeLanguage(language);
+        const currentCountryLabel = getCountryName(currentCountry, nextLanguage);
+        this.setData({
+            language: nextLanguage,
+            currentCountryLabel,
+            uiText: buildProfileText(nextLanguage, currentCountry, currentCountryLabel, bookmarksCount, isLogin)
+        });
     },
 
     onShow() {
@@ -34,27 +51,30 @@ Page({
     },
 
     refreshProfile() {
-        const userInfo = wx.getStorageSync('userInfo') || null;
+        const currentUser = getStoredCurrentUser();
+        const userInfo = currentUser || null;
         const selectedDestination = wx.getStorageSync('selectedDestination') || {};
         const currentCountry = selectedDestination.zhName || '肯尼亚';
         const currentCity = COUNTRY_CITY_MAP[currentCountry] || '主要城市';
         const bookmarks = this.normalizeBookmarks(wx.getStorageSync('bookmarks') || []);
         const memberSince = this.ensureMemberSince();
-        const insight = this.getCountryInsight(currentCountry, currentCity);
-        const isLogin = !!userInfo;
+        const isLogin = isLoggedIn(currentUser);
+        const isAdmin = isAdminUser(currentUser);
+        const currentCountryLabel = getCountryName(currentCountry, this.data.language);
 
+        this.applyLanguage(this.data.language, currentCountry, bookmarks.length, isLogin);
         this.setData({
             isLogin,
+            isAdmin,
+            currentUser,
             userInfo: userInfo || {},
             currentCountry,
             currentCity,
+            currentCountryLabel,
+            destinationInsight: this.data.uiText.destinationInsight,
+            focusLabel: this.data.uiText.focusLabel,
+            riskLabel: this.data.uiText.riskLabel,
             memberSince,
-            companionNote: isLogin
-                ? '你的微信身份、收藏夹和旅途服务都已经汇总到这张随身面板里。'
-                : '登录后可同步收藏夹、目的地与常用提醒，把出行信息收成一页。',
-            destinationInsight: insight.destinationInsight,
-            focusLabel: insight.focusLabel,
-            riskLabel: insight.riskLabel,
             bookmarks,
             quickActions: this.buildQuickActions(bookmarks.length),
             serviceEntries: this.buildServiceEntries(currentCountry),
@@ -86,149 +106,17 @@ Page({
         }));
     },
 
-    getCountryInsight(currentCountry, currentCity) {
-        const insightMap = {
-            '肯尼亚': {
-                destinationInsight: '内罗毕更需要关注晚间通勤、证件随身管理和约车路线确认。',
-                focusLabel: '夜间交通',
-                riskLabel: '中等风险'
-            },
-            '坦桑尼亚': {
-                destinationInsight: '落地后建议优先熟悉港口与机场周边交通方式，降低临时换乘成本。',
-                focusLabel: '口岸出行',
-                riskLabel: '中等风险'
-            },
-            '尼日利亚': {
-                destinationInsight: '商务活动多的区域节奏快，建议提前固化通勤与会面动线。',
-                focusLabel: '商务路线',
-                riskLabel: '需提高警惕'
-            }
-        };
-
-        return insightMap[currentCountry] || {
-            destinationInsight: `${currentCity}当前更适合优先建立稳定路线，把证件、交通和联系人放在第一顺位。`,
-            focusLabel: '证件保管',
-            riskLabel: '中等风险'
-        };
-    },
-
     buildProfileStats(bookmarksCount, isLogin, currentCountry) {
-        return [
-            {
-                label: '旅途身份',
-                value: isLogin ? '已激活' : '待登录',
-                tone: isLogin ? 'emerald' : 'sand'
-            },
-            {
-                label: '当前目的地',
-                value: currentCountry,
-                tone: 'sky'
-            },
-            {
-                label: '收藏夹',
-                value: `${bookmarksCount} 条`,
-                tone: 'rose'
-            },
-            {
-                label: '安全评分',
-                value: '92',
-                tone: 'gold'
-            }
-        ];
+        const text = buildProfileText(this.data.language, currentCountry, this.data.currentCountryLabel, bookmarksCount, isLogin);
+        return text.profileStats;
     },
 
     buildQuickActions(bookmarksCount) {
-        return [
-            {
-                key: 'visa',
-                label: '证件材料',
-                meta: '签证与清单',
-                icon: '🛂',
-                tone: 'sky'
-            },
-            {
-                key: 'security',
-                label: '安全助手',
-                meta: '预警与应急',
-                icon: '🛡️',
-                tone: 'emerald'
-            },
-            {
-                key: 'bookmarks',
-                label: '我的收藏',
-                meta: `${bookmarksCount} 条归档`,
-                icon: '✦',
-                tone: 'sand'
-            },
-            {
-                key: 'message',
-                label: '消息中心',
-                meta: '系统提醒',
-                icon: '✉️',
-                tone: 'rose'
-            }
-        ];
+        return buildProfileText(this.data.language, this.data.currentCountry, this.data.currentCountryLabel, bookmarksCount, this.data.isLogin).quickActions;
     },
 
     buildServiceEntries(currentCountry) {
-        return [
-            {
-                title: '本地资讯摘要',
-                subtitle: `查看${currentCountry}的生活线索与城市节奏`,
-                icon: '📰',
-                action: 'local-info'
-            },
-            {
-                title: '签证材料清单',
-                subtitle: '出发前最后核对一遍高频证件事项',
-                icon: '🧾',
-                action: 'visa'
-            },
-            {
-                title: '安全出行提醒',
-                subtitle: '同步最新风险等级与夜间出行建议',
-                icon: '🛡️',
-                action: 'security'
-            },
-            {
-                title: '本地推荐路线',
-                subtitle: '把住宿、交通和补给点排进同一条路线',
-                icon: '🧭',
-                action: 'recommend'
-            },
-            {
-                title: '常用沟通词句',
-                subtitle: '紧急场景、问路和支付对话都能快速找到',
-                icon: '🗨️',
-                action: 'phrases'
-            },
-            {
-                title: '偏好与设置',
-                subtitle: '通知、语言和隐私能力会在后续继续完善',
-                icon: '⚙️',
-                action: 'settings'
-            }
-        ];
-    },
-
-    getUserProfile() {
-        wx.getUserProfile({
-            desc: '用于完善你的旅途身份档案',
-            success: (res) => {
-                wx.setStorageSync('userInfo', res.userInfo);
-                this.refreshProfile();
-                wx.showToast({
-                    title: '旅途档案已开启',
-                    icon: 'success'
-                });
-            },
-            fail: () => {
-                wx.showToast({
-                    title: '未完成授权',
-                    icon: 'none'
-                });
-            }
-        });
+        return buildProfileText(this.data.language, currentCountry, this.data.currentCountryLabel, this.data.bookmarks.length, this.data.isLogin).serviceEntries;
     },
 
     onQuickActionTap(e) {
@@ -257,7 +145,7 @@ Page({
 
         if (key === 'bookmarks') {
             wx.showToast({
-                title: this.data.bookmarks.length ? '下方可查看收藏清单' : '收藏夹还是空的',
+                title: this.data.language === 'zh' ? (this.data.bookmarks.length ? '下方可查看收藏清单' : '收藏夹还是空的') : this.data.language === 'en' ? (this.data.bookmarks.length ? 'See your saved list below' : 'No bookmarks yet') : (this.data.bookmarks.length ? 'Voir la liste enregistrée ci-dessous' : 'Aucun favori pour le moment'),
                 icon: 'none'
             });
         }
@@ -302,7 +190,7 @@ Page({
         }
 
         wx.showToast({
-            title: title || '功能开发中',
+            title: title || (this.data.language === 'zh' ? '功能开发中' : this.data.language === 'en' ? 'Feature coming soon' : 'Fonction bientôt disponible'),
             icon: 'none'
         });
     },
@@ -310,7 +198,7 @@ Page({
     onBookmarkTap(e) {
         const { title } = e.currentTarget.dataset;
         wx.showToast({
-            title: title || '已打开收藏',
+            title: title || (this.data.language === 'zh' ? '已打开收藏' : this.data.language === 'en' ? 'Bookmark opened' : 'Favori ouvert'),
             icon: 'none'
         });
     },
@@ -327,17 +215,31 @@ Page({
         });
 
         wx.showToast({
-            title: '已移出收藏',
+            title: this.data.language === 'zh' ? '已移出收藏' : this.data.language === 'en' ? 'Removed from bookmarks' : 'Retiré des favoris',
             icon: 'success'
         });
     },
 
     onLogout() {
-        wx.removeStorageSync('userInfo');
+        logoutCurrentUser();
         this.refreshProfile();
         wx.showToast({
-            title: '已退出登录',
+            title: this.data.language === 'zh' ? '已退出登录' : this.data.language === 'en' ? 'Signed out' : 'Déconnecté',
             icon: 'none'
+        });
+    },
+
+    onAdminCenterTap() {
+        if (!this.data.isAdmin) {
+            wx.showToast({
+                title: this.data.language === 'zh' ? '仅管理员可进入' : this.data.language === 'en' ? 'Admins only' : 'Réservé aux administrateurs',
+                icon: 'none'
+            });
+            return;
+        }
+
+        wx.navigateTo({
+            url: '/pages/admin/admin'
         });
     },
 

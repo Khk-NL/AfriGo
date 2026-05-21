@@ -1,34 +1,24 @@
+import { buildMessageText, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
+
 Page({
     data: {
-        notices: [
-            {
-                id: 1,
-                type: "安全预警",
-                tagBg: "#ffeeee",
-                title: "内罗毕集会提醒",
-                content: "近期市中心区域可能有规模性活动，建议华人同胞减少不必要出行，注意人身安全。",
-                time: "10:25",
-                unread: true
-            },
-            {
-                id: 2,
-                type: "系统更新",
-                tagBg: "#eef9f2",
-                title: "斯瓦希里语库更新",
-                content: "我们新增了50条关于“当地集市贸易”的实用口语，快去实用词句板块看看吧！",
-                time: "昨天",
-                unread: true
-            },
-            {
-                id: 3,
-                type: "办事指南",
-                tagBg: "#eef2ff",
-                title: "签证续签政策变动",
-                content: "当地移民局发布最新通告，关于劳务签证续签流程有所简化，详情请查阅劳务合规模块。",
-                time: "3天前",
-                unread: false
-            }
-        ]
+        language: getStoredLanguage(),
+        uiText: buildMessageText(getStoredLanguage()),
+        notices: []
+    },
+
+    applyLanguage(language) {
+        const nextLanguage = normalizeLanguage(language);
+        const localeText = buildMessageText(nextLanguage);
+        this.setData({
+            language: nextLanguage,
+            uiText: localeText,
+            notices: localeText.notices
+        });
+    },
+
+    onLoad() {
+        this.applyLanguage(getStoredLanguage());
     },
 
     // Removed onBackTap as this is a tab bar page
@@ -43,7 +33,7 @@ Page({
         this.setData({ notices: list });
 
         wx.showToast({
-            title: '已标记为已读',
+            title: this.data.uiText.unreadToast,
             icon: 'none'
         });
     },

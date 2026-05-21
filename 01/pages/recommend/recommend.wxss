@@ -1,13 +1,56 @@
 /* 01/pages/recommend/recommend.wxss */
-@import "../home/home.wxss";
+@import "../../templates/content-shell.wxss";
 
 .active-pill {
-        background: #5f24b6 !important; /* 换个主色调区分模块 */
-}
-.active-pill .tag-text {
-        color: #ffffff !important;
+  background: linear-gradient(135deg, #5f24b6 0%, #7b4fc3 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
 }
 
-.recommend-list {
-        padding-bottom: 60rpx;
+.active-pill .tag-text {
+  color: #ffffff !important;
+}
+
+.recommend-card {
+  margin-top: 18rpx;
+}
+
+.recommend-rating {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.recommend-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  color: #5f24b6;
+  background: rgba(95, 36, 182, 0.12);
+}
+
+.recommend-address {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
+.recommend-note-label,
+.recommend-note-text {
+  display: block;
+}
+
+.recommend-note-label {
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 22rpx;
+}
+
+.recommend-note-text {
+  margin-top: 6rpx;
+  color: #4b5563;
+  font-size: 22rpx;
+  line-height: 1.6;
 }
