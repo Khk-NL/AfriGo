@@ -1,5 +1,5 @@
 import { buildCommunityText, getStoredLanguage } from '../../utils/i18n.js';
-import { getCloudDatabase, loadCollectionWithFallback } from '../../utils/cloud-service.js';
+import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 
 const STATS = [
   { id: 1, value: '24.8K', label: '精选动态' },
@@ -59,72 +59,36 @@ Page({
   },
 
   onShow() {
+    const cached = wx.getStorageSync('selectedDestination');
+    if (cached && cached.zhName) {
+      this.setData({
+        welcomeCountryZh: cached.zhName
+      });
+    }
     this.refreshCommunityFeed();
   },
 
   async refreshCommunityFeed() {
-    const db = getCloudDatabase();
-    if (!db) {
+    const posts = await loadCollectionWithFallback('posts', []);
+    const latest = posts[0];
+    if (!latest) {
       return;
     }
 
-    try {
-      const result = await db.collection('posts').orderBy('createTime', 'desc').limit(1).get();
-      const latest = result.data && result.data[0];
-      if (!latest) {
-        return;
-      }
-
-      const cloudImage = await this.resolveCloudImage(latest.mediaFileIds || []);
-      this.setData({
-        featuredPost: {
-          ...this.data.featuredPost,
-          author: latest.authorName || this.data.featuredPost.author,
-          role: latest.authorRole === 'admin' ? '管理员发布' : '云端旅人',
-          time: '云端同步',
-          title: latest.content ? latest.content.slice(0, 28) : this.data.featuredPost.title,
-          body: latest.content || this.data.featuredPost.body,
-          image: cloudImage || this.data.featuredPost.image,
-          tags: ['云端动态', latest.sourcePage || 'posts'],
-          location: latest.destinationLabel || 'Cloud feed',
-          light: 'Cloud post',
-          likesText: this.data.featuredPost.likesText,
-          baseLikesText: this.data.featuredPost.baseLikesText,
-          likedLikesText: this.data.featuredPost.likedLikesText,
-          commentsText: this.data.featuredPost.commentsText,
-          savesText: this.data.featuredPost.savesText,
-          isLiked: false
-        }
-      });
-    } catch (error) {
-      console.warn('community: load posts failed', error);
-    }
-  },
-
-  async resolveCloudImage(fileIds) {
-    if (!Array.isArray(fileIds) || !fileIds.length || !wx.cloud || typeof wx.cloud.getTempFileURL !== 'function') {
-      return '';
-    }
-
-    try {
-      const result = await wx.cloud.getTempFileURL({
-        fileList: [fileIds[0]]
-      });
-      const file = result.fileList && result.fileList[0];
-      return file && file.tempFileURL ? file.tempFileURL : '';
-    } catch (error) {
-      return '';
-    }
-  },
-
-  onShow() {
-    const cached = wx.getStorageSync('selectedDestination');
-    if (!cached || !cached.zhName) {
-      return;
-    }
-
+    const cloudImage = Array.isArray(latest.mediaFileIds) ? latest.mediaFileIds[0] : '';
     this.setData({
-      welcomeCountryZh: cached.zhName
+      featuredPost: {
+        ...this.data.featuredPost,
+        author: latest.authorName || this.data.featuredPost.author,
+        role: latest.authorRole === 'admin' ? '管理员发布' : '云端旅人',
+        time: '云端同步',
+        title: latest.content ? latest.content.slice(0, 28) : this.data.featuredPost.title,
+        body: latest.content || this.data.featuredPost.body,
+        image: cloudImage || this.data.featuredPost.image,
+        tags: ['云端动态', latest.sourcePage || 'posts'],
+        location: latest.destinationLabel || 'Cloud feed',
+        light: 'Cloud post'
+      }
     });
   },
 

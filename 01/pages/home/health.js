@@ -1,4 +1,5 @@
 import { buildHealthText, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
+import { loadGuide } from '../../utils/cloud-service.js';
 
 Page({
   data: {
@@ -39,6 +40,29 @@ Page({
     const countryName = cached.zhName || '刚果(金)';
     this.setData({ countryName });
     this.applyLanguage(getStoredLanguage(), countryName);
+    this.loadGuideHealth(countryName);
+  },
+
+  async loadGuideHealth(countryName) {
+    try {
+      const guide = await loadGuide(countryName);
+      if (!guide || !guide.health) {
+        return;
+      }
+      const uiText = {
+        ...this.data.uiText,
+        entryMustDesc: guide.health.entryMustDesc || this.data.uiText.entryMustDesc
+      };
+      this.setData({
+        uiText,
+        tickerText: guide.health.tickerText || this.data.tickerText,
+        hospitals: (guide.health.hospitals && guide.health.hospitals.length) ? guide.health.hospitals : this.data.hospitals,
+        malariaTips: (guide.health.malariaTips && guide.health.malariaTips.length) ? guide.health.malariaTips : this.data.malariaTips,
+        emergencyPhone: guide.health.emergencyPhone || this.data.emergencyPhone
+      });
+    } catch (error) {
+      console.warn('health: fallback to local', error);
+    }
   },
 
   onGoBack() {

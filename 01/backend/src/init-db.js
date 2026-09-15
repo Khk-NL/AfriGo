@@ -1,0 +1,185 @@
+require('dotenv').config();
+
+const mysql = require('mysql2/promise');
+const path = require('path');
+
+const attractionsLib = require(path.join(__dirname, '../../data/attractions.js'));
+const recommendLib = require(path.join(__dirname, '../../data/recommend.js'));
+
+const TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS attractions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  item_key VARCHAR(64) DEFAULT '',
+  country_zh VARCHAR(64) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  image VARCHAR(512) DEFAULT '',
+  tags_json JSON,
+  description TEXT,
+  tips TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS recommend (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  item_key VARCHAR(64) DEFAULT '',
+  country_zh VARCHAR(64) NOT NULL,
+  category VARCHAR(64) DEFAULT '',
+  name VARCHAR(255) NOT NULL,
+  rating VARCHAR(64) DEFAULT '',
+  description TEXT,
+  address VARCHAR(255) DEFAULT '',
+  safety_tip TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  openid VARCHAR(128) NOT NULL UNIQUE,
+  nick_name VARCHAR(128) DEFAULT '',
+  avatar_url VARCHAR(512) DEFAULT '',
+  role VARCHAR(32) DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  last_login_at TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS posts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  content TEXT,
+  media_urls JSON,
+  author_openid VARCHAR(128) DEFAULT '',
+  author_name VARCHAR(128) DEFAULT '',
+  author_avatar VARCHAR(512) DEFAULT '',
+  author_role VARCHAR(32) DEFAULT 'user',
+  status VARCHAR(32) DEFAULT 'published',
+  destination_label VARCHAR(128) DEFAULT '',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS country_guides (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  country_zh VARCHAR(64) NOT NULL UNIQUE,
+  payload JSON NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`;
+
+async function connectWithProvidedAccounts() {
+  const host = process.env.DB_HOST;
+  const port = Number(process.env.DB_PORT || 3306);
+  const dbName = process.env.DB_NAME;
+  const attempts = [
+    {
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: dbName
+    },
+    {
+      user: 'root',
+      password: process.env.DB_ROOT_PASSWORD,
+      database: undefined
+    }
+  ];
+
+  let lastError;
+  for (const attempt of attempts) {
+    if (!attempt.user || !attempt.password) continue;
+    try {
+      const conn = await mysql.createConnection({
+        host,
+        port,
+        user: attempt.user,
+        password: attempt.password,
+        database: attempt.database,
+        charset: 'utf8mb4',
+        connectTimeout: 10000
+      });
+      return { conn, user: attempt.user };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error('无法使用提供的账号连接 MySQL');
+}
+
+async function ensureDatabase(conn, user) {
+  const dbName = process.env.DB_NAME;
+  await conn.query(
+    `CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+  );
+  await conn.query(`USE \`${dbName}\``);
+
+  if (user === 'root' && process.env.DB_USER && process.env.DB_PASSWORD) {
+    const appUser = process.env.DB_USER;
+    const appPassword = process.env.DB_PASSWORD;
+    await conn.query(
+      `CREATE USER IF NOT EXISTS '${appUser}'@'%' IDENTIFIED BY '${appPassword.replace(/'/g, "''")}'`
+    );
+    await conn.query(`GRANT ALL PRIVILEGES ON \`${dbName}\`.* TO '${appUser}'@'%'`);
+    await conn.query('FLUSH PRIVILEGES');
+  }
+}
+
+async function seedCollection(conn, table, sourceMap, buildRow) {
+  const [countRows] = await conn.query(`SELECT COUNT(*) AS total FROM \`${table}\``);
+  if (countRows[0].total > 0) {
+    console.log(`${table}: already has ${countRows[0].total} rows, skip seed`);
+    return;
+  }
+
+  const rows = [];
+  Object.entries(sourceMap || {}).forEach(([countryZh, list]) => {
+    (list || []).forEach((item) => {
+      rows.push(buildRow(countryZh, item));
+    });
+  });
+
+  for (const row of rows) {
+    const keys = Object.keys(row);
+    const sql = `INSERT INTO \`${table}\` (${keys.join(',')}) VALUES (${keys.map(() => '?').join(',')})`;
+    await conn.query(sql, keys.map((key) => row[key]));
+  }
+
+  console.log(`${table}: inserted ${rows.length} rows`);
+}
+
+async function main() {
+  const { conn, user } = await connectWithProvidedAccounts();
+  console.log(`connected as ${user}`);
+  await ensureDatabase(conn, user);
+
+  for (const statement of TABLE_SQL.split(';').map((item) => item.trim()).filter(Boolean)) {
+    await conn.query(statement);
+  }
+  console.log('tables ready');
+
+  await seedCollection(conn, 'attractions', attractionsLib.attractions, (countryZh, item) => ({
+    item_key: String(item.id || ''),
+    country_zh: countryZh,
+    name: item.name || '',
+    image: item.image || '',
+    tags_json: JSON.stringify(item.tags || []),
+    description: item.desc || '',
+    tips: item.tips || ''
+  }));
+
+  await seedCollection(conn, 'recommend', recommendLib.recommend, (countryZh, item) => ({
+    item_key: String(item.id || ''),
+    country_zh: countryZh,
+    category: item.category || '',
+    name: item.name || '',
+    rating: item.rating || '',
+    description: item.desc || '',
+    address: item.address || '',
+    safety_tip: item.safetyTip || ''
+  }));
+
+  await conn.end();
+  console.log('init-db done');
+}
+
+main().catch((error) => {
+  console.error('init-db failed:', error.code || '', error.message);
+  process.exit(1);
+});

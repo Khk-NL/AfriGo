@@ -1,3 +1,5 @@
+import { loadGuide } from '../../utils/cloud-service.js';
+
 Page({
   data: {
     countryNameZh: '刚果(金)',
@@ -25,6 +27,31 @@ Page({
     policePhone: '112',
     medicalPhone: '119',
     gaugeSweep: 240
+  },
+
+  onLoad() {
+    const selected = wx.getStorageSync('selectedDestination') || {};
+    const countryNameZh = selected.zhName || this.data.countryNameZh;
+    this.setData({
+      countryNameZh,
+      countryNameEn: selected.enName || this.data.countryNameEn
+    });
+    this.loadGuideSecurity(countryNameZh);
+  },
+
+  async loadGuideSecurity(countryNameZh) {
+    try {
+      const guide = await loadGuide(countryNameZh);
+      if (!guide || !guide.security) {
+        return;
+      }
+      this.setData({
+        ...guide.security,
+        countryNameZh: guide.security.countryNameZh || countryNameZh
+      });
+    } catch (error) {
+      console.warn('security: fallback to local', error);
+    }
   },
 
   onCallEmbassy() {

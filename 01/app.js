@@ -4,13 +4,6 @@ import { getStoredCurrentUser } from './utils/cloud-service.js';
 
 App({
   onLaunch() {
-    if (wx.cloud && typeof wx.cloud.init === 'function') {
-      wx.cloud.init({
-        env: 'afri-can-d8gis35sc2475c8e6',
-        traceUser: true
-      })
-    }
-
     setStoredLanguage(getStoredLanguage());
 
     // 展示本地存储能力

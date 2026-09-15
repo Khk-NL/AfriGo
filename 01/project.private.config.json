@@ -4,7 +4,7 @@
   "setting": {
     "compileHotReLoad": true,
     "skylineRenderEnable": true,
-    "urlCheck": true,
+    "urlCheck": false,
     "coverView": true,
     "lazyloadPlaceholderEnable": false,
     "preloadBackgroundData": false,

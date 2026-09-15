@@ -1,18 +1,17 @@
-﻿const USER_STORAGE_KEY = 'currentUser';
+﻿import { request } from './api.js';
+
+const USER_STORAGE_KEY = 'currentUser';
 const USER_INFO_STORAGE_KEY = 'userInfo';
 const USER_ROLE_STORAGE_KEY = 'userRole';
-const USER_CENTER_FUNCTION_NAME = 'user-center';
-function getCloudDatabase() {
-  if (!wx.cloud || typeof wx.cloud.database !== 'function') {
-    return null;
-  }
-  try {
-    return wx.cloud.database();
-  } catch (error) {
-    console.warn('cloud-service: cloud database unavailable', error);
-    return null;
-  }
+
+function noteCloudError() {
+  return false;
 }
+
+function getCloudDatabase() {
+  return null;
+}
+
 function getStoredCurrentUser() {
   try {
     return wx.getStorageSync(USER_STORAGE_KEY) || null;
@@ -20,6 +19,7 @@ function getStoredCurrentUser() {
     return null;
   }
 }
+
 function cacheCurrentUser(user) {
   try {
     if (user) {
@@ -36,42 +36,122 @@ function cacheCurrentUser(user) {
   }
   return user;
 }
+
 function isLoggedIn(user = getStoredCurrentUser()) {
   return !!user;
 }
+
 function isAdminUser(user = getStoredCurrentUser()) {
   if (!user) {
     return false;
   }
   return user.role === 'admin' || user.isAdmin === true || wx.getStorageSync(USER_ROLE_STORAGE_KEY) === 'admin';
 }
-async function callUserCenter(action, payload = {}) {
-  if (!wx.cloud || typeof wx.cloud.callFunction !== 'function') {
-    throw new Error('云函数不可用');
+
+function getUserDisplayName(user = getStoredCurrentUser()) {
+  if (!user) {
+    return '微信用户';
   }
-  const result = await wx.cloud.callFunction({
-    name: USER_CENTER_FUNCTION_NAME,
+  return user.nickName || user.userInfo?.nickName || user.nickname || '微信用户';
+}
+
+async function loadCollection(collectionName, countryZh) {
+  const query = countryZh ? `?country=${encodeURIComponent(countryZh)}` : '';
+  const pathMap = {
+    attractions: `/api/attractions${query}`,
+    recommend: `/api/recommend${query}`,
+    posts: '/api/posts',
+    users: '/api/collections/users'
+  };
+  const path = pathMap[collectionName] || `/api/collections/${collectionName}`;
+  const result = await request(path);
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function loadGuide(countryZh) {
+  const query = countryZh ? `?country=${encodeURIComponent(countryZh)}` : '';
+  const result = await request(`/api/guide${query}`);
+  return result.data || null;
+}
+
+async function loadCollectionWithFallback(collectionName, fallback = [], countryZh) {
+  try {
+    return await loadCollection(collectionName, countryZh);
+  } catch (error) {
+    console.warn(`api: fallback to local data for ${collectionName}`, error);
+    return Array.isArray(fallback) ? fallback.slice() : [];
+  }
+}
+
+async function addDocument(collectionName, data) {
+  const result = await request(`/api/collections/${collectionName}`, {
+    method: 'POST',
+    data
+  });
+  return { _id: result._id, id: result.id };
+}
+
+async function updateDocument(collectionName, docId, data) {
+  return request(`/api/collections/${collectionName}/${docId}`, {
+    method: 'PUT',
+    data
+  });
+}
+
+async function removeDocument(collectionName, docId) {
+  return request(`/api/collections/${collectionName}/${docId}`, {
+    method: 'DELETE'
+  });
+}
+
+async function uploadMediaFiles() {
+  return [];
+}
+
+async function createPost({ content, extra = {} } = {}) {
+  const trimmedContent = typeof content === 'string' ? content.trim() : '';
+  if (!trimmedContent) {
+    throw new Error('帖子内容不能为空');
+  }
+
+  const currentUser = getStoredCurrentUser();
+  return request('/api/posts', {
+    method: 'POST',
     data: {
-      action,
-      ...payload
+      content: trimmedContent,
+      authorOpenid: currentUser?.openid || '',
+      authorName: getUserDisplayName(currentUser),
+      authorAvatar: currentUser?.avatarUrl || '',
+      authorRole: currentUser?.role || 'user',
+      ...extra
     }
   });
-  return result && result.result ? result.result : {};
 }
-function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {}) {
+
+async function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {}) {
   return new Promise((resolve, reject) => {
     if (!wx.getUserProfile) {
       reject(new Error('当前版本不支持微信登录授权'));
       return;
     }
+
     wx.getUserProfile({
       desc,
       success: async (profileRes) => {
         try {
-          const result = await callUserCenter('login', {
-            profile: profileRes.userInfo || {}
+          const profile = profileRes.userInfo || {};
+          const result = await request('/api/auth/login', {
+            method: 'POST',
+            data: {
+              nickName: profile.nickName || '',
+              avatarUrl: profile.avatarUrl || '',
+              openid: wx.getStorageSync('localOpenid') || ''
+            }
           });
           const user = result.user || result;
+          if (user && user.openid) {
+            wx.setStorageSync('localOpenid', user.openid);
+          }
           cacheCurrentUser(user);
           resolve(user);
         } catch (error) {
@@ -82,114 +162,25 @@ function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {}) {
     });
   });
 }
+
 async function refreshCurrentUser() {
-  try {
-    const result = await callUserCenter('me');
-    const user = result.user || null;
-    if (user) {
-      cacheCurrentUser(user);
-    }
-    return user;
-  } catch (error) {
-    return getStoredCurrentUser();
-  }
+  return getStoredCurrentUser();
 }
+
 function logoutCurrentUser() {
   cacheCurrentUser(null);
 }
-function getUserDisplayName(user = getStoredCurrentUser()) {
-  if (!user) {
-    return '微信用户';
-  }
-  return user.nickName || user.userInfo?.nickName || user.nickname || '微信用户';
+
+async function callUserCenter() {
+  throw new Error('请使用微信登录接口');
 }
-async function loadCollection(collectionName) {
-  const db = getCloudDatabase();
-  if (!db) {
-    throw new Error('云数据库不可用');
-  }
-  const result = await db.collection(collectionName).get();
-  return Array.isArray(result.data) ? result.data : [];
-}
-async function loadCollectionWithFallback(collectionName, fallback = []) {
-  try {
-    return await loadCollection(collectionName);
-  } catch (error) {
-    console.warn(`cloud-service: fallback to local data for ${collectionName}`, error);
-    return Array.isArray(fallback) ? fallback.slice() : [];
-  }
-}
-async function addDocument(collectionName, data) {
-  const db = getCloudDatabase();
-  if (!db) {
-    throw new Error('云数据库不可用');
-  }
-  return db.collection(collectionName).add({
-    data: {
-      ...data,
-      createTime: data && Object.prototype.hasOwnProperty.call(data, 'createTime')
-        ? data.createTime
-        : db.serverDate()
-    }
-  });
-}
-async function updateDocument(collectionName, docId, data) {
-  const db = getCloudDatabase();
-  if (!db) {
-    throw new Error('云数据库不可用');
-  }
-  return db.collection(collectionName).doc(docId).update({
-    data
-  });
-}
-async function removeDocument(collectionName, docId) {
-  const db = getCloudDatabase();
-  if (!db) {
-    throw new Error('云数据库不可用');
-  }
-  return db.collection(collectionName).doc(docId).remove();
-}
-async function uploadMediaFiles(mediaList = [], prefix = 'uploads') {
-  if (!Array.isArray(mediaList) || mediaList.length === 0) {
-    return [];
-  }
-  if (!wx.cloud || typeof wx.cloud.uploadFile !== 'function') {
-    throw new Error('云存储不可用');
-  }
-  const uploadTasks = mediaList.map((media, index) => {
-    const filePath = media.tempFilePath || media.filePath || media;
-    const cloudPath = `${prefix}/${Date.now()}-${index}-${Math.random().toString(16).slice(2)}.jpg`;
-    return wx.cloud.uploadFile({
-      cloudPath,
-      filePath
-    });
-  });
-  const results = await Promise.all(uploadTasks);
-  return results.map((item) => item.fileID);
-}
-async function createPost({ content, mediaList = [], extra = {} } = {}) {
-  const trimmedContent = typeof content === 'string' ? content.trim() : '';
-  if (!trimmedContent && (!Array.isArray(mediaList) || mediaList.length === 0)) {
-    throw new Error('帖子内容不能为空');
-  }
-  const currentUser = getStoredCurrentUser();
-  const mediaFileIds = await uploadMediaFiles(mediaList, 'posts');
-  return addDocument('posts', {
-    content: trimmedContent,
-    mediaFileIds,
-    authorOpenid: currentUser?.openid || '',
-    authorName: getUserDisplayName(currentUser),
-    authorAvatar: currentUser?.avatarUrl || '',
-    authorRole: currentUser?.role || 'user',
-    status: 'published',
-    ...extra
-  });
-}
+
 export {
   USER_STORAGE_KEY,
   USER_INFO_STORAGE_KEY,
   USER_ROLE_STORAGE_KEY,
   getCloudDatabase,
+  noteCloudError,
   getStoredCurrentUser,
   cacheCurrentUser,
   isLoggedIn,
@@ -201,6 +192,7 @@ export {
   getUserDisplayName,
   loadCollection,
   loadCollectionWithFallback,
+  loadGuide,
   addDocument,
   updateDocument,
   removeDocument,

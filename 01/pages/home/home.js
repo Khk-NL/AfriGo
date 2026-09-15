@@ -1,23 +1,11 @@
 import { ElephantRenderer } from '../../utils/elephant-renderer.js';
+import { createPost, loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
 
 const { attractions: localAttractionsData } = require('../../data/attractions.js');
 const { recommend: localRecommendData } = require('../../data/recommend.js');
 
 const DEFAULT_COUNTRY = '肯尼亚';
-
-const getCloudDatabase = () => {
-  if (!wx.cloud || typeof wx.cloud.database !== 'function') {
-    return null;
-  }
-
-  try {
-    return wx.cloud.database();
-  } catch (error) {
-    console.warn('home: cloud database unavailable', error);
-    return null;
-  }
-};
 
 const getCountryCandidates = (countryZh) => {
   const candidates = [];
@@ -133,40 +121,18 @@ Page({
 
   async loadCollectionData(collectionName, localSource, countryZh, targetKey) {
     const localFallback = pickLocalCountryList(localSource, countryZh);
-    const db = getCloudDatabase();
-
-    try {
-      if (!db) {
-        console.warn(`home: ${collectionName} fallback to local data because cloud db is unavailable`);
-        this.setData({ [targetKey]: localFallback });
-        return localFallback;
-      }
-
-      const result = await db.collection(collectionName).get();
-      const cloudList = pickCloudCountryList(result && result.data, countryZh);
-
-      if (cloudList.length) {
-        this.setData({ [targetKey]: cloudList });
-        return cloudList;
-      }
-
-      console.warn(`home: ${collectionName} cloud result empty, fallback to local data`);
-      this.setData({ [targetKey]: localFallback });
-      return localFallback;
-    } catch (error) {
-      console.error(`home: failed to load ${collectionName} from cloud`, error);
-      this.setData({ [targetKey]: localFallback });
-      return localFallback;
-    }
+    const docs = await loadCollectionWithFallback(collectionName, localFallback, countryZh);
+    const cloudList = pickCloudCountryList(docs, countryZh);
+    const nextList = cloudList.length ? cloudList : localFallback;
+    this.setData({ [targetKey]: nextList });
+    return nextList;
   },
 
   async loadHomeCollections(countryZh) {
     this._homeCollectionsCountry = countryZh;
 
-    await Promise.all([
-      this.loadCollectionData('attractions', localAttractionsData, countryZh, 'attractionsList'),
-      this.loadCollectionData('recommend', localRecommendData, countryZh, 'recommendList')
-    ]);
+    await this.loadCollectionData('attractions', localAttractionsData, countryZh, 'attractionsList');
+    await this.loadCollectionData('recommend', localRecommendData, countryZh, 'recommendList');
   },
 
   async uploadPost(content) {
@@ -175,17 +141,7 @@ Page({
       throw new Error('帖子内容不能为空');
     }
 
-    const db = getCloudDatabase();
-    if (!db) {
-      throw new Error('云数据库不可用，无法发布帖子');
-    }
-
-    return db.collection('posts').add({
-      data: {
-        content: trimmedContent,
-        createTime: db.serverDate()
-      }
-    });
+    return createPost({ content: trimmedContent });
   },
 
   onReady() {

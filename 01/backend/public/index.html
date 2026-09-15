@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>景点图片上传</title>
+  <style>
+    body { font-family: sans-serif; max-width: 880px; margin: 32px auto; color: #222; }
+    h1 { font-size: 22px; }
+    p { color: #555; line-height: 1.6; }
+    .card { display: flex; gap: 16px; padding: 16px; border: 1px solid #e6e6e6; border-radius: 12px; margin-bottom: 12px; align-items: center; }
+    img { width: 120px; height: 80px; object-fit: cover; border-radius: 8px; background: #f3f3f3; }
+    .meta { flex: 1; }
+    .name { font-weight: 700; }
+    .country { color: #888; font-size: 13px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>给景点上传照片</h1>
+  <p>选择一张图片后会立刻保存到数据库。小程序重新进入景点页就能看到。</p>
+  <div id="list">正在加载...</div>
+  <script>
+    async function loadList() {
+      const res = await fetch('/api/attractions');
+      const body = await res.json();
+      const list = document.getElementById('list');
+      if (!body.ok) {
+        list.textContent = body.message || '加载失败';
+        return;
+      }
+      list.innerHTML = '';
+      body.data.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <div class="meta">
+            <div class="name">${item.name}</div>
+            <div class="country">${item.countryZh} · ID ${item.id}</div>
+          </div>
+          <input type="file" accept="image/*" />
+        `;
+        const input = card.querySelector('input');
+        const img = card.querySelector('img');
+        input.addEventListener('change', async () => {
+          if (!input.files[0]) return;
+          const form = new FormData();
+          form.append('file', input.files[0]);
+          const uploadRes = await fetch('/api/attractions/' + item.id + '/image', {
+            method: 'POST',
+            body: form
+          });
+          const uploadBody = await uploadRes.json();
+          if (uploadBody.ok) {
+            img.src = uploadBody.url + '?t=' + Date.now();
+          } else {
+            alert(uploadBody.message || '上传失败');
+          }
+        });
+        list.appendChild(card);
+      });
+    }
+    loadList();
+  </script>
+</body>
+</html>

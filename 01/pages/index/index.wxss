@@ -163,6 +163,32 @@ page {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.25) 100%);
 }
 
+.cover-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30%;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.cover-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.cover-dot.active {
+  width: 16px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
 .square-glass-info {
   position: absolute;
   left: 0;

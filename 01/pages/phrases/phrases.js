@@ -1,3 +1,5 @@
+import { loadGuide } from '../../utils/cloud-service.js';
+
 const phraseLib = require('../../data/phrases.js');
 
 const buildFallbackPhrases = (countryName) => ([
@@ -37,22 +39,28 @@ Page({
     searchKey: ""
   },
 
-  onLoad: function() {
-    // 1. 获取首页传过来的国家，默认肯尼亚
+  onLoad: async function() {
     const cached = wx.getStorageSync('selectedDestination') || { zhName: "肯尼亚" };
     const countryName = cached.zhName;
-
-    // 2. 从你的 js 结构中精准提取数组
-    // phraseLib.phrases["肯尼亚"] -> 拿到那个 [ {id:1...} ] 数组
     const list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : buildFallbackPhrases(countryName);
-
-    console.log("当前载入国家:", countryName, "数据量:", list.length);
 
     this.setData({
       currentCountry: countryName,
       fullList: list,
       displayList: list
     });
+
+    try {
+      const guide = await loadGuide(countryName);
+      if (guide && Array.isArray(guide.phrasesList) && guide.phrasesList.length) {
+        this.setData({
+          fullList: guide.phrasesList,
+          displayList: guide.phrasesList
+        });
+      }
+    } catch (error) {
+      console.warn('phrases: fallback to local', error);
+    }
   },
 
   // 搜索框输入监听

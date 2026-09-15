@@ -12,7 +12,17 @@ const COUNTRY_NAMES = {
   '坦桑尼亚': { zh: '坦桑尼亚', en: 'Tanzania', fr: 'Tanzanie' },
   '肯尼亚': { zh: '肯尼亚', en: 'Kenya', fr: 'Kenya' },
   '科特迪瓦': { zh: '科特迪瓦', en: 'Côte d’Ivoire', fr: 'Côte d’Ivoire' },
-  '赞比亚': { zh: '赞比亚', en: 'Zambia', fr: 'Zambie' }
+  '赞比亚': { zh: '赞比亚', en: 'Zambia', fr: 'Zambie' },
+  '乌干达': { zh: '乌干达', en: 'Uganda', fr: 'Ouganda' },
+  '几内亚': { zh: '几内亚', en: 'Guinea', fr: 'Guinée' },
+  '刚果(布)': { zh: '刚果(布)', en: 'Congo', fr: 'Congo' },
+  '利比里亚': { zh: '利比里亚', en: 'Liberia', fr: 'Libéria' },
+  '埃塞俄比亚': { zh: '埃塞俄比亚', en: 'Ethiopia', fr: 'Éthiopie' },
+  '塞内加尔': { zh: '塞内加尔', en: 'Senegal', fr: 'Sénégal' },
+  '津巴布韦': { zh: '津巴布韦', en: 'Zimbabwe', fr: 'Zimbabwe' },
+  '摩洛哥': { zh: '摩洛哥', en: 'Morocco', fr: 'Maroc' },
+  '莫桑比克': { zh: '莫桑比克', en: 'Mozambique', fr: 'Mozambique' },
+  '阿尔及利亚': { zh: '阿尔及利亚', en: 'Algeria', fr: 'Algérie' }
 };
 
 const FEATURE_KEYS = [
@@ -676,7 +686,17 @@ function buildProfileText(language, currentCountryZh = '肯尼亚', currentCount
     '坦桑尼亚': { zh: '达累斯萨拉姆', en: 'Dar es Salaam', fr: 'Dar es Salaam' },
     '肯尼亚': { zh: '内罗毕', en: 'Nairobi', fr: 'Nairobi' },
     '科特迪瓦': { zh: '阿比让', en: 'Abidjan', fr: 'Abidjan' },
-    '赞比亚': { zh: '卢萨卡', en: 'Lusaka', fr: 'Lusaka' }
+    '赞比亚': { zh: '卢萨卡', en: 'Lusaka', fr: 'Lusaka' },
+    '乌干达': { zh: '坎帕拉', en: 'Kampala', fr: 'Kampala' },
+    '几内亚': { zh: '科纳克里', en: 'Conakry', fr: 'Conakry' },
+    '刚果(布)': { zh: '布拉柴维尔', en: 'Brazzaville', fr: 'Brazzaville' },
+    '利比里亚': { zh: '蒙罗维亚', en: 'Monrovia', fr: 'Monrovia' },
+    '埃塞俄比亚': { zh: '亚的斯亚贝巴', en: 'Addis Ababa', fr: 'Addis-Abeba' },
+    '塞内加尔': { zh: '达喀尔', en: 'Dakar', fr: 'Dakar' },
+    '津巴布韦': { zh: '哈拉雷', en: 'Harare', fr: 'Harare' },
+    '摩洛哥': { zh: '拉巴特', en: 'Rabat', fr: 'Rabat' },
+    '莫桑比克': { zh: '马普托', en: 'Maputo', fr: 'Maputo' },
+    '阿尔及利亚': { zh: '阿尔及尔', en: 'Algiers', fr: 'Alger' }
   };
   const cityEntry = cityMap[currentCountryZh] || { zh: '主要城市', en: 'Main city', fr: 'Ville principale' };
   const city = cityEntry[locale] || cityEntry.zh;

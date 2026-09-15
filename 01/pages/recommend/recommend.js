@@ -1,9 +1,7 @@
 // 01/pages/recommend/recommend.js
-import { getCloudDatabase } from '../../utils/cloud-service.js';
+import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 
 const recLib = require('../../data/recommend.js');
-
-const DEFAULT_COUNTRY = '刚果(金)';
 
 const getCountryCandidates = (countryZh) => {
   const rawCountry = typeof countryZh === 'string' ? countryZh.trim() : '';
@@ -16,10 +14,6 @@ const getCountryCandidates = (countryZh) => {
   const aliasCountry = rawCountry.replace(/[()]/g, '');
   if (aliasCountry && aliasCountry !== rawCountry) {
     candidates.push(aliasCountry);
-  }
-
-  if (!candidates.includes(DEFAULT_COUNTRY)) {
-    candidates.push(DEFAULT_COUNTRY);
   }
 
   return candidates;
@@ -56,7 +50,7 @@ const pickCloudCountryList = (docs, countryZh) => {
 Page({
   data: {
     currentCountry: "",
-    categories: ["全部", "美食", "住宿", "交通", "购物"],
+    categories: ["全部", "美食", "住宿", "交通", "活动"],
     activeCategory: "全部",
     displayList: [],
     fullList: [],
@@ -77,38 +71,15 @@ Page({
 
   async loadRecommendations(countryZh) {
     const localFallback = pickCountryList(recLib.recommend, countryZh);
-    const db = getCloudDatabase();
-
-    try {
-      if (!db) {
-        this.setData({
-          currentCountry: countryZh,
-          displayList: localFallback,
-          fullList: localFallback,
-          summaryCount: localFallback.length
-        });
-        return;
-      }
-
-      const result = await db.collection('recommend').get();
-      const cloudList = pickCloudCountryList(result.data, countryZh);
-      const nextList = cloudList.length ? cloudList : localFallback;
-
-      this.setData({
-        currentCountry: countryZh,
-        displayList: nextList,
-        fullList: nextList,
-        summaryCount: nextList.length
-      });
-    } catch (error) {
-      console.error('recommend: load failed', error);
-      this.setData({
-        currentCountry: countryZh,
-        displayList: localFallback,
-        fullList: localFallback,
-        summaryCount: localFallback.length
-      });
-    }
+    const docs = await loadCollectionWithFallback('recommend', localFallback, countryZh);
+    const cloudList = pickCloudCountryList(docs, countryZh);
+    const nextList = cloudList.length ? cloudList : localFallback;
+    this.setData({
+      currentCountry: countryZh,
+      displayList: nextList,
+      fullList: nextList,
+      summaryCount: nextList.length
+    });
   },
 
   onTagTap: function(e) {
@@ -118,6 +89,21 @@ Page({
       filtered = this.data.fullList.filter(item => item.category === category);
     }
     this.setData({ activeCategory: category, displayList: filtered });
+  },
+
+  onCardTap(e) {
+    const { name, address, desc, safetyTip } = e.currentTarget.dataset;
+    wx.showModal({
+      title: name || '出行推荐',
+      content: [address, desc, safetyTip ? `安全提示：${safetyTip}` : ''].filter(Boolean).join('\n\n'),
+      showCancel: false
+    });
+  },
+
+  onGoHomeTap() {
+    wx.switchTab({
+      url: '/pages/home/home'
+    });
   },
 
   onBackTap: function() {

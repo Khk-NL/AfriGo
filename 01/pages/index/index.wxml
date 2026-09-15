@@ -14,7 +14,7 @@
     </view>
 
     <view class="destination-section">
-      <view class="square-card {{isCountryTransition ? 'card-fade' : ''}}">
+      <view class="square-card {{isCountryTransition ? 'card-fade' : ''}}" bindtap="onCoverTap">
         <image
           wx:if="{{currentCountryImage}}"
           class="square-image"
@@ -23,7 +23,14 @@
         />
         <view class="square-image-placeholder" style="background: {{currentCountryBg}};" wx:else></view>
         <view class="square-mask"></view>
-        <view class="square-glass-info" bindtap="openCountrySheet">
+        <view class="cover-dots" wx:if="{{currentCoverImages.length > 1}}">
+          <view
+            wx:for="{{currentCoverImages}}"
+            wx:key="*this"
+            class="cover-dot {{index === currentCoverIndex ? 'active' : ''}}"
+          ></view>
+        </view>
+        <view class="square-glass-info" catchtap="openCountrySheet">
           <view class="square-country-row {{isCountryTransition ? 'country-fade' : ''}}">
             <text class="square-country">{{currentCountryLabel}}</text>
             <text class="square-country-arrow">▼</text>

@@ -1,3 +1,5 @@
+import { loadGuide } from '../../utils/cloud-service.js';
+
 Page({
   data: {
     countryName: '刚果金',
@@ -40,7 +42,30 @@ Page({
     const selectedDestination = wx.getStorageSync('selectedDestination') || {}
     const rawCountryName = selectedDestination.zhName || '刚果金'
     const countryName = this.normalizeCountryName(rawCountryName)
+    this.loadVisaData(countryName)
+  },
 
+  async loadVisaData(countryName) {
+    try {
+      const guide = await loadGuide(countryName)
+      if (guide && Array.isArray(guide.visaItems) && guide.visaItems.length) {
+        this.setData({
+          countryName,
+          countryFlag: this.getCountryFlag(countryName),
+          updateDate: '2026-09-15',
+          visaItems: this.normalizeVisaItems(guide.visaItems).map((item) => this.attachCardKeyInfo(item)),
+          latestPolicyChange: guide.latestPolicyChange || '',
+          noData: false
+        })
+        return
+      }
+    } catch (error) {
+      console.warn('visa: fallback to local', error)
+    }
+    this.applyLocalVisa(countryName)
+  },
+
+  applyLocalVisa(countryName) {
     const visaDatabase = {
       刚果金: {
         latestPolicyChange: '2024年起要求提供详细行程和官方认证邀请函。',
@@ -1209,6 +1234,9 @@ Page({
     if (normalized === '刚果金' || normalized === '刚果') {
       return '刚果金'
     }
+    if (normalized === '刚果布') {
+      return '刚果(布)'
+    }
     return rawName
   },
 
@@ -1226,7 +1254,17 @@ Page({
       '坦桑尼亚': '🇹🇿',
       '科特迪瓦': '🇨🇮',
       '赞比亚': '🇿🇲',
+      '乌干达': '🇺🇬',
+      '几内亚': '🇬🇳',
+      '刚果(布)': '🇨🇬',
+      '刚果布': '🇨🇬',
+      '利比里亚': '🇱🇷',
+      '埃塞俄比亚': '🇪🇹',
+      '塞内加尔': '🇸🇳',
+      '津巴布韦': '🇿🇼',
       '摩洛哥': '🇲🇦',
+      '莫桑比克': '🇲🇿',
+      '阿尔及利亚': '🇩🇿',
       '突尼斯': '🇹🇳',
       '南方非洲': '🌍'
     }

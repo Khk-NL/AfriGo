@@ -1,4 +1,6 @@
 // 01/pages/labor/labor.js
+import { loadGuide } from '../../utils/cloud-service.js';
+
 const laborLib = require('../../data/labor.js');
 
 const HOME_ROUTE = '/pages/home/home';
@@ -34,15 +36,27 @@ Page({
     policyCount: 0
   },
 
-  onLoad() {
+  async onLoad() {
     const selected = wx.getStorageSync('selectedDestination') || { zhName: '刚果(金)' };
-    const list = laborLib.labor[selected.zhName] || buildFallbackPolicies(selected.zhName);
-
+    const countryZh = selected.zhName;
+    const localList = laborLib.labor[countryZh] || buildFallbackPolicies(countryZh);
     this.setData({
-      currentCountry: selected.zhName,
-      policyList: list,
-      policyCount: list.length
+      currentCountry: countryZh,
+      policyList: localList,
+      policyCount: localList.length
     });
+
+    try {
+      const guide = await loadGuide(countryZh);
+      if (guide && Array.isArray(guide.laborList) && guide.laborList.length) {
+        this.setData({
+          policyList: guide.laborList,
+          policyCount: guide.laborList.length
+        });
+      }
+    } catch (error) {
+      console.warn('labor: fallback to local', error);
+    }
   },
 
   onPolicyTap(e) {

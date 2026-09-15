@@ -1,0 +1,46 @@
+﻿[
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\刚果河.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\drc.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\加纳黑星门1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\ghana.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\埃及吉萨金字塔1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\egypt.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\安哥拉罗安达城市2.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\angola.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\尼日利亚莱基桥1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\nigeria.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\南非桌山1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\south-africa.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\马达加斯加猴面包树1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\madagascar.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\坦桑尼亚乞力马扎罗山1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\tanzania.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\肯尼亚马赛马拉保护区1.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\kenya.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\科特迪瓦露天市集.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\cote-divoire.jpg"
+  },
+  {
+    "src": "C:\\Users\\25374\\Desktop\\小程序\\小程序数据\\国家封面照片\\赞比亚维多利亚瀑布.jpg",
+    "dst": "C:\\Users\\25374\\Desktop\\小程序\\01\\assets\\images\\covers\\zambia.jpg"
+  }
+]

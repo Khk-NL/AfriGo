@@ -1,9 +1,22 @@
 // 01/pages/attractions/attractions.js
-import { getCloudDatabase } from '../../utils/cloud-service.js';
+import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 
 const attrLib = require('../../data/attractions.js');
 
-const DEFAULT_COUNTRY = '刚果(金)';
+const hasUsableImage = (image) => {
+  if (!image || typeof image !== 'string') {
+    return false;
+  }
+  return image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/assets/images/covers/');
+};
+
+const applyCountryCover = (list, coverImage) => {
+  const fallback = coverImage || '/assets/images/covers/drc.jpg';
+  return (list || []).map((item) => ({
+    ...item,
+    image: hasUsableImage(item.image) ? item.image : fallback
+  }));
+};
 
 const buildFallbackAttractions = (countryZh) => ([
   {
@@ -35,10 +48,6 @@ const getCountryCandidates = (countryZh) => {
   const aliasCountry = rawCountry.replace(/[()]/g, '');
   if (aliasCountry && aliasCountry !== rawCountry) {
     candidates.push(aliasCountry);
-  }
-
-  if (!candidates.includes(DEFAULT_COUNTRY)) {
-    candidates.push(DEFAULT_COUNTRY);
   }
 
   return candidates;
@@ -92,33 +101,16 @@ Page({
   },
 
   async loadAttractions(countryZh) {
-    const localFallback = pickCountryList(attrLib.attractions, countryZh);
-    const placeholderFallback = buildFallbackAttractions(countryZh);
-    const db = getCloudDatabase();
-
-    try {
-      if (!db) {
-        this.setData({
-          currentCountry: countryZh,
-          list: localFallback.length ? localFallback : placeholderFallback
-        });
-        return;
-      }
-
-      const result = await db.collection('attractions').get();
-      const cloudList = pickCloudCountryList(result.data, countryZh);
-
-      this.setData({
-        currentCountry: countryZh,
-        list: cloudList.length ? cloudList : (localFallback.length ? localFallback : placeholderFallback)
-      });
-    } catch (error) {
-      console.error('attractions: load failed', error);
-      this.setData({
-        currentCountry: countryZh,
-        list: localFallback.length ? localFallback : placeholderFallback
-      });
-    }
+    const selected = wx.getStorageSync('selectedDestination') || {};
+    const coverImage = selected.image || '/assets/images/covers/drc.jpg';
+    const localFallback = applyCountryCover(pickCountryList(attrLib.attractions, countryZh), coverImage);
+    const placeholderFallback = applyCountryCover(buildFallbackAttractions(countryZh), coverImage);
+    const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
+    const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);
+    this.setData({
+      currentCountry: countryZh,
+      list: cloudList.length ? cloudList : (localFallback.length ? localFallback : placeholderFallback)
+    });
   },
 
   onBackTap: function() {

@@ -1,3 +1,5 @@
+import { loadGuide } from '../../utils/cloud-service.js';
+
 const DEFAULT_THEME_START = '#FFF3E0';
 const DEFAULT_THEME_END = '#FFE0B2';
 
@@ -12,7 +14,17 @@ const COUNTRY_CITY_MAP = {
   '坦桑尼亚': '达累斯萨拉姆',
   '肯尼亚': '内罗毕',
   '科特迪瓦': '阿比让',
-  '赞比亚': '卢萨卡'
+  '赞比亚': '卢萨卡',
+  '乌干达': '坎帕拉',
+  '几内亚': '科纳克里',
+  '刚果(布)': '布拉柴维尔',
+  '利比里亚': '蒙罗维亚',
+  '埃塞俄比亚': '亚的斯亚贝巴',
+  '塞内加尔': '达喀尔',
+  '津巴布韦': '哈拉雷',
+  '摩洛哥': '拉巴特',
+  '莫桑比克': '马普托',
+  '阿尔及利亚': '阿尔及尔'
 };
 
 Page({
@@ -56,6 +68,23 @@ Page({
       serviceItems: content.serviceItems,
       livingTips: content.livingTips
     });
+    this.loadGuideLocalInfo(countryName, content);
+  },
+
+  async loadGuideLocalInfo(countryName, fallback) {
+    try {
+      const guide = await loadGuide(countryName);
+      if (!guide || !guide.localInfo) {
+        return;
+      }
+      this.setData({
+        summary: guide.localInfo.summary || fallback.summary,
+        pulseItems: (guide.localInfo.pulseItems && guide.localInfo.pulseItems.length) ? guide.localInfo.pulseItems : fallback.pulseItems,
+        livingTips: (guide.localInfo.livingTips && guide.localInfo.livingTips.length) ? guide.localInfo.livingTips : fallback.livingTips
+      });
+    } catch (error) {
+      console.warn('local-info: fallback to local', error);
+    }
   },
 
   buildContent(countryName, cityName) {

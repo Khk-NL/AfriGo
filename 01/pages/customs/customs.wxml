@@ -11,20 +11,16 @@
       <view class="back-btn" bindtap="onGoBack">
         <view class="back-arrow"></view>
       </view>
-      <view class="lang-tag">官方语言 / Official Language: 法语 (French)</view>
-      <text class="hero-title">刚果(金) 风俗与禁忌指南</text>
+      <view class="lang-tag">{{languageLabel}}</view>
+      <text class="hero-title">{{pageTitle}}</text>
     </view>
 
     <view class="bento-grid">
       <view class="card card-half">
         <text class="card-title">行为红线</text>
-        <view class="bullet-row">
-          <view class="icon-wrap" aria-hidden="true">✋</view>
-          <text class="bullet-text">忌用左手递物/进食</text>
-        </view>
-        <view class="bullet-row">
-          <view class="icon-wrap" aria-hidden="true">👤</view>
-          <text class="bullet-text">忌触摸他人头部</text>
+        <view class="bullet-row" wx:for="{{behaviorLines}}" wx:key="*this">
+          <view class="icon-wrap" aria-hidden="true">•</view>
+          <text class="bullet-text">{{item}}</text>
         </view>
       </view>
 
@@ -35,31 +31,15 @@
           <view class="swatch swatch-blue"></view>
           <view class="swatch swatch-black"></view>
         </view>
-        <text class="swatch-text">忌纯白/大面积白（哀悼） | 忌纯蓝（殖民记忆） | 忌纯黑（丧色）</text>
+        <text class="swatch-text">{{colorText}}</text>
       </view>
     </view>
 
     <view class="card card-full">
       <text class="card-title">宗教禁忌（必看）</text>
-      <view class="bullet-row">
-        <view class="icon-wrap" aria-hidden="true">⛪</view>
-        <text class="bullet-text">周日多为安息日，避免安排正式商务/公务活动。</text>
-      </view>
-      <view class="bullet-row">
-        <view class="icon-wrap" aria-hidden="true">👕</view>
-        <text class="bullet-text">进入教堂须保守着装（禁短裤、无袖），保持安静。</text>
-      </view>
-      <view class="bullet-row">
-        <view class="icon-wrap" aria-hidden="true">🤲</view>
-        <text class="bullet-text">严禁左手递物与进食，勿触摸他人头部。</text>
-      </view>
-      <view class="bullet-row">
-        <view class="icon-wrap" aria-hidden="true">📷</view>
-        <text class="bullet-text">部族地区不可随意拍摄酋长与祭祀仪式，需先获许可。</text>
-      </view>
-      <view class="bullet-row">
-        <view class="icon-wrap" aria-hidden="true">🗣️</view>
-        <text class="bullet-text">避免公开争论宗教冲突、批评宗教领袖或亵渎圣物。</text>
+      <view class="bullet-row" wx:for="{{religionLines}}" wx:key="*this">
+        <view class="icon-wrap" aria-hidden="true">•</view>
+        <text class="bullet-text">{{item}}</text>
       </view>
     </view>
 
@@ -68,8 +48,8 @@
       <view class="dress-layout">
         <view class="dress-col">
           <text class="dress-title">男士 👔</text>
-          <text class="dress-text">商务需深色西装+领带；日常以T恤+长裤为宜，禁短裤/拖鞋/运动鞋。</text>
-          <text class="dress-sub">部族/宗教场景避免纯白、纯蓝、纯黑及夸张撞色。</text>
+          <text class="dress-text">{{dressMen}}</text>
+          <text class="dress-sub">部族/宗教场景避免高对比撞色与过于暴露的装束。</text>
           <view class="taboo-pill">
             <text class="taboo-icon">⚠️</text>
             <text class="taboo-label">绝对禁忌：迷彩/军绿色、矿区化纤衣物</text>
@@ -77,8 +57,8 @@
         </view>
         <view class="dress-col">
           <text class="dress-title">女士 👗</text>
-          <text class="dress-text">商务宜过膝长裙/长裤套装；日常避免过短、透视、露肩。</text>
-          <text class="dress-sub">部族/宗教场景建议包头巾、妆容朴素，避免浓妆。</text>
+          <text class="dress-text">{{dressWomen}}</text>
+          <text class="dress-sub">进入宗教或部族场所时，优先选择保守、得体的穿着。</text>
           <view class="taboo-pill">
             <text class="taboo-icon">⚠️</text>
             <text class="taboo-label">绝对禁忌：无袖、短裙、紧身露肩、公开亲密着装</text>
@@ -90,28 +70,20 @@
     <view class="card card-full">
       <text class="card-title">社交礼仪</text>
       <view class="chip-row">
-        <text class="chip">称呼长辈：Papa / Mama / Chef</text>
-        <text class="chip">正式称呼：先生/夫人/女士/小姐</text>
-        <text class="chip">最高礼仪：举右手（掌心向外）喊“玛斯特”</text>
-        <text class="chip">进教堂/酋长住所常需脱鞋</text>
+        <text class="chip" wx:for="{{etiquetteChips}}" wx:key="*this">{{item}}</text>
       </view>
-      <text class="etiquette-text">见面多行握手礼（轻柔且稍久），熟人可拥抱+轻拍后背；对长辈或酋长常以弯腰/半跪致意。男性不主动与女性握手，宜等待对方先示意。</text>
+      <text class="etiquette-text">{{etiquetteText}}</text>
     </view>
 
     <view class="card card-full">
       <text class="card-title">特殊习俗（当地高频）</text>
-      <view class="sub-title">丧葬习俗</view>
-      <text class="bullet-text">11月1日为逝者节；部分部族有白蚁巢葬、树葬等传统，整体以土葬为主，忌火葬。</text>
-      <view class="sub-title">婚俗与家庭</view>
-      <text class="bullet-text">部分部族存在一夫多妻传统；彩礼可为货币、牲畜或劳动抵偿，婚礼常持续10-15天。</text>
-      <view class="sub-title">日常交往</view>
-      <text class="bullet-text">主食fufu常用手抓食；公开场合严禁亲吻等亲密行为；OK手势常被视为侮辱；部分家庭忌女婿触碰岳母。</text>
+      <view class="sub-title">当地习俗</view>
+      <text class="bullet-text">{{customText}}</text>
     </view>
 
     <view class="card card-full">
       <text class="card-title">官方信息来源</text>
-      <text class="source-line">人民日报海外版（社交礼仪/着装）：http://paper.people.com.cn/rmrbhwb/html/2016-08/20/content_1705671.htm</text>
-      <text class="source-line">中国驻刚果（金）大使馆（领事提醒/禁忌）：https://cd.china-embassy.gov.cn/chn/lsfw_0/lsbh_138072/laxz/</text>
+      <text class="source-line" wx:for="{{sourceLines}}" wx:key="*this">{{item}}</text>
     </view>
 
     <view class="page-gap"></view>
