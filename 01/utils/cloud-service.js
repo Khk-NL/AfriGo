@@ -198,6 +198,37 @@ async function refreshCurrentUser() {
   }
 }
 
+async function loadBookmarks() {
+  const result = await request('/api/bookmarks');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function addBookmark(bookmark) {
+  return request('/api/bookmarks', { method: 'POST', data: bookmark });
+}
+
+async function removeBookmark(bookmarkId) {
+  return request(`/api/bookmarks/${bookmarkId}`, { method: 'DELETE' });
+}
+
+async function loadNotifications() {
+  const result = await request('/api/notifications');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function markNotificationRead(notificationId) {
+  return request(`/api/notifications/${notificationId}/read`, { method: 'PATCH' });
+}
+
+async function loadMyPosts() {
+  const result = await request('/api/me/posts');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function deleteMyPost(postId) {
+  return request(`/api/posts/${postId}`, { method: 'DELETE' });
+}
+
 function logoutCurrentUser() {
   request('/api/auth/logout', { method: 'POST' }).catch(() => {});
   cacheAuthToken('');
@@ -229,5 +260,12 @@ export {
   updateDocument,
   removeDocument,
   uploadMediaFiles,
-  createPost
+  createPost,
+  loadBookmarks,
+  addBookmark,
+  removeBookmark,
+  loadNotifications,
+  markNotificationRead,
+  loadMyPosts,
+  deleteMyPost
 };

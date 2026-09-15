@@ -54,6 +54,9 @@
                                                         <text style="font-size: 24rpx; color: #888;">🗣️ 跟着念：</text>
                                                         <text style="font-size: 26rpx; color: #e65100; font-weight: bold;">{{item.konger}}</text>
                                                 </view>
+                                                <view class="bookmark-action {{item.isBookmarked ? 'bookmarked' : ''}}" catchtap="onBookmarkTap" data-id="{{item.id}}">
+                                                        {{item.isBookmarked ? '★ 已收藏' : '☆ 收藏'}}
+                                                </view>
                                         </view>
                                 </block>
 

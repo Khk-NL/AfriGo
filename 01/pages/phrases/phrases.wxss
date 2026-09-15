@@ -37,3 +37,12 @@
 .active-pill .tag-text {
         color: #fff !important;
 }
+.bookmark-action {
+  margin-top: 18rpx;
+  color: #7a6848;
+  font-size: 26rpx;
+}
+
+.bookmark-action.bookmarked {
+  color: #c28a24;
+}

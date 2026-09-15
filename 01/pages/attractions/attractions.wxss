@@ -68,3 +68,12 @@
 
 .tips-icon { font-size: 24rpx; }
 .tips-text { font-size: 22rpx; color: #b91c1c; flex: 1; }
+.bookmark-action {
+  margin-top: 20rpx;
+  color: #7a6848;
+  font-size: 26rpx;
+}
+
+.bookmark-action.bookmarked {
+  color: #c28a24;
+}

@@ -50,6 +50,9 @@
 
               <view class="visa-right">
                 <button class="materials-btn" bindtap="toggleVisaExpand" data-id="{{item.id}}">点击展开更多信息</button>
+                <button class="bookmark-btn {{item.isBookmarked ? 'bookmarked' : ''}}" catchtap="onBookmarkTap" data-id="{{item.id}}">
+                  {{item.isBookmarked ? '★ 已收藏' : '☆ 收藏'}}
+                </button>
               </view>
             </view>
 

@@ -16,6 +16,7 @@
             </view>
 
             <view class="notice-list">
+                <view wx:if="{{isLoading}}" class="empty-box"><text>正在加载消息...</text></view>
                 <block wx:for="{{notices}}" wx:key="id">
                     <view class="notice-card {{item.unread ? 'unread-style' : ''}}" bindtap="readNotice" data-id="{{item.id}}">
                         <view class="card-tag" style="background: {{item.tagBg}};">{{item.type}}</view>

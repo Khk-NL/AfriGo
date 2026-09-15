@@ -1,5 +1,5 @@
 import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
-import { getStoredCurrentUser, isAdminUser, isLoggedIn, logoutCurrentUser } from '../../utils/cloud-service.js';
+import { deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark } from '../../utils/cloud-service.js';
 
 const COUNTRY_CITY_MAP = {
     '刚果(金)': '金沙萨',
@@ -41,6 +41,7 @@ Page({
         riskLabel: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false).riskLabel,
         uiText: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false),
         bookmarks: [],
+        myPosts: [],
         quickActions: [],
         serviceEntries: [],
         profileStats: []
@@ -60,17 +61,28 @@ Page({
         this.refreshProfile();
     },
 
-    refreshProfile() {
+    async refreshProfile() {
         const currentUser = getStoredCurrentUser();
         const userInfo = currentUser || null;
         const selectedDestination = wx.getStorageSync('selectedDestination') || {};
         const currentCountry = selectedDestination.zhName || '肯尼亚';
         const currentCity = COUNTRY_CITY_MAP[currentCountry] || '主要城市';
-        const bookmarks = this.normalizeBookmarks(wx.getStorageSync('bookmarks') || []);
+        let bookmarks = [];
+        let myPosts = [];
         const memberSince = this.ensureMemberSince();
         const isLogin = isLoggedIn(currentUser);
         const isAdmin = isAdminUser(currentUser);
         const currentCountryLabel = getCountryName(currentCountry, this.data.language);
+
+        if (isLogin) {
+            try {
+                const [remoteBookmarks, remotePosts] = await Promise.all([loadBookmarks(), loadMyPosts()]);
+                bookmarks = this.normalizeBookmarks(remoteBookmarks);
+                myPosts = remotePosts;
+            } catch (error) {
+                console.error('profile: load personal data failed', error);
+            }
+        }
 
         this.applyLanguage(this.data.language, currentCountry, bookmarks.length, isLogin);
         this.setData({
@@ -86,6 +98,7 @@ Page({
             riskLabel: this.data.uiText.riskLabel,
             memberSince,
             bookmarks,
+            myPosts,
             quickActions: this.buildQuickActions(bookmarks.length),
             serviceEntries: this.buildServiceEntries(currentCountry),
             profileStats: this.buildProfileStats(bookmarks.length, isLogin, currentCountry)
@@ -111,8 +124,8 @@ Page({
         return bookmarks.map((item, index) => ({
             id: String(item.id || item.title || item.name || index),
             title: item.title || item.name || `已收藏内容 ${index + 1}`,
-            date: item.date || '最近加入',
-            category: item.category || item.type || '旅途清单'
+            date: item.date || (item.createTime ? String(item.createTime).slice(0, 10) : '最近加入'),
+            category: item.category || item.resourceType || item.type || '旅途清单'
         }));
     },
 
@@ -213,20 +226,40 @@ Page({
         });
     },
 
-    onRemoveBookmark(e) {
+    async onRemoveBookmark(e) {
         const { id } = e.currentTarget.dataset;
-        const bookmarks = this.data.bookmarks.filter((bookmark) => String(bookmark.id) !== String(id));
+        try {
+            await removeBookmark(id);
+            const bookmarks = this.data.bookmarks.filter((bookmark) => String(bookmark.id) !== String(id));
+            this.setData({
+                bookmarks,
+                quickActions: this.buildQuickActions(bookmarks.length),
+                profileStats: this.buildProfileStats(bookmarks.length, this.data.isLogin, this.data.currentCountry)
+            });
+            wx.showToast({
+                title: this.data.language === 'zh' ? '已移出收藏' : this.data.language === 'en' ? 'Removed from bookmarks' : 'Retiré des favoris',
+                icon: 'success'
+            });
+        } catch (error) {
+            wx.showToast({ title: '移除失败，请稍后重试', icon: 'none' });
+        }
+    },
 
-        wx.setStorageSync('bookmarks', bookmarks);
-        this.setData({
-            bookmarks,
-            quickActions: this.buildQuickActions(bookmarks.length),
-            profileStats: this.buildProfileStats(bookmarks.length, this.data.isLogin, this.data.currentCountry)
-        });
-
-        wx.showToast({
-            title: this.data.language === 'zh' ? '已移出收藏' : this.data.language === 'en' ? 'Removed from bookmarks' : 'Retiré des favoris',
-            icon: 'success'
+    onDeletePost(e) {
+        const { id } = e.currentTarget.dataset;
+        wx.showModal({
+            title: '删除动态',
+            content: '确认删除这条动态吗？',
+            success: async (result) => {
+                if (!result.confirm) return;
+                try {
+                    await deleteMyPost(id);
+                    this.setData({ myPosts: this.data.myPosts.filter((post) => String(post.id) !== String(id)) });
+                    wx.showToast({ title: '已删除', icon: 'success' });
+                } catch (error) {
+                    wx.showToast({ title: '删除失败，请稍后重试', icon: 'none' });
+                }
+            }
         });
     },
 

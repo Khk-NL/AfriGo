@@ -37,6 +37,9 @@
                                                                 <text class="tips-icon">💡</text>
                                                                 <text class="tips-text">{{item.tips}}</text>
                                                         </view>
+                                                        <view class="bookmark-action {{item.isBookmarked ? 'bookmarked' : ''}}" catchtap="onBookmarkTap" data-id="{{item.id}}">
+                                                                {{item.isBookmarked ? '★ 已收藏' : '☆ 收藏'}}
+                                                        </view>
                                                 </view>
                                         </view>
                                 </block>

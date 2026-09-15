@@ -118,6 +118,30 @@ function mapPost(row) {
   };
 }
 
+function mapBookmark(row) {
+  return {
+    id: String(row.id),
+    resourceType: row.resource_type,
+    resourceId: row.resource_id,
+    title: row.title,
+    category: row.category,
+    countryCode: row.country_code,
+    payload: parseJson(row.payload_json, {}),
+    createTime: row.created_at
+  };
+}
+
+function mapNotification(row) {
+  return {
+    id: String(row.id),
+    type: row.type,
+    title: row.title,
+    content: row.content,
+    unread: !row.read_at,
+    createTime: row.created_at
+  };
+}
+
 async function listByCountry(table, mapper, countryCode, country) {
   const normalizedCode = normalizeCountryCode(countryCode, country);
   const candidates = countryCandidates(country);
@@ -224,7 +248,7 @@ app.get('/api/guide', async (req, res) => {
 
 app.get('/api/posts', async (_req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM posts ORDER BY id DESC');
+    const [rows] = await pool.query("SELECT * FROM posts WHERE status = 'published' ORDER BY id DESC");
     res.json({ ok: true, data: rows.map(mapPost) });
   } catch (error) {
     res.status(500).json({ ok: false, message: error.message });
@@ -256,6 +280,11 @@ app.post('/api/posts', authenticate, async (req, res, next) => {
         'published',
         body.destinationLabel || ''
       ]
+    );
+
+    await pool.query(
+      'INSERT INTO notifications (user_id, type, title, content) VALUES (?, ?, ?, ?)',
+      [req.user.id, 'publish', '动态发布成功', content ? content.slice(0, 120) : '你的图片动态已发布']
     );
 
     res.json({ ok: true, _id: String(result.insertId), id: result.insertId });
@@ -307,6 +336,101 @@ app.post('/api/auth/logout', authenticate, async (req, res, next) => {
 
 app.get('/api/auth/me', authenticate, (req, res) => {
   res.json({ ok: true, user: mapUser(req.user) });
+});
+
+app.get('/api/me/posts', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM posts WHERE author_id = ? ORDER BY id DESC', [req.user.id]);
+    res.json({ ok: true, data: rows.map(mapPost) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/posts/:id', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT author_id FROM posts WHERE id = ? LIMIT 1', [req.params.id]);
+    if (!rows[0]) {
+      res.status(404).json({ ok: false, message: '帖子不存在' });
+      return;
+    }
+    if (req.user.role !== 'admin' && Number(rows[0].author_id) !== Number(req.user.id)) {
+      res.status(403).json({ ok: false, message: '不能删除其他用户的帖子' });
+      return;
+    }
+    await pool.query('DELETE FROM posts WHERE id = ?', [req.params.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/bookmarks', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM bookmarks WHERE user_id = ? ORDER BY id DESC', [req.user.id]);
+    res.json({ ok: true, data: rows.map(mapBookmark) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/bookmarks', authenticate, async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const allowedTypes = ['attraction', 'recommend', 'phrase', 'visa'];
+    if (!allowedTypes.includes(body.resourceType) || !String(body.resourceId || '').trim() || !String(body.title || '').trim()) {
+      res.status(400).json({ ok: false, message: '收藏参数不完整' });
+      return;
+    }
+    const [result] = await pool.query(
+      `INSERT INTO bookmarks (user_id, resource_type, resource_id, title, category, country_code, payload_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE title = VALUES(title), category = VALUES(category), payload_json = VALUES(payload_json)`,
+      [
+        req.user.id,
+        body.resourceType,
+        String(body.resourceId),
+        String(body.title).slice(0, 255),
+        String(body.category || '').slice(0, 64),
+        normalizeCountryCode(body.countryCode),
+        JSON.stringify(body.payload || {})
+      ]
+    );
+    const [rows] = await pool.query(
+      'SELECT id FROM bookmarks WHERE user_id = ? AND resource_type = ? AND country_code = ? AND resource_id = ? LIMIT 1',
+      [req.user.id, body.resourceType, normalizeCountryCode(body.countryCode), String(body.resourceId)]
+    );
+    res.json({ ok: true, id: rows[0] ? String(rows[0].id) : String(result.insertId || '') });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/bookmarks/:id', authenticate, async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM bookmarks WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/notifications', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 100', [req.user.id]);
+    res.json({ ok: true, data: rows.map(mapNotification) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.patch('/api/notifications/:id/read', authenticate, async (req, res, next) => {
+  try {
+    await pool.query('UPDATE notifications SET read_at = COALESCE(read_at, NOW()) WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res) => {
@@ -376,8 +500,33 @@ app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res) 
   }
 });
 
-app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res) => {
-  res.status(400).json({ ok: false, message: '请在 1Panel 中修改，或使用对应业务接口' });
+app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    if (req.params.name === 'attractions') {
+      await pool.query(
+        `UPDATE attractions SET name = ?, image = ?, tags_json = ?, description = ?, tips = ?, country_code = ?, country_zh = ? WHERE id = ?`,
+        [body.name || '', body.image || '', JSON.stringify(body.tags || []), body.desc || '', body.tips || '', normalizeCountryCode(body.countryCode, body.countryZh), body.countryZh || '', req.params.id]
+      );
+    } else if (req.params.name === 'recommend') {
+      await pool.query(
+        `UPDATE recommend SET category = ?, name = ?, rating = ?, description = ?, address = ?, safety_tip = ?, country_code = ?, country_zh = ? WHERE id = ?`,
+        [body.category || '', body.name || '', body.rating || '', body.desc || '', body.address || '', body.safetyTip || '', normalizeCountryCode(body.countryCode, body.countryZh), body.countryZh || '', req.params.id]
+      );
+    } else if (req.params.name === 'posts') {
+      const status = ['published', 'hidden', 'rejected'].includes(body.status) ? body.status : 'published';
+      await pool.query('UPDATE posts SET content = ?, status = ? WHERE id = ?', [body.content || '', status, req.params.id]);
+    } else if (req.params.name === 'users') {
+      const role = body.role === 'admin' ? 'admin' : 'user';
+      await pool.query('UPDATE users SET nick_name = ?, role = ? WHERE id = ?', [body.nickName || '', role, req.params.id]);
+    } else {
+      res.status(404).json({ ok: false, message: '未知集合' });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res) => {

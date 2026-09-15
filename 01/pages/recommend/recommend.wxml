@@ -59,6 +59,9 @@
                 <text class="recommend-note-label">💡 安全避坑：</text>
                 <text class="recommend-note-text">{{item.safetyTip}}</text>
               </view>
+              <view class="bookmark-action {{item.isBookmarked ? 'bookmarked' : ''}}" catchtap="onBookmarkTap" data-id="{{item.id}}">
+                {{item.isBookmarked ? '★ 已收藏' : '☆ 收藏'}}
+              </view>
             </view>
           </block>
         </block>

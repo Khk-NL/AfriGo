@@ -71,6 +71,33 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS bookmarks (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  resource_type VARCHAR(32) NOT NULL,
+  resource_id VARCHAR(128) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  category VARCHAR(64) DEFAULT '',
+  country_code CHAR(2) DEFAULT '',
+  payload_json JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_bookmarks_user_resource (user_id, resource_type, country_code, resource_id),
+  INDEX idx_bookmarks_user (user_id),
+  CONSTRAINT fk_bookmarks_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type VARCHAR(64) DEFAULT 'system',
+  title VARCHAR(255) NOT NULL,
+  content TEXT,
+  read_at TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_notifications_user_created (user_id, created_at),
+  CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS country_guides (
   id INT AUTO_INCREMENT PRIMARY KEY,
   country_code CHAR(2) NOT NULL UNIQUE,

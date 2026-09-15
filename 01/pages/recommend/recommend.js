@@ -1,5 +1,6 @@
 // 01/pages/recommend/recommend.js
 import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
+import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 
 const recLib = require('../../data/recommend.js');
 
@@ -73,13 +74,39 @@ Page({
     const localFallback = pickCountryList(recLib.recommend, countryZh);
     const docs = await loadCollectionWithFallback('recommend', localFallback, countryZh);
     const cloudList = pickCloudCountryList(docs, countryZh);
-    const nextList = cloudList.length ? cloudList : localFallback;
+    let nextList = cloudList.length ? cloudList : localFallback;
+    try {
+      nextList = await decorateBookmarks(nextList, 'recommend');
+    } catch (error) {
+      console.warn('recommend: load bookmarks failed', error);
+    }
     this.setData({
       currentCountry: countryZh,
       displayList: nextList,
       fullList: nextList,
       summaryCount: nextList.length
     });
+  },
+
+  async onBookmarkTap(e) {
+    const { id } = e.currentTarget.dataset;
+    const item = this.data.fullList.find((entry) => String(entry.id) === String(id));
+    if (!item) return;
+    try {
+      const state = await toggleBookmark('recommend', item, {
+        title: item.name,
+        category: item.category || '出行推荐',
+        payload: { address: item.address, desc: item.desc, safetyTip: item.safetyTip }
+      });
+      const fullList = this.data.fullList.map((entry) => String(entry.id) === String(id) ? { ...entry, ...state } : entry);
+      const displayList = this.data.activeCategory === '全部'
+        ? fullList
+        : fullList.filter((entry) => entry.category === this.data.activeCategory);
+      this.setData({ fullList, displayList });
+      wx.showToast({ title: state.isBookmarked ? '已收藏' : '已取消收藏', icon: 'success' });
+    } catch (error) {
+      wx.showToast({ title: error.message || '收藏失败', icon: 'none' });
+    }
   },
 
   onTagTap: function(e) {

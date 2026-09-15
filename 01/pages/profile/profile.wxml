@@ -123,6 +123,28 @@
                 </block>
             </view>
 
+            <view wx:if="{{isLogin}}" class="section-card bookmark-card">
+                <view class="section-head section-head-row">
+                    <view>
+                        <text class="section-title">我的动态</text>
+                        <text class="section-subtitle">管理你发布的旅行记录</text>
+                    </view>
+                    <text class="section-pill">{{myPosts.length}} 条</text>
+                </view>
+                <view wx:if="{{myPosts.length === 0}}" class="empty-bookmarks">
+                    <text class="empty-title">还没有发布动态</text>
+                </view>
+                <block wx:else wx:for="{{myPosts}}" wx:key="id">
+                    <view class="bookmark-item">
+                        <view class="bookmark-main">
+                            <text class="bookmark-title">{{item.content || '图片动态'}}</text>
+                            <text class="bookmark-date">{{item.createTime}}</text>
+                        </view>
+                        <view class="bookmark-remove" bindtap="onDeletePost" data-id="{{item.id}}">删除</view>
+                    </view>
+                </block>
+            </view>
+
             <view class="section-card support-card">
                 <view class="section-head">
                     <view>

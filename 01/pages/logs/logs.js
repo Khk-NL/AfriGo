@@ -1,4 +1,5 @@
 import { loadGuide } from '../../utils/cloud-service.js';
+import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 
 Page({
   data: {
@@ -49,11 +50,15 @@ Page({
     try {
       const guide = await loadGuide(countryName)
       if (guide && Array.isArray(guide.visaItems) && guide.visaItems.length) {
+        const visaItems = await decorateBookmarks(
+          this.normalizeVisaItems(guide.visaItems).map((item) => this.attachCardKeyInfo(item)),
+          'visa'
+        )
         this.setData({
           countryName,
           countryFlag: this.getCountryFlag(countryName),
           updateDate: '2026-09-15',
-          visaItems: this.normalizeVisaItems(guide.visaItems).map((item) => this.attachCardKeyInfo(item)),
+          visaItems,
           latestPolicyChange: guide.latestPolicyChange || '',
           noData: false
         })
@@ -62,10 +67,10 @@ Page({
     } catch (error) {
       console.warn('visa: fallback to local', error)
     }
-    this.applyLocalVisa(countryName)
+    await this.applyLocalVisa(countryName)
   },
 
-  applyLocalVisa(countryName) {
+  async applyLocalVisa(countryName) {
     const visaDatabase = {
       刚果金: {
         latestPolicyChange: '2024年起要求提供详细行程和官方认证邀请函。',
@@ -172,14 +177,39 @@ Page({
       return
     }
 
+    let visaItems = this.normalizeVisaItems(dataset.visaItems).map((item) => this.attachCardKeyInfo(item))
+    try {
+      visaItems = await decorateBookmarks(visaItems, 'visa')
+    } catch (error) {
+      console.warn('visa: load bookmarks failed', error)
+    }
     this.setData({
       countryName,
       countryFlag: this.getCountryFlag(countryName),
       updateDate: '2026-03-22',
-      visaItems: this.normalizeVisaItems(dataset.visaItems).map((item) => this.attachCardKeyInfo(item)),
+      visaItems,
       latestPolicyChange: dataset.latestPolicyChange,
       noData: false
     })
+  },
+
+  async onBookmarkTap(e) {
+    const { id } = e.currentTarget.dataset
+    const item = this.data.visaItems.find((entry) => String(entry.id) === String(id))
+    if (!item) return
+    try {
+      const state = await toggleBookmark('visa', item, {
+        title: `${this.data.countryName} · ${item.visaType}`,
+        category: '签证指南',
+        payload: { visaMode: item.visaMode, processingTime: item.processingTime, fee: item.fee }
+      })
+      this.setData({
+        visaItems: this.data.visaItems.map((entry) => String(entry.id) === String(id) ? { ...entry, ...state } : entry)
+      })
+      wx.showToast({ title: state.isBookmarked ? '已收藏' : '已取消收藏', icon: 'success' })
+    } catch (error) {
+      wx.showToast({ title: error.message || '收藏失败', icon: 'none' })
+    }
   },
 
   initNavMetrics() {

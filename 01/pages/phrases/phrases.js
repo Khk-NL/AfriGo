@@ -1,4 +1,5 @@
 import { loadGuide } from '../../utils/cloud-service.js';
+import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 
 const phraseLib = require('../../data/phrases.js');
 
@@ -42,7 +43,13 @@ Page({
   onLoad: async function() {
     const cached = wx.getStorageSync('selectedDestination') || { zhName: "肯尼亚" };
     const countryName = cached.zhName;
-    const list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : buildFallbackPhrases(countryName);
+    let list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : buildFallbackPhrases(countryName);
+
+    try {
+      list = await decorateBookmarks(list, 'phrase');
+    } catch (error) {
+      console.warn('phrases: load bookmarks failed', error);
+    }
 
     this.setData({
       currentCountry: countryName,
@@ -53,9 +60,10 @@ Page({
     try {
       const guide = await loadGuide(countryName);
       if (guide && Array.isArray(guide.phrasesList) && guide.phrasesList.length) {
+        const phrasesList = await decorateBookmarks(guide.phrasesList, 'phrase');
         this.setData({
-          fullList: guide.phrasesList,
-          displayList: guide.phrasesList
+          fullList: phrasesList,
+          displayList: phrasesList
         });
       }
     } catch (error) {
@@ -110,5 +118,32 @@ Page({
 
   onPlayAudio: function() {
     wx.showToast({ title: '语音播放中...', icon: 'none' });
+  },
+
+  async onBookmarkTap(e) {
+    const { id } = e.currentTarget.dataset;
+    const item = this.data.fullList.find((entry) => String(entry.id) === String(id));
+    if (!item) return;
+    try {
+      const state = await toggleBookmark('phrase', item, {
+        title: item.cn || item.foreign,
+        category: item.type || '实用语句',
+        payload: { cn: item.cn, foreign: item.foreign, konger: item.konger }
+      });
+      const fullList = this.data.fullList.map((entry) => String(entry.id) === String(id) ? { ...entry, ...state } : entry);
+      const displayList = fullList.filter((entry) => {
+        const matchCat = this.data.activeCategory === '全部' || entry.type === this.data.activeCategory;
+        const searchKey = this.data.searchKey;
+        const matchKey = !searchKey ||
+          (entry.cn && entry.cn.toLowerCase().includes(searchKey)) ||
+          (entry.foreign && entry.foreign.toLowerCase().includes(searchKey)) ||
+          (entry.konger && entry.konger.toLowerCase().includes(searchKey));
+        return matchCat && matchKey;
+      });
+      this.setData({ fullList, displayList });
+      wx.showToast({ title: state.isBookmarked ? '已收藏' : '已取消收藏', icon: 'success' });
+    } catch (error) {
+      wx.showToast({ title: error.message || '收藏失败', icon: 'none' });
+    }
   }
 });

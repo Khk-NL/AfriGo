@@ -487,3 +487,12 @@ page {
   color: #2f4f73;
   line-height: 1.6;
 }
+.bookmark-btn {
+  margin-top: 12rpx;
+  color: #7a6848;
+  font-size: 24rpx;
+}
+
+.bookmark-btn.bookmarked {
+  color: #c28a24;
+}

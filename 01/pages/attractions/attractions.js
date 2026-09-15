@@ -1,5 +1,6 @@
 // 01/pages/attractions/attractions.js
 import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
+import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 
 const attrLib = require('../../data/attractions.js');
 
@@ -107,10 +108,35 @@ Page({
     const placeholderFallback = applyCountryCover(buildFallbackAttractions(countryZh), coverImage);
     const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
     const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);
+    let nextList = cloudList.length ? cloudList : (localFallback.length ? localFallback : placeholderFallback);
+    try {
+      nextList = await decorateBookmarks(nextList, 'attraction');
+    } catch (error) {
+      console.warn('attractions: load bookmarks failed', error);
+    }
     this.setData({
       currentCountry: countryZh,
-      list: cloudList.length ? cloudList : (localFallback.length ? localFallback : placeholderFallback)
+      list: nextList
     });
+  },
+
+  async onBookmarkTap(e) {
+    const { id } = e.currentTarget.dataset;
+    const item = this.data.list.find((entry) => String(entry.id) === String(id));
+    if (!item) return;
+    try {
+      const state = await toggleBookmark('attraction', item, {
+        title: item.name,
+        category: '景点攻略',
+        payload: { image: item.image, desc: item.desc }
+      });
+      this.setData({
+        list: this.data.list.map((entry) => String(entry.id) === String(id) ? { ...entry, ...state } : entry)
+      });
+      wx.showToast({ title: state.isBookmarked ? '已收藏' : '已取消收藏', icon: 'success' });
+    } catch (error) {
+      wx.showToast({ title: error.message || '收藏失败', icon: 'none' });
+    }
   },
 
   onBackTap: function() {
