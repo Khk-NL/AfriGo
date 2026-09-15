@@ -1,5 +1,5 @@
 import { buildCommunityText, getStoredLanguage } from '../../utils/i18n.js';
-import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
+import { loadCollection } from '../../utils/cloud-service.js';
 
 const STATS = [
   { id: 1, value: '24.8K', label: '精选动态' },
@@ -44,7 +44,10 @@ Page({
     journeyNote: '从首页的 mint 晨光，缓缓过渡到发布页的 champagne 暖色',
     stats: STATS,
     avatars: AVATARS,
-    featuredPost: FEATURED_POST
+    featuredPost: FEATURED_POST,
+    feedPosts: [],
+    isLoading: false,
+    loadError: ''
   },
 
   onLoad() {
@@ -69,27 +72,47 @@ Page({
   },
 
   async refreshCommunityFeed() {
-    const posts = await loadCollectionWithFallback('posts', []);
-    const latest = posts[0];
-    if (!latest) {
-      return;
+    this.setData({ isLoading: true, loadError: '' });
+    try {
+      const posts = await loadCollection('posts');
+      const normalizedPosts = posts.map((post) => {
+        const firstMedia = Array.isArray(post.mediaFileIds) ? post.mediaFileIds[0] : null;
+        const image = typeof firstMedia === 'string' ? firstMedia : firstMedia && firstMedia.url;
+        return {
+          ...post,
+          image: image || '',
+          displayTime: post.createTime ? String(post.createTime).slice(0, 16).replace('T', ' ') : '刚刚',
+          roleLabel: post.authorRole === 'admin' ? '管理员发布' : '旅行者'
+        };
+      });
+      const latest = normalizedPosts[0];
+      this.setData({
+        feedPosts: latest ? normalizedPosts.slice(1) : [],
+        featuredPost: latest ? {
+          ...this.data.featuredPost,
+          author: latest.authorName || this.data.featuredPost.author,
+          role: latest.roleLabel,
+          time: latest.displayTime,
+          title: latest.content ? latest.content.slice(0, 28) : '图片动态',
+          body: latest.content || '分享了一组旅途照片',
+          image: latest.image || this.data.featuredPost.image,
+          tags: ['社区动态'],
+          location: latest.destinationLabel || this.data.welcomeCountryZh,
+          light: 'Live post'
+        } : FEATURED_POST,
+        isLoading: false
+      });
+    } catch (error) {
+      console.error('community: load posts failed', error);
+      this.setData({
+        isLoading: false,
+        loadError: '社区动态加载失败，请稍后重试'
+      });
     }
+  },
 
-    const cloudImage = Array.isArray(latest.mediaFileIds) ? latest.mediaFileIds[0] : '';
-    this.setData({
-      featuredPost: {
-        ...this.data.featuredPost,
-        author: latest.authorName || this.data.featuredPost.author,
-        role: latest.authorRole === 'admin' ? '管理员发布' : '云端旅人',
-        time: '云端同步',
-        title: latest.content ? latest.content.slice(0, 28) : this.data.featuredPost.title,
-        body: latest.content || this.data.featuredPost.body,
-        image: cloudImage || this.data.featuredPost.image,
-        tags: ['云端动态', latest.sourcePage || 'posts'],
-        location: latest.destinationLabel || 'Cloud feed',
-        light: 'Cloud post'
-      }
-    });
+  onRetryTap() {
+    this.refreshCommunityFeed();
   },
 
   onComposeTap() {

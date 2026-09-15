@@ -60,8 +60,8 @@
                     </block>
                 </view>
 
-                <view class="submit-btn" bindtap="onPublishTap">
-                    <text class="submit-btn-text">立即发布</text>
+                <view class="submit-btn {{isPublishing ? 'submit-btn-disabled' : ''}}" bindtap="onPublishTap">
+                    <text class="submit-btn-text">{{isPublishing ? '正在发布...' : '立即发布'}}</text>
                 </view>
             </view>
 

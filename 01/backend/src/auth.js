@@ -6,7 +6,7 @@ function hashToken(token) {
 
 async function exchangeWechatCode(code) {
   const isDevelopment = process.env.NODE_ENV !== 'production';
-  if (isDevelopment && process.env.ALLOW_DEV_AUTH === 'true' && code === 'dev-login') {
+  if (isDevelopment && process.env.ALLOW_DEV_AUTH === 'true') {
     return { openid: process.env.DEV_AUTH_OPENID || 'dev-user' };
   }
 

@@ -32,7 +32,8 @@ Page({
         mediaList: [],
         mediaSlots: createMediaSlots([]),
         currentUser: null,
-        isLogin: false
+        isLogin: false,
+        isPublishing: false
     },
 
     onLoad() {
@@ -105,6 +106,9 @@ Page({
     },
 
     async onPublishTap() {
+        if (this.data.isPublishing) {
+            return;
+        }
         if (!this.data.isLogin) {
             wx.showToast({
                 title: '请先在欢迎页登录',
@@ -122,11 +126,14 @@ Page({
         }
 
         try {
+            this.setData({ isPublishing: true });
+            const destination = wx.getStorageSync('selectedDestination') || {};
             await createPost({
                 content: this.data.content,
                 mediaList: this.data.mediaList,
                 extra: {
-                    sourcePage: 'publish'
+                    sourcePage: 'publish',
+                    destinationLabel: destination.zhName || ''
                 }
             });
 
@@ -140,12 +147,17 @@ Page({
                 title: '发布成功',
                 icon: 'success'
             });
+            setTimeout(() => {
+                wx.switchTab({ url: '/pages/community/community' });
+            }, 500);
         } catch (error) {
             console.error('publish: create post failed', error);
             wx.showToast({
                 title: '发布失败，请稍后重试',
                 icon: 'none'
             });
+        } finally {
+            this.setData({ isPublishing: false });
         }
     },
 

@@ -534,3 +534,6 @@
 .publish-text {
     color: #7a5a49;
 }
+.submit-btn-disabled {
+  opacity: 0.65;
+}

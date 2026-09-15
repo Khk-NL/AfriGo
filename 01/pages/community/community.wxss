@@ -486,3 +486,41 @@
   height: 36rpx;
 }
 
+.feed-state {
+  margin-top: 24rpx;
+  padding: 30rpx;
+  color: #58645e;
+  text-align: center;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  margin-top: 24rpx;
+}
+
+.feed-card {
+  padding: 30rpx;
+}
+
+.feed-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  margin-bottom: 20rpx;
+}
+
+.feed-card-content {
+  display: block;
+  color: #29342f;
+  font-size: 29rpx;
+  line-height: 1.75;
+}
+
+.feed-card-image {
+  width: 100%;
+  height: 360rpx;
+  margin-top: 22rpx;
+  border-radius: 24rpx;
+}

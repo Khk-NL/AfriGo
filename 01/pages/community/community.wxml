@@ -111,6 +111,25 @@
         </view>
       </view>
 
+      <view wx:if="{{isLoading}}" class="feed-state acrylic-card">正在加载社区动态...</view>
+      <view wx:elif="{{loadError}}" class="feed-state acrylic-card" bindtap="onRetryTap">
+        {{loadError}} · 点击重试
+      </view>
+
+      <view wx:if="{{feedPosts.length}}" class="feed-list">
+        <block wx:for="{{feedPosts}}" wx:key="id">
+          <view class="feed-card acrylic-card">
+            <view class="feed-card-head">
+              <text class="feature-author-name">{{item.authorName || '微信用户'}}</text>
+              <text class="feature-author-meta">{{item.roleLabel}} · {{item.displayTime}}</text>
+            </view>
+            <text wx:if="{{item.content}}" class="feed-card-content">{{item.content}}</text>
+            <image wx:if="{{item.image}}" class="feed-card-image" src="{{item.image}}" mode="aspectFill" />
+            <text wx:if="{{item.destinationLabel}}" class="feature-location">{{item.destinationLabel}}</text>
+          </view>
+        </block>
+      </view>
+
       <view class="bottom-gap"></view>
     </view>
   </scroll-view>
