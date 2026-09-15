@@ -1,0 +1,18 @@
+[Unit]
+Description=Liunianun WeChat Mini Program API
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=liunianun
+Group=liunianun
+WorkingDirectory=/opt/liunianun/01/backend
+EnvironmentFile=/etc/liunianun/api.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,6 @@
 const path = require('path');
 const XLSX = require('xlsx');
+const { normalizeCountryCode } = require('./countries');
 
 const EXCEL_PATH = path.join(__dirname, '../../../整合版.xlsx');
 
@@ -365,6 +366,7 @@ function buildPayload(row, workbook) {
       : parseLangSheet(workbook, text(row[23]));
 
   return {
+    countryCode: normalizeCountryCode(countryZh),
     countryZh,
     region: text(row[1]),
     chinaCoop: text(row[2]),

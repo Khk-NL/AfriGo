@@ -17,6 +17,7 @@ Page({
     isLogin: false,
     isAdmin: false,
     currentCountryId: 'drc',
+    currentCountryCode: 'CD',
     currentCountryZh: '刚果(金)',
     currentCountryEn: 'DR Congo',
     currentCountryLabel: getCountryName('刚果(金)', getStoredLanguage()),
@@ -32,6 +33,7 @@ Page({
     countries: [
       {
         id: 'drc',
+        code: 'CD',
         zhName: '刚果(金)',
         enName: 'DR Congo',
         flag: '🇨🇩',
@@ -41,6 +43,7 @@ Page({
       },
       {
         id: 'ghana',
+        code: 'GH',
         zhName: '加纳',
         enName: 'Ghana',
         flag: '🇬🇭',
@@ -50,6 +53,7 @@ Page({
       },
       {
         id: 'egypt',
+        code: 'EG',
         zhName: '埃及',
         enName: 'Egypt',
         flag: '🇪🇬',
@@ -59,6 +63,7 @@ Page({
       },
       {
         id: 'angola',
+        code: 'AO',
         zhName: '安哥拉',
         enName: 'Angola',
         flag: '🇦🇴',
@@ -68,6 +73,7 @@ Page({
       },
       {
         id: 'nigeria',
+        code: 'NG',
         zhName: '尼日利亚',
         enName: 'Nigeria',
         flag: '🇳🇬',
@@ -77,6 +83,7 @@ Page({
       },
       {
         id: 'south-africa',
+        code: 'ZA',
         zhName: '南非',
         enName: 'South Africa',
         flag: '🇿🇦',
@@ -86,6 +93,7 @@ Page({
       },
       {
         id: 'madagascar',
+        code: 'MG',
         zhName: '马达加斯加',
         enName: 'Madagascar',
         flag: '🇲🇬',
@@ -95,6 +103,7 @@ Page({
       },
       {
         id: 'tanzania',
+        code: 'TZ',
         zhName: '坦桑尼亚',
         enName: 'Tanzania',
         flag: '🇹🇿',
@@ -104,6 +113,7 @@ Page({
       },
       {
         id: 'kenya',
+        code: 'KE',
         zhName: '肯尼亚',
         enName: 'Kenya',
         flag: '🇰🇪',
@@ -113,6 +123,7 @@ Page({
       },
       {
         id: 'cote-divoire',
+        code: 'CI',
         zhName: '科特迪瓦',
         enName: "Côte d'Ivoire",
         flag: '🇨🇮',
@@ -122,6 +133,7 @@ Page({
       },
       {
         id: 'zambia',
+        code: 'ZM',
         zhName: '赞比亚',
         enName: 'Zambia',
         flag: '🇿🇲',
@@ -131,6 +143,7 @@ Page({
       },
       {
         id: 'uganda',
+        code: 'UG',
         zhName: '乌干达',
         enName: 'Uganda',
         flag: '🇺🇬',
@@ -140,6 +153,7 @@ Page({
       },
       {
         id: 'guinea',
+        code: 'GN',
         zhName: '几内亚',
         enName: 'Guinea',
         flag: '🇬🇳',
@@ -153,6 +167,7 @@ Page({
       },
       {
         id: 'roc',
+        code: 'CG',
         zhName: '刚果(布)',
         enName: 'Congo',
         flag: '🇨🇬',
@@ -162,6 +177,7 @@ Page({
       },
       {
         id: 'liberia',
+        code: 'LR',
         zhName: '利比里亚',
         enName: 'Liberia',
         flag: '🇱🇷',
@@ -171,6 +187,7 @@ Page({
       },
       {
         id: 'ethiopia',
+        code: 'ET',
         zhName: '埃塞俄比亚',
         enName: 'Ethiopia',
         flag: '🇪🇹',
@@ -180,6 +197,7 @@ Page({
       },
       {
         id: 'senegal',
+        code: 'SN',
         zhName: '塞内加尔',
         enName: 'Senegal',
         flag: '🇸🇳',
@@ -189,6 +207,7 @@ Page({
       },
       {
         id: 'zimbabwe',
+        code: 'ZW',
         zhName: '津巴布韦',
         enName: 'Zimbabwe',
         flag: '🇿🇼',
@@ -198,6 +217,7 @@ Page({
       },
       {
         id: 'morocco',
+        code: 'MA',
         zhName: '摩洛哥',
         enName: 'Morocco',
         flag: '🇲🇦',
@@ -207,6 +227,7 @@ Page({
       },
       {
         id: 'mozambique',
+        code: 'MZ',
         zhName: '莫桑比克',
         enName: 'Mozambique',
         flag: '🇲🇿',
@@ -216,6 +237,7 @@ Page({
       },
       {
         id: 'algeria',
+        code: 'DZ',
         zhName: '阿尔及利亚',
         enName: 'Algeria',
         flag: '🇩🇿',
@@ -401,6 +423,7 @@ Page({
     setTimeout(() => {
       this.setData({
         currentCountryId: selectedCountry.id,
+        currentCountryCode: selectedCountry.code,
         currentCountryZh: selectedCountry.zhName,
         currentCountryEn: selectedCountry.enName,
         currentCountryLabel: selectedCountryLabel,
@@ -481,6 +504,7 @@ Page({
       // 1. 存储选中的国家信息
       wx.setStorageSync('selectedDestination', {
         id: this.data.currentCountryId,
+        code: this.data.currentCountryCode,
         zhName: this.data.currentCountryZh,
         enName: this.data.currentCountryEn,
         label: this.data.currentCountryLabel,

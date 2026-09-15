@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node src/server.js",
     "init-db": "node src/init-db.js",
-    "import-excel": "node src/import-excel.js"
+    "import-excel": "node src/import-excel.js",
+    "test": "node --test"
   },
   "dependencies": {
+    "ali-oss": "^6.23.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

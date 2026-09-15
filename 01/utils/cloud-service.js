@@ -1,8 +1,10 @@
 ﻿import { request } from './api.js';
 
+import { AUTH_TOKEN_STORAGE_KEY, upload } from './api.js';
+import { normalizeCountryCode } from './countries.js';
+
 const USER_STORAGE_KEY = 'currentUser';
 const USER_INFO_STORAGE_KEY = 'userInfo';
-const USER_ROLE_STORAGE_KEY = 'userRole';
 
 function noteCloudError() {
   return false;
@@ -25,16 +27,26 @@ function cacheCurrentUser(user) {
     if (user) {
       wx.setStorageSync(USER_STORAGE_KEY, user);
       wx.setStorageSync(USER_INFO_STORAGE_KEY, user);
-      wx.setStorageSync(USER_ROLE_STORAGE_KEY, user.role || 'user');
     } else {
       wx.removeStorageSync(USER_STORAGE_KEY);
       wx.removeStorageSync(USER_INFO_STORAGE_KEY);
-      wx.removeStorageSync(USER_ROLE_STORAGE_KEY);
     }
   } catch (error) {
     // ignore storage errors in restricted environments
   }
   return user;
+}
+
+function cacheAuthToken(token) {
+  try {
+    if (token) {
+      wx.setStorageSync(AUTH_TOKEN_STORAGE_KEY, token);
+    } else {
+      wx.removeStorageSync(AUTH_TOKEN_STORAGE_KEY);
+    }
+  } catch (error) {
+    // ignore storage errors in restricted environments
+  }
 }
 
 function isLoggedIn(user = getStoredCurrentUser()) {
@@ -45,7 +57,7 @@ function isAdminUser(user = getStoredCurrentUser()) {
   if (!user) {
     return false;
   }
-  return user.role === 'admin' || user.isAdmin === true || wx.getStorageSync(USER_ROLE_STORAGE_KEY) === 'admin';
+  return user.role === 'admin' || user.isAdmin === true;
 }
 
 function getUserDisplayName(user = getStoredCurrentUser()) {
@@ -56,7 +68,11 @@ function getUserDisplayName(user = getStoredCurrentUser()) {
 }
 
 async function loadCollection(collectionName, countryZh) {
-  const query = countryZh ? `?country=${encodeURIComponent(countryZh)}` : '';
+  const countryCode = normalizeCountryCode(countryZh);
+  const queryParams = [];
+  if (countryCode) queryParams.push(`countryCode=${encodeURIComponent(countryCode)}`);
+  if (countryZh) queryParams.push(`country=${encodeURIComponent(countryZh)}`);
+  const query = queryParams.length ? `?${queryParams.join('&')}` : '';
   const pathMap = {
     attractions: `/api/attractions${query}`,
     recommend: `/api/recommend${query}`,
@@ -69,7 +85,11 @@ async function loadCollection(collectionName, countryZh) {
 }
 
 async function loadGuide(countryZh) {
-  const query = countryZh ? `?country=${encodeURIComponent(countryZh)}` : '';
+  const countryCode = normalizeCountryCode(countryZh);
+  const queryParams = [];
+  if (countryCode) queryParams.push(`countryCode=${encodeURIComponent(countryCode)}`);
+  if (countryZh) queryParams.push(`country=${encodeURIComponent(countryZh)}`);
+  const query = queryParams.length ? `?${queryParams.join('&')}` : '';
   const result = await request(`/api/guide${query}`);
   return result.data || null;
 }
@@ -104,25 +124,29 @@ async function removeDocument(collectionName, docId) {
   });
 }
 
-async function uploadMediaFiles() {
-  return [];
+async function uploadMediaFiles(mediaList = []) {
+  const uploaded = [];
+  for (const media of mediaList.slice(0, 4)) {
+    const filePath = media && (media.tempFilePath || media.filePath);
+    if (!filePath) continue;
+    const result = await upload('/api/upload', filePath);
+    if (result.media) uploaded.push(result.media);
+  }
+  return uploaded;
 }
 
-async function createPost({ content, extra = {} } = {}) {
+async function createPost({ content, mediaList = [], extra = {} } = {}) {
   const trimmedContent = typeof content === 'string' ? content.trim() : '';
-  if (!trimmedContent) {
-    throw new Error('帖子内容不能为空');
+  if (!trimmedContent && !mediaList.length) {
+    throw new Error('帖子内容和图片不能同时为空');
   }
 
-  const currentUser = getStoredCurrentUser();
+  const mediaFileIds = await uploadMediaFiles(mediaList);
   return request('/api/posts', {
     method: 'POST',
     data: {
       content: trimmedContent,
-      authorOpenid: currentUser?.openid || '',
-      authorName: getUserDisplayName(currentUser),
-      authorAvatar: currentUser?.avatarUrl || '',
-      authorRole: currentUser?.role || 'user',
+      mediaFileIds,
       ...extra
     }
   });
@@ -140,18 +164,19 @@ async function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {})
       success: async (profileRes) => {
         try {
           const profile = profileRes.userInfo || {};
+          const loginRes = await new Promise((loginResolve, loginReject) => {
+            wx.login({ success: loginResolve, fail: loginReject });
+          });
           const result = await request('/api/auth/login', {
             method: 'POST',
             data: {
               nickName: profile.nickName || '',
               avatarUrl: profile.avatarUrl || '',
-              openid: wx.getStorageSync('localOpenid') || ''
+              code: loginRes.code
             }
           });
           const user = result.user || result;
-          if (user && user.openid) {
-            wx.setStorageSync('localOpenid', user.openid);
-          }
+          cacheAuthToken(result.token || '');
           cacheCurrentUser(user);
           resolve(user);
         } catch (error) {
@@ -164,10 +189,18 @@ async function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {})
 }
 
 async function refreshCurrentUser() {
-  return getStoredCurrentUser();
+  try {
+    const result = await request('/api/auth/me');
+    return cacheCurrentUser(result.user || null);
+  } catch (error) {
+    cacheAuthToken('');
+    return cacheCurrentUser(null);
+  }
 }
 
 function logoutCurrentUser() {
+  request('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  cacheAuthToken('');
   cacheCurrentUser(null);
 }
 
@@ -178,7 +211,6 @@ async function callUserCenter() {
 export {
   USER_STORAGE_KEY,
   USER_INFO_STORAGE_KEY,
-  USER_ROLE_STORAGE_KEY,
   getCloudDatabase,
   noteCloudError,
   getStoredCurrentUser,

@@ -5,11 +5,13 @@ const path = require('path');
 
 const attractionsLib = require(path.join(__dirname, '../../data/attractions.js'));
 const recommendLib = require(path.join(__dirname, '../../data/recommend.js'));
+const { COUNTRY_CODE_BY_ZH, normalizeCountryCode } = require('./countries');
 
 const TABLE_SQL = `
 CREATE TABLE IF NOT EXISTS attractions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   item_key VARCHAR(64) DEFAULT '',
+  country_code CHAR(2) NOT NULL,
   country_zh VARCHAR(64) NOT NULL,
   name VARCHAR(255) NOT NULL,
   image VARCHAR(512) DEFAULT '',
@@ -22,6 +24,7 @@ CREATE TABLE IF NOT EXISTS attractions (
 CREATE TABLE IF NOT EXISTS recommend (
   id INT AUTO_INCREMENT PRIMARY KEY,
   item_key VARCHAR(64) DEFAULT '',
+  country_code CHAR(2) NOT NULL,
   country_zh VARCHAR(64) NOT NULL,
   category VARCHAR(64) DEFAULT '',
   name VARCHAR(255) NOT NULL,
@@ -43,10 +46,22 @@ CREATE TABLE IF NOT EXISTS users (
   last_login_at TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS auth_sessions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  revoked_at TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_auth_sessions_user (user_id),
+  CONSTRAINT fk_auth_sessions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   content TEXT,
   media_urls JSON,
+  author_id INT NULL,
   author_openid VARCHAR(128) DEFAULT '',
   author_name VARCHAR(128) DEFAULT '',
   author_avatar VARCHAR(512) DEFAULT '',
@@ -58,6 +73,7 @@ CREATE TABLE IF NOT EXISTS posts (
 
 CREATE TABLE IF NOT EXISTS country_guides (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  country_code CHAR(2) NOT NULL UNIQUE,
   country_zh VARCHAR(64) NOT NULL UNIQUE,
   payload JSON NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -121,6 +137,33 @@ async function ensureDatabase(conn, user) {
   }
 }
 
+async function ensureColumn(conn, table, column, definition) {
+  const [rows] = await conn.query(
+    `SELECT COUNT(*) AS total FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+    [process.env.DB_NAME, table, column]
+  );
+  if (!rows[0].total) {
+    await conn.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+  }
+}
+
+async function migrateLegacySchema(conn) {
+  await ensureColumn(conn, 'attractions', 'country_code', "CHAR(2) NOT NULL DEFAULT '' AFTER item_key");
+  await ensureColumn(conn, 'recommend', 'country_code', "CHAR(2) NOT NULL DEFAULT '' AFTER item_key");
+  await ensureColumn(conn, 'country_guides', 'country_code', "CHAR(2) NOT NULL DEFAULT '' AFTER id");
+  await ensureColumn(conn, 'posts', 'author_id', 'INT NULL AFTER media_urls');
+
+  for (const [countryZh, countryCode] of Object.entries(COUNTRY_CODE_BY_ZH)) {
+    for (const table of ['attractions', 'recommend', 'country_guides']) {
+      await conn.query(
+        `UPDATE \`${table}\` SET country_code = ? WHERE country_zh = ? AND country_code = ''`,
+        [countryCode, countryZh]
+      );
+    }
+  }
+}
+
 async function seedCollection(conn, table, sourceMap, buildRow) {
   const [countRows] = await conn.query(`SELECT COUNT(*) AS total FROM \`${table}\``);
   if (countRows[0].total > 0) {
@@ -152,10 +195,12 @@ async function main() {
   for (const statement of TABLE_SQL.split(';').map((item) => item.trim()).filter(Boolean)) {
     await conn.query(statement);
   }
+  await migrateLegacySchema(conn);
   console.log('tables ready');
 
   await seedCollection(conn, 'attractions', attractionsLib.attractions, (countryZh, item) => ({
     item_key: String(item.id || ''),
+    country_code: normalizeCountryCode(countryZh),
     country_zh: countryZh,
     name: item.name || '',
     image: item.image || '',
@@ -166,6 +211,7 @@ async function main() {
 
   await seedCollection(conn, 'recommend', recommendLib.recommend, (countryZh, item) => ({
     item_key: String(item.id || ''),
+    country_code: normalizeCountryCode(countryZh),
     country_zh: countryZh,
     category: item.category || '',
     name: item.name || '',

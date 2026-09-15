@@ -1,41 +1,37 @@
 require('dotenv').config();
 
-const fs = require('fs');
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const { createPool } = require('./db');
-const { countryCandidates } = require('./excel-guide');
+const { countryCandidates, normalizeCountryCode } = require('./countries');
+const { exchangeWechatCode, issueSession, createAuthMiddleware, requireAdmin, hashToken } = require('./auth');
+const { getObjectUrl, uploadImage, resolveMedia } = require('./oss');
 
 const app = express();
 const pool = createPool();
 const port = Number(process.env.PORT || 3001);
-const PUBLIC_BASE = process.env.PUBLIC_BASE_URL || `http://127.0.0.1:${port}`;
-const UPLOAD_DIR = path.join(__dirname, '../uploads');
-const PUBLIC_DIR = path.join(__dirname, '../public');
-
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+const authenticate = createAuthMiddleware(pool);
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
-    filename: (_req, file, cb) => {
-      const ext = path.extname(file.originalname || '').toLowerCase() || '.jpg';
-      cb(null, `${Date.now()}-${Math.random().toString(16).slice(2)}${ext}`);
-    }
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 }
 });
 
-app.use(cors());
+const allowedOrigins = String(process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((item) => item.trim())
+  .filter(Boolean);
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || process.env.NODE_ENV !== 'production' || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('CORS origin not allowed'));
+  }
+}));
 app.use(express.json({ limit: '2mb' }));
-app.use('/uploads', express.static(UPLOAD_DIR));
-app.use('/admin', express.static(PUBLIC_DIR));
-app.get('/admin', (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'admin.html'));
-});
 
 function toPublicUrl(image) {
   if (!image) {
@@ -47,10 +43,7 @@ function toPublicUrl(image) {
   if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/assets/')) {
     return image;
   }
-  if (image.startsWith('/uploads/')) {
-    return `${PUBLIC_BASE}${image}`;
-  }
-  return `${PUBLIC_BASE}/uploads/${path.basename(image)}`;
+  return getObjectUrl(image);
 }
 
 function parseJson(value, fallback) {
@@ -71,6 +64,7 @@ function mapAttraction(row) {
   return {
     id: row.id,
     _id: String(row.id),
+    countryCode: row.country_code,
     countryZh: row.country_zh,
     name: row.name,
     image: toPublicUrl(row.image),
@@ -84,6 +78,7 @@ function mapRecommend(row) {
   return {
     id: row.id,
     _id: String(row.id),
+    countryCode: row.country_code,
     countryZh: row.country_zh,
     category: row.category,
     name: row.name,
@@ -107,11 +102,12 @@ function mapUser(row) {
 }
 
 function mapPost(row) {
+  const storedMedia = parseJson(row.media_urls, []);
   return {
     id: row.id,
     _id: String(row.id),
     content: row.content,
-    mediaFileIds: parseJson(row.media_urls, []),
+    mediaFileIds: resolveMedia(storedMedia),
     authorOpenid: row.author_openid,
     authorName: row.author_name,
     authorAvatar: row.author_avatar,
@@ -122,12 +118,15 @@ function mapPost(row) {
   };
 }
 
-async function listByCountry(table, mapper, country) {
+async function listByCountry(table, mapper, countryCode, country) {
+  const normalizedCode = normalizeCountryCode(countryCode, country);
   const candidates = countryCandidates(country);
-  const sql = country
-    ? `SELECT * FROM \`${table}\` WHERE country_zh IN (${candidates.map(() => '?').join(',')}) ORDER BY id ASC`
+  const sql = normalizedCode
+    ? `SELECT * FROM \`${table}\` WHERE country_code = ? ORDER BY id ASC`
+    : country
+      ? `SELECT * FROM \`${table}\` WHERE country_zh IN (${candidates.map(() => '?').join(',')}) ORDER BY id ASC`
     : `SELECT * FROM \`${table}\` ORDER BY id ASC`;
-  const params = country ? candidates : [];
+  const params = normalizedCode ? [normalizedCode] : country ? candidates : [];
   const [rows] = await pool.query(sql, params);
   return rows.map(mapper);
 }
@@ -139,30 +138,26 @@ function parsePayload(value) {
   return parseJson(value, null);
 }
 
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    res.status(400).json({ ok: false, message: '没有收到图片' });
-    return;
-  }
-  const url = `${PUBLIC_BASE}/uploads/${req.file.filename}`;
-  res.json({ ok: true, url, filename: req.file.filename });
-});
-
-app.post('/api/attractions/:id/image', upload.single('file'), async (req, res) => {
+app.post('/api/upload', authenticate, upload.single('file'), async (req, res, next) => {
   try {
-    if (!req.file) {
-      res.status(400).json({ ok: false, message: '没有收到图片' });
-      return;
-    }
-    const url = `${PUBLIC_BASE}/uploads/${req.file.filename}`;
-    await pool.query('UPDATE attractions SET image = ? WHERE id = ?', [url, req.params.id]);
-    res.json({ ok: true, url, id: Number(req.params.id) });
+    const media = await uploadImage(req.file);
+    res.json({ ok: true, media });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.put('/api/attractions/:id', async (req, res) => {
+app.post('/api/attractions/:id/image', authenticate, requireAdmin, upload.single('file'), async (req, res, next) => {
+  try {
+    const media = await uploadImage(req.file);
+    await pool.query('UPDATE attractions SET image = ? WHERE id = ?', [media.objectKey, req.params.id]);
+    res.json({ ok: true, media, id: Number(req.params.id) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put('/api/attractions/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const payload = req.body || {};
     await pool.query(
@@ -171,7 +166,7 @@ app.put('/api/attractions/:id', async (req, res) => {
     );
     res.json({ ok: true });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
@@ -186,7 +181,7 @@ app.get('/api/health', async (_req, res) => {
 
 app.get('/api/attractions', async (req, res) => {
   try {
-    const data = await listByCountry('attractions', mapAttraction, req.query.country);
+    const data = await listByCountry('attractions', mapAttraction, req.query.countryCode, req.query.country);
     res.json({ ok: true, data });
   } catch (error) {
     res.status(500).json({ ok: false, message: error.message });
@@ -195,7 +190,7 @@ app.get('/api/attractions', async (req, res) => {
 
 app.get('/api/recommend', async (req, res) => {
   try {
-    const data = await listByCountry('recommend', mapRecommend, req.query.country);
+    const data = await listByCountry('recommend', mapRecommend, req.query.countryCode, req.query.country);
     res.json({ ok: true, data });
   } catch (error) {
     res.status(500).json({ ok: false, message: error.message });
@@ -204,16 +199,19 @@ app.get('/api/recommend', async (req, res) => {
 
 app.get('/api/guide', async (req, res) => {
   try {
+    const countryCode = normalizeCountryCode(req.query.countryCode, req.query.country);
     const candidates = countryCandidates(req.query.country);
-    if (!req.query.country) {
-      const [rows] = await pool.query('SELECT country_zh FROM country_guides ORDER BY id ASC');
-      res.json({ ok: true, data: rows.map((row) => row.country_zh) });
+    if (!countryCode && !req.query.country) {
+      const [rows] = await pool.query('SELECT country_code, country_zh FROM country_guides ORDER BY id ASC');
+      res.json({ ok: true, data: rows.map((row) => ({ countryCode: row.country_code, countryZh: row.country_zh })) });
       return;
     }
-    const [rows] = await pool.query(
-      `SELECT payload FROM country_guides WHERE country_zh IN (${candidates.map(() => '?').join(',')}) LIMIT 1`,
-      candidates
-    );
+    const [rows] = countryCode
+      ? await pool.query('SELECT payload FROM country_guides WHERE country_code = ? LIMIT 1', [countryCode])
+      : await pool.query(
+        `SELECT payload FROM country_guides WHERE country_zh IN (${candidates.map(() => '?').join(',')}) LIMIT 1`,
+        candidates
+      );
     if (!rows[0]) {
       res.status(404).json({ ok: false, message: '暂无该国家整合资料' });
       return;
@@ -233,41 +231,44 @@ app.get('/api/posts', async (_req, res) => {
   }
 });
 
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', authenticate, async (req, res, next) => {
   try {
     const body = req.body || {};
     const content = typeof body.content === 'string' ? body.content.trim() : '';
-    if (!content) {
-      res.status(400).json({ ok: false, message: '帖子内容不能为空' });
+    const mediaFileIds = Array.isArray(body.mediaFileIds) ? body.mediaFileIds.slice(0, 4) : [];
+    if (!content && !mediaFileIds.length) {
+      res.status(400).json({ ok: false, message: '帖子内容和图片不能同时为空' });
       return;
     }
 
     const [result] = await pool.query(
       `INSERT INTO posts
-        (content, media_urls, author_openid, author_name, author_avatar, author_role, status, destination_label)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (content, media_urls, author_id, author_openid, author_name, author_avatar, author_role, status, destination_label)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         content,
-        JSON.stringify(body.mediaFileIds || []),
-        body.authorOpenid || '',
-        body.authorName || '微信用户',
-        body.authorAvatar || '',
-        body.authorRole || 'user',
-        body.status || 'published',
+        JSON.stringify(mediaFileIds.map((item) => item.objectKey || item).filter(Boolean)),
+        req.user.id,
+        req.user.openid,
+        req.user.nick_name || '微信用户',
+        req.user.avatar_url || '',
+        req.user.role,
+        'published',
         body.destinationLabel || ''
       ]
     );
 
     res.json({ ok: true, _id: String(result.insertId), id: result.insertId });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res, next) => {
   try {
     const body = req.body || {};
-    const openid = body.openid || `local_${Date.now()}`;
+    const loginResult = await exchangeWechatCode(body.code);
+    const openid = loginResult.openid;
     const nickName = body.nickName || '';
     const avatarUrl = body.avatarUrl || '';
     const [existing] = await pool.query('SELECT * FROM users WHERE openid = ? LIMIT 1', [openid]);
@@ -278,7 +279,8 @@ app.post('/api/auth/login', async (req, res) => {
         [nickName || existing[0].nick_name, avatarUrl || existing[0].avatar_url, existing[0].id]
       );
       const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [existing[0].id]);
-      res.json({ ok: true, user: mapUser(rows[0]) });
+      const token = await issueSession(pool, rows[0].id);
+      res.json({ ok: true, user: mapUser(rows[0]), token });
       return;
     }
 
@@ -287,13 +289,27 @@ app.post('/api/auth/login', async (req, res) => {
       [openid, nickName, avatarUrl, 'user']
     );
     const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
-    res.json({ ok: true, user: mapUser(rows[0]) });
+    const token = await issueSession(pool, rows[0].id);
+    res.json({ ok: true, user: mapUser(rows[0]), token });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.get('/api/collections/:name', async (req, res) => {
+app.post('/api/auth/logout', authenticate, async (req, res, next) => {
+  try {
+    await pool.query('UPDATE auth_sessions SET revoked_at = NOW() WHERE token_hash = ?', [hashToken(req.sessionToken)]);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/auth/me', authenticate, (req, res) => {
+  res.json({ ok: true, user: mapUser(req.user) });
+});
+
+app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res) => {
   const mappers = {
     attractions: mapAttraction,
     recommend: mapRecommend,
@@ -314,14 +330,15 @@ app.get('/api/collections/:name', async (req, res) => {
   }
 });
 
-app.post('/api/collections/:name', async (req, res) => {
+app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res) => {
   try {
     const payload = req.body || {};
     if (req.params.name === 'attractions') {
       const [result] = await pool.query(
-        'INSERT INTO attractions (item_key, country_zh, name, image, tags_json, description, tips) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO attractions (item_key, country_code, country_zh, name, image, tags_json, description, tips) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [
           String(payload.id || ''),
+          normalizeCountryCode(payload.countryCode, payload.countryZh || payload.country),
           payload.countryZh || payload.country || '',
           payload.name || '',
           payload.image || '',
@@ -336,9 +353,10 @@ app.post('/api/collections/:name', async (req, res) => {
 
     if (req.params.name === 'recommend') {
       const [result] = await pool.query(
-        'INSERT INTO recommend (item_key, country_zh, category, name, rating, description, address, safety_tip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO recommend (item_key, country_code, country_zh, category, name, rating, description, address, safety_tip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           String(payload.id || ''),
+          normalizeCountryCode(payload.countryCode, payload.countryZh || payload.country),
           payload.countryZh || payload.country || '',
           payload.category || '',
           payload.name || '',
@@ -358,11 +376,11 @@ app.post('/api/collections/:name', async (req, res) => {
   }
 });
 
-app.put('/api/collections/:name/:id', async (req, res) => {
+app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res) => {
   res.status(400).json({ ok: false, message: '请在 1Panel 中修改，或使用对应业务接口' });
 });
 
-app.delete('/api/collections/:name/:id', async (req, res) => {
+app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res) => {
   const allowed = ['attractions', 'recommend', 'posts', 'users'];
   if (!allowed.includes(req.params.name)) {
     res.status(404).json({ ok: false, message: '未知集合' });
@@ -379,4 +397,17 @@ app.delete('/api/collections/:name/:id', async (req, res) => {
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`API listening at http://127.0.0.1:${port}`);
+});
+
+app.use((error, _req, res, _next) => {
+  const statusCode = Number(error.statusCode || (error.code === 'LIMIT_FILE_SIZE' ? 413 : 500));
+  if (statusCode >= 500) {
+    console.error('request failed', error);
+  }
+  res.status(statusCode).json({
+    ok: false,
+    message: statusCode >= 500 && process.env.NODE_ENV === 'production'
+      ? '服务暂时不可用'
+      : error.message
+  });
 });
