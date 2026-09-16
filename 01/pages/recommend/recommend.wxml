@@ -23,6 +23,11 @@
           <text class="section-subtitle">点选标签后只看你最需要的推荐内容</text>
         </view>
 
+        <view class="recommend-search">
+          <text class="recommend-search-icon">⌕</text>
+          <input value="{{searchKeyword}}" bindinput="onSearchInput" placeholder="搜索名称、地点或内容..." />
+        </view>
+
         <scroll-view class="tag-scroll" scroll-x="true" show-scrollbar="false">
           <view class="tag-row">
             <block wx:for="{{categories}}" wx:key="*this">

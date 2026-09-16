@@ -4,7 +4,13 @@
   "libVersion": "3.14.3",
   "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      { "type": "folder", "value": "backend" },
+      { "type": "folder", "value": "node_modules" },
+      { "type": "folder", "value": "scripts" },
+      { "type": "file", "value": "package.json" },
+      { "type": "file", "value": "package-lock.json" }
+    ],
     "include": []
   },
   "setting": {

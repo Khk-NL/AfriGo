@@ -3,6 +3,8 @@
 import { AUTH_TOKEN_STORAGE_KEY, upload } from './api.js';
 import { normalizeCountryCode } from './countries.js';
 
+const { guidesByCode = {} } = require('../data/country-guides.generated.js');
+
 const USER_STORAGE_KEY = 'currentUser';
 const USER_INFO_STORAGE_KEY = 'userInfo';
 
@@ -90,17 +92,33 @@ async function loadGuide(countryZh) {
   if (countryCode) queryParams.push(`countryCode=${encodeURIComponent(countryCode)}`);
   if (countryZh) queryParams.push(`country=${encodeURIComponent(countryZh)}`);
   const query = queryParams.length ? `?${queryParams.join('&')}` : '';
-  const result = await request(`/api/guide${query}`);
-  return result.data || null;
+  try {
+    const result = await request(`/api/guide${query}`);
+    return result.data || null;
+  } catch (error) {
+    const localGuide = countryCode ? guidesByCode[countryCode] : null;
+    if (localGuide) {
+      console.warn(`api: fallback to workbook guide for ${countryCode}`, error);
+      return localGuide;
+    }
+    throw error;
+  }
 }
 
 async function loadCollectionWithFallback(collectionName, fallback = [], countryZh) {
   try {
-    return await loadCollection(collectionName, countryZh);
+    const remoteData = await loadCollection(collectionName, countryZh);
+    if (remoteData.length) return remoteData;
   } catch (error) {
     console.warn(`api: fallback to local data for ${collectionName}`, error);
-    return Array.isArray(fallback) ? fallback.slice() : [];
   }
+  const guide = guidesByCode[normalizeCountryCode(countryZh)];
+  const guideField = collectionName === 'attractions'
+    ? 'attractionsList'
+    : collectionName === 'recommend' ? 'recommendList' : '';
+  const workbookFallback = guideField && guide && Array.isArray(guide[guideField]) ? guide[guideField] : [];
+  if (workbookFallback.length) return workbookFallback.slice();
+  return Array.isArray(fallback) ? fallback.slice() : [];
 }
 
 async function addDocument(collectionName, data) {

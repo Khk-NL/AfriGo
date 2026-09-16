@@ -3,33 +3,6 @@ import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 
 const phraseLib = require('../../data/phrases.js');
 
-const buildFallbackPhrases = (countryName) => ([
-  {
-    id: 'fallback-1',
-    type: '示例',
-    cn: `${countryName}暂无同步语句`,
-    foreign: 'No synced phrase yet',
-    konger: '展示用占位内容',
-    audio: ''
-  },
-  {
-    id: 'fallback-2',
-    type: '示例',
-    cn: '请在云端配置实用语句',
-    foreign: 'Please configure phrases in cloud data',
-    konger: '后续自动替换',
-    audio: ''
-  },
-  {
-    id: 'fallback-3',
-    type: '示例',
-    cn: '这里会显示同样的卡片组件',
-    foreign: 'The same card component will render here',
-    konger: 'UI 先行展示',
-    audio: ''
-  }
-]);
-
 Page({
   data: {
     currentCountry: "",
@@ -37,13 +10,14 @@ Page({
     displayList: [],   // 存储搜索/过滤后的展示数组
     categories: ["全部", "日常", "应急", "医疗"],
     activeCategory: "全部",
-    searchKey: ""
+    searchKey: "",
+    noData: false
   },
 
   onLoad: async function() {
     const cached = wx.getStorageSync('selectedDestination') || { zhName: "肯尼亚" };
     const countryName = cached.zhName;
-    let list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : buildFallbackPhrases(countryName);
+    let list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : [];
 
     try {
       list = await decorateBookmarks(list, 'phrase');
@@ -54,7 +28,9 @@ Page({
     this.setData({
       currentCountry: countryName,
       fullList: list,
-      displayList: list
+      displayList: list,
+      categories: ['全部', ...new Set(list.map((item) => item.type).filter(Boolean))],
+      noData: !list.length
     });
 
     try {
@@ -63,7 +39,9 @@ Page({
         const phrasesList = await decorateBookmarks(guide.phrasesList, 'phrase');
         this.setData({
           fullList: phrasesList,
-          displayList: phrasesList
+          displayList: phrasesList,
+          categories: ['全部', ...new Set(phrasesList.map((item) => item.type).filter(Boolean))],
+          noData: false
         });
       }
     } catch (error) {
@@ -116,8 +94,16 @@ Page({
     wx.navigateBack();
   },
 
-  onPlayAudio: function() {
-    wx.showToast({ title: '语音播放中...', icon: 'none' });
+  onPlayAudio: function(e) {
+    const id = e.currentTarget.dataset.id;
+    const item = this.data.fullList.find((entry) => String(entry.id) === String(id));
+    if (!item || !item.audio) {
+      wx.showToast({ title: '当前语句暂无音频', icon: 'none' });
+      return;
+    }
+    const audio = wx.createInnerAudioContext();
+    audio.src = item.audio;
+    audio.play();
   },
 
   async onBookmarkTap(e) {

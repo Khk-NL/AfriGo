@@ -231,16 +231,28 @@ app.get('/api/guide', async (req, res) => {
       return;
     }
     const [rows] = countryCode
-      ? await pool.query('SELECT payload FROM country_guides WHERE country_code = ? LIMIT 1', [countryCode])
+      ? await pool.query('SELECT payload, updated_at FROM country_guides WHERE country_code = ? LIMIT 1', [countryCode])
       : await pool.query(
-        `SELECT payload FROM country_guides WHERE country_zh IN (${candidates.map(() => '?').join(',')}) LIMIT 1`,
+        `SELECT payload, updated_at FROM country_guides WHERE country_zh IN (${candidates.map(() => '?').join(',')}) LIMIT 1`,
         candidates
       );
     if (!rows[0]) {
       res.status(404).json({ ok: false, message: '暂无该国家整合资料' });
       return;
     }
-    res.json({ ok: true, data: parsePayload(rows[0].payload) });
+    const guide = parsePayload(rows[0].payload);
+    res.json({
+      ok: true,
+      data: {
+        ...guide,
+        source: {
+          type: 'database',
+          label: '服务端整合资料',
+          updatedAt: rows[0].updated_at,
+          urls: [guide.visa && guide.visa.url, guide.extras && guide.extras.officialSites].filter(Boolean)
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({ ok: false, message: error.message });
   }

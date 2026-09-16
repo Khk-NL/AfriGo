@@ -19,25 +19,6 @@ const applyCountryCover = (list, coverImage) => {
   }));
 };
 
-const buildFallbackAttractions = (countryZh) => ([
-  {
-    id: 'fallback-1',
-    name: `${countryZh}景点示例`,
-    image: '/assets/images/congo-drc.png',
-    tags: ['示例组件', '待同步'],
-    desc: '当前目的地还没有同步景点数据，先展示一个完整的卡片组件，避免页面空白。',
-    tips: '后续接入云端后，这里会自动切换为真实景点列表。'
-  },
-  {
-    id: 'fallback-2',
-    name: '行程亮点占位卡',
-    image: '/assets/images/congo-drc.png',
-    tags: ['卡片布局', '前端适配'],
-    desc: '即使没有后端数据，也会先把封面图、标签和说明文字渲染出来。',
-    tips: '建议将云端景点字段补齐后再替换此内容。'
-  }
-]);
-
 const getCountryCandidates = (countryZh) => {
   const rawCountry = typeof countryZh === 'string' ? countryZh.trim() : '';
   const candidates = [];
@@ -86,7 +67,11 @@ Page({
   data: {
     currentCountry: "",
     list: [],
-    tags: ["全部", "自然", "人文", "探险"]
+    fullList: [],
+    tags: ["全部"],
+    activeTag: "全部",
+    searchKeyword: "",
+    noData: false
   },
 
   onLoad: function() {
@@ -105,19 +90,43 @@ Page({
     const selected = wx.getStorageSync('selectedDestination') || {};
     const coverImage = selected.image || '/assets/images/covers/drc.jpg';
     const localFallback = applyCountryCover(pickCountryList(attrLib.attractions, countryZh), coverImage);
-    const placeholderFallback = applyCountryCover(buildFallbackAttractions(countryZh), coverImage);
     const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
     const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);
-    let nextList = cloudList.length ? cloudList : (localFallback.length ? localFallback : placeholderFallback);
+    let nextList = cloudList.length ? cloudList : localFallback;
     try {
       nextList = await decorateBookmarks(nextList, 'attraction');
     } catch (error) {
       console.warn('attractions: load bookmarks failed', error);
     }
+    const tags = ['全部', ...new Set(nextList.flatMap((item) => Array.isArray(item.tags) ? item.tags : []))];
     this.setData({
       currentCountry: countryZh,
-      list: nextList
+      list: nextList,
+      fullList: nextList,
+      tags,
+      activeTag: '全部',
+      searchKeyword: '',
+      noData: !nextList.length
     });
+  },
+
+  onSearchInput(e) {
+    this.setData({ searchKeyword: e.detail.value || '' }, () => this.applyFilters());
+  },
+
+  onTagTap(e) {
+    this.setData({ activeTag: e.currentTarget.dataset.tag || '全部' }, () => this.applyFilters());
+  },
+
+  applyFilters() {
+    const keyword = String(this.data.searchKeyword || '').trim().toLowerCase();
+    const activeTag = this.data.activeTag;
+    const list = this.data.fullList.filter((item) => {
+      const matchesTag = activeTag === '全部' || (Array.isArray(item.tags) && item.tags.includes(activeTag));
+      const searchable = [item.name, item.desc, item.tips, ...(item.tags || [])].filter(Boolean).join(' ').toLowerCase();
+      return matchesTag && (!keyword || searchable.includes(keyword));
+    });
+    this.setData({ list });
   },
 
   async onBookmarkTap(e) {
@@ -144,8 +153,13 @@ Page({
   },
 
   onAttrTap: function(e) {
-    const name = e.currentTarget.dataset.name;
-    // 以后可以跳转到详情页
-    wx.showToast({ title: '查看' + name + '详情', icon: 'none' });
+    const id = e.currentTarget.dataset.id;
+    const item = this.data.fullList.find((entry) => String(entry.id) === String(id));
+    if (!item) return;
+    wx.showModal({
+      title: item.name || '景点详情',
+      content: [item.desc, item.tips ? `出行提示：${item.tips}` : ''].filter(Boolean).join('\n\n'),
+      showCancel: false
+    });
   }
 });

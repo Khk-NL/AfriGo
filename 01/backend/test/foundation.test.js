@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 const { normalizeCountryCode, normalizeCountryName, countryCandidates } = require('../src/countries');
 const { hashToken } = require('../src/auth');
 const { assertImage, createObjectKey } = require('../src/oss');
+const { loadGuideWorkbook } = require('../src/excel-guide');
+const { withStableIds } = require('../src/export-miniprogram-data');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -31,4 +33,14 @@ test('uploads reject unsupported content types', () => {
     () => assertImage({ buffer: Buffer.from('x'), mimetype: 'text/plain' }),
     /仅支持 JPG、PNG 或 WebP 图片/
   );
+});
+
+test('workbook guides export supported countries with stable content ids', () => {
+  const guides = loadGuideWorkbook();
+  assert.equal(guides.length, 11);
+  assert.ok(guides.every((guide) => /^[A-Z]{2}$/.test(guide.countryCode)));
+  const kenya = withStableIds(guides.find((guide) => guide.countryCode === 'KE'));
+  assert.ok(kenya.attractionsList.length > 0);
+  assert.equal(kenya.attractionsList[0].id, 'KE-attraction-1');
+  assert.equal(kenya.recommendList[0].id, 'KE-recommend-1');
 });

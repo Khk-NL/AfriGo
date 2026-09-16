@@ -53,6 +53,7 @@ Page({
     currentCountry: "",
     categories: ["全部", "美食", "住宿", "交通", "活动"],
     activeCategory: "全部",
+    searchKeyword: "",
     displayList: [],
     fullList: [],
     summaryCount: 0
@@ -84,7 +85,9 @@ Page({
       currentCountry: countryZh,
       displayList: nextList,
       fullList: nextList,
-      summaryCount: nextList.length
+      summaryCount: nextList.length,
+      searchKeyword: '',
+      activeCategory: '全部'
     });
   },
 
@@ -99,10 +102,7 @@ Page({
         payload: { address: item.address, desc: item.desc, safetyTip: item.safetyTip }
       });
       const fullList = this.data.fullList.map((entry) => String(entry.id) === String(id) ? { ...entry, ...state } : entry);
-      const displayList = this.data.activeCategory === '全部'
-        ? fullList
-        : fullList.filter((entry) => entry.category === this.data.activeCategory);
-      this.setData({ fullList, displayList });
+      this.setData({ fullList }, () => this.applyFilters());
       wx.showToast({ title: state.isBookmarked ? '已收藏' : '已取消收藏', icon: 'success' });
     } catch (error) {
       wx.showToast({ title: error.message || '收藏失败', icon: 'none' });
@@ -111,11 +111,21 @@ Page({
 
   onTagTap: function(e) {
     const category = e.currentTarget.dataset.tag;
-    let filtered = this.data.fullList;
-    if (category !== "全部") {
-      filtered = this.data.fullList.filter(item => item.category === category);
-    }
-    this.setData({ activeCategory: category, displayList: filtered });
+    this.setData({ activeCategory: category }, () => this.applyFilters());
+  },
+
+  onSearchInput(e) {
+    this.setData({ searchKeyword: e.detail.value || '' }, () => this.applyFilters());
+  },
+
+  applyFilters() {
+    const keyword = String(this.data.searchKeyword || '').trim().toLowerCase();
+    const displayList = this.data.fullList.filter((item) => {
+      const matchesCategory = this.data.activeCategory === '全部' || item.category === this.data.activeCategory;
+      const searchable = [item.name, item.category, item.address, item.desc, item.safetyTip].filter(Boolean).join(' ').toLowerCase();
+      return matchesCategory && (!keyword || searchable.includes(keyword));
+    });
+    this.setData({ displayList });
   },
 
   onCardTap(e) {

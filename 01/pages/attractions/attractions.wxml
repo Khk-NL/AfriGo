@@ -14,13 +14,21 @@
                         <view class="search-block">
                                 <view class="search-shell">
                                         <text class="search-icon">⌕</text>
-                                        <input class="search-placeholder" placeholder="搜索景点或体验..." />
+                                        <input class="search-placeholder" value="{{searchKeyword}}" bindinput="onSearchInput" placeholder="搜索景点或体验..." />
                                 </view>
                         </view>
 
+                        <scroll-view class="attr-tag-scroll" scroll-x="true" show-scrollbar="false">
+                                <view class="attr-filter-row">
+                                        <block wx:for="{{tags}}" wx:key="*this">
+                                                <view class="attr-filter {{activeTag === item ? 'active' : ''}}" bindtap="onTagTap" data-tag="{{item}}">{{item}}</view>
+                                        </block>
+                                </view>
+                        </scroll-view>
+
                         <view class="attraction-list">
                                 <block wx:for="{{list}}" wx:key="id">
-                                        <view class="attr-card" bindtap="onAttrTap" data-name="{{item.name}}">
+                                        <view class="attr-card" bindtap="onAttrTap" data-id="{{item.id}}">
                                                 <view class="attr-img-box">
                                                         <image class="attr-img" src="{{item.image}}" mode="aspectFill" />
                                                         <view class="attr-tag-box">
@@ -43,6 +51,10 @@
                                                 </view>
                                         </view>
                                 </block>
+                                <view wx:if="{{!list.length}}" class="attr-empty">
+                                        <text class="attr-empty-title">{{noData ? '该国家暂无经核验的景点资料' : '没有匹配的景点'}}</text>
+                                        <text class="attr-empty-desc">{{noData ? '可稍后重试远程同步，或由管理员补充来源明确的数据。' : '请更换关键词或选择“全部”。'}}</text>
+                                </view>
                         </view>
                 </view>
         </scroll-view>

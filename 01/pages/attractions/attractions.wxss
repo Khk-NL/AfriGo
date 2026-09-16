@@ -77,3 +77,12 @@
 .bookmark-action.bookmarked {
   color: #c28a24;
 }
+
+.attr-tag-scroll { margin: 0 0 24rpx; white-space: nowrap; }
+.attr-filter-row { display: inline-flex; gap: 14rpx; padding: 2rpx; }
+.attr-filter { padding: 12rpx 24rpx; border-radius: 999rpx; background: #fff; color: #566071; font-size: 24rpx; }
+.attr-filter.active { background: #5f24b6; color: #fff; }
+.attr-empty { padding: 70rpx 32rpx; text-align: center; background: #fff; border-radius: 24rpx; }
+.attr-empty-title, .attr-empty-desc { display: block; }
+.attr-empty-title { color: #1f2937; font-size: 28rpx; font-weight: 700; }
+.attr-empty-desc { margin-top: 14rpx; color: #6b7280; font-size: 23rpx; line-height: 1.6; }

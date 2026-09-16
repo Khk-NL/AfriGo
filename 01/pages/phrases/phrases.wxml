@@ -40,7 +40,7 @@
                                 <block wx:for="{{displayList}}" wx:key="id">
                                         <view class="emergency-card embassy"
                                                     style="margin-bottom: 24rpx; align-items: flex-start; padding: 30rpx; position: relative;"
-                                                    bindtap="onPlayAudio">
+                                                    bindtap="onPlayAudio" data-id="{{item.id}}">
 
                                                 <view style="display: flex; justify-content: space-between; width: 100%;">
                                                         <text class="en-text" style="color: #65c79c; font-weight: bold;">[{{item.type}}]</text>
@@ -61,7 +61,7 @@
                                 </block>
 
                                 <view wx:if="{{displayList.length === 0}}" style="text-align: center; padding: 100rpx 0;">
-                                        <text style="color: #999; font-size: 28rpx;">没搜到相关内容哦~</text>
+                                        <text style="color: #999; font-size: 28rpx;">{{noData ? '该国家暂无经核验的常用语资料' : '没有匹配的语句'}}</text>
                                 </view>
                         </view>
 

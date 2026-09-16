@@ -185,6 +185,10 @@ page {
   line-height: 1.6;
 }
 
+.source-list { margin-top: 18rpx; display: flex; flex-wrap: wrap; gap: 12rpx; align-items: center; }
+.source-label { color: #1f4d8c; font-size: 22rpx; font-weight: 700; }
+.source-link { padding: 8rpx 14rpx; border-radius: 999rpx; background: rgba(31, 77, 140, 0.1); color: #1f4d8c; font-size: 21rpx; }
+
 .visa-list {
   display: flex;
   flex-direction: column;

@@ -6,6 +6,7 @@
     "start": "node src/server.js",
     "init-db": "node src/init-db.js",
     "import-excel": "node src/import-excel.js",
+    "export-miniprogram-data": "node src/export-miniprogram-data.js",
     "test": "node --test"
   },
   "dependencies": {

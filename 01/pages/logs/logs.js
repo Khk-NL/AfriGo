@@ -15,6 +15,7 @@ Page({
     capsuleHeight: 32,
     visaItems: [],
     latestPolicyChange: '',
+    sourceUrls: [],
     noData: false,
     expandedVisaId: ''
   },
@@ -57,9 +58,10 @@ Page({
         this.setData({
           countryName,
           countryFlag: this.getCountryFlag(countryName),
-          updateDate: '2026-09-15',
+          updateDate: this.formatSourceDate(guide.source && guide.source.updatedAt),
           visaItems,
           latestPolicyChange: guide.latestPolicyChange || '',
+          sourceUrls: (guide.source && guide.source.urls) || [],
           noData: false
         })
         return
@@ -210,6 +212,19 @@ Page({
     } catch (error) {
       wx.showToast({ title: error.message || '收藏失败', icon: 'none' })
     }
+  },
+
+  formatSourceDate(value) {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) return '未标注';
+    const pad = (number) => String(number).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  },
+
+  onCopySource(e) {
+    const url = this.data.sourceUrls[Number(e.currentTarget.dataset.index)];
+    if (!url) return;
+    wx.setClipboardData({ data: url });
   },
 
   initNavMetrics() {

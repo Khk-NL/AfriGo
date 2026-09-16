@@ -16,7 +16,7 @@
     <view class="content-wrap">
       <view class="hero-head">
         <text class="hero-title">{{countryName}} 签证指南</text>
-        <text class="hero-date">更新日期：{{updateDate}}</text>
+        <text class="hero-date">资料同步日期：{{updateDate}}</text>
       </view>
 
       <view class="policy-card">
@@ -25,6 +25,12 @@
           <text class="policy-title">最新政策提醒</text>
         </view>
         <text class="policy-text">{{latestPolicyChange}}</text>
+        <view wx:if="{{sourceUrls.length}}" class="source-list">
+          <text class="source-label">资料来源</text>
+          <block wx:for="{{sourceUrls}}" wx:key="*this">
+            <text class="source-link" bindtap="onCopySource" data-index="{{index}}">复制来源链接 {{index + 1}}</text>
+          </block>
+        </view>
       </view>
 
       <view class="visa-list">
