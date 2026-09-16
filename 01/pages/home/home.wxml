@@ -70,6 +70,15 @@
         <view class="landing-plan-arrow">›</view>
       </view>
 
+      <view class="landing-plan-card services-card" bindtap="onServicesTap">
+        <view class="landing-plan-copy">
+          <text class="landing-plan-eyebrow">LOCAL SERVICE DESK</text>
+          <text class="landing-plan-title">经审核的本地服务</text>
+          <text class="landing-plan-desc">酒店、交通、导游与保险咨询意向</text>
+        </view>
+        <view class="landing-plan-arrow">›</view>
+      </view>
+
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">

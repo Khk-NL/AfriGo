@@ -176,6 +176,42 @@ CREATE TABLE IF NOT EXISTS trip_reviews (
   CONSTRAINT fk_trip_reviews_trip FOREIGN KEY (trip_id) REFERENCES trip_plans(id) ON DELETE CASCADE,
   CONSTRAINT fk_trip_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS service_providers (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  country_code CHAR(2) NOT NULL,
+  country_zh VARCHAR(64) NOT NULL,
+  category VARCHAR(24) NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  summary TEXT,
+  qualification_note VARCHAR(500) DEFAULT '',
+  source_url VARCHAR(500) DEFAULT '',
+  contact_channel VARCHAR(40) DEFAULT '',
+  contact_value VARCHAR(200) DEFAULT '',
+  status VARCHAR(24) NOT NULL DEFAULT 'pending',
+  verified_at TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_service_providers_country_category (country_code, category, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS service_leads (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  provider_id BIGINT NULL,
+  country_code CHAR(2) NOT NULL,
+  category VARCHAR(24) NOT NULL,
+  contact_name VARCHAR(80) NOT NULL,
+  contact_value VARCHAR(160) NOT NULL,
+  request_text TEXT NOT NULL,
+  status VARCHAR(24) NOT NULL DEFAULT 'new',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_service_leads_user_created (user_id, created_at),
+  INDEX idx_service_leads_status_created (status, created_at),
+  CONSTRAINT fk_service_leads_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_service_leads_provider FOREIGN KEY (provider_id) REFERENCES service_providers(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `;
 
 async function connectWithProvidedAccounts() {

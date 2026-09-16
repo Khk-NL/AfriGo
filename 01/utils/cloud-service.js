@@ -300,6 +300,22 @@ async function saveTripReview(tripId, review) {
   return result.review;
 }
 
+async function loadServices(countryCode, category = '') {
+  const query = [`countryCode=${encodeURIComponent(countryCode || '')}`];
+  if (category) query.push(`category=${encodeURIComponent(category)}`);
+  const result = await request(`/api/services?${query.join('&')}`);
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function submitServiceLead(payload) {
+  return request('/api/service-leads', { method: 'POST', data: payload });
+}
+
+async function loadMyServiceLeads() {
+  const result = await request('/api/me/service-leads');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
 async function translateText({ text, sourceLanguage = 'auto', targetLanguage }) {
   const result = await request('/api/translate', {
     method: 'POST',
@@ -374,6 +390,9 @@ export {
   deleteTripExpense,
   loadTripReview,
   saveTripReview,
+  loadServices,
+  submitServiceLead,
+  loadMyServiceLeads,
   translateText,
   togglePostLike,
   loadPostEngagement,

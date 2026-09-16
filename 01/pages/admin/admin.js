@@ -4,7 +4,9 @@ const COLLECTIONS = [
   { key: 'users', label: '用户数据' },
   { key: 'posts', label: '社区帖子' },
   { key: 'attractions', label: '景点攻略' },
-  { key: 'recommend', label: '出行推荐' }
+  { key: 'recommend', label: '出行推荐' },
+  { key: 'service_providers', label: '服务方审核' },
+  { key: 'service_leads', label: '服务意向单' }
 ];
 
 Page({

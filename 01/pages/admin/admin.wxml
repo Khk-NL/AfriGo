@@ -31,6 +31,8 @@
     </view>
     <view class="editor-panel">
       <text class="editor-title">JSON 编辑器</text>
+      <text wx:if="{{activeCollection === 'service_providers'}}" class="editor-hint">服务方只有 status=approved 才会公开；请填写 countryZh、category、name、qualificationNote 和 sourceUrl。</text>
+      <text wx:if="{{activeCollection === 'service_leads'}}" class="editor-hint">意向单仅允许修改 status：new、contacted、closed 或 rejected。</text>
       <textarea class="editor-textarea" value="{{editorText}}" bindinput="onEditorInput" placeholder="在这里编辑 JSON 对象" auto-height="true" />
       <view class="action-row">
         <view class="action-btn action-add" bindtap="onAddTap">新增</view>

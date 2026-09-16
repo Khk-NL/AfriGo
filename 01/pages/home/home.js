@@ -259,6 +259,10 @@ Page({
     wx.navigateTo({ url: '/pages/trip-review/trip-review' });
   },
 
+  onServicesTap() {
+    wx.navigateTo({ url: '/pages/services/services' });
+  },
+
   onFeatureTap(e) {
     const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
     if (key === 'attractions') return;

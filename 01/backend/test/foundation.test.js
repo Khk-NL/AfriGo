@@ -10,6 +10,7 @@ const { validateProductionConfig } = require('../src/config');
 const { createRateLimiter } = require('../src/rate-limit');
 const { sanitizeTripPayload } = require('../src/trip-plan');
 const { sanitizeExpensePayload, sanitizeReviewPayload } = require('../src/trip-review');
+const { sanitizeLeadPayload, sanitizeProviderPayload } = require('../src/services');
 const { translateText, validateTranslationInput } = require('../src/translate');
 
 test('country names resolve to stable ISO codes', () => {
@@ -139,4 +140,22 @@ test('translation provider stays closed until explicitly enabled', async () => {
   );
   if (previous === undefined) delete process.env.ALIYUN_TRANSLATE_ENABLED;
   else process.env.ALIYUN_TRANSLATE_ENABLED = previous;
+});
+
+test('service providers and leads require auditable fields', () => {
+  const provider = sanitizeProviderPayload({
+    countryZh: '肯尼亚',
+    category: 'guide',
+    name: '测试服务方',
+    sourceUrl: 'https://example.com/provider',
+    status: 'approved'
+  });
+  assert.equal(provider.countryCode, 'KE');
+  assert.equal(provider.status, 'approved');
+  assert.deepEqual(
+    sanitizeLeadPayload({ providerId: '8', contactName: '张三', contactValue: 'wechat-id', requestText: '需要中文向导' }),
+    { providerId: 8, contactName: '张三', contactValue: 'wechat-id', requestText: '需要中文向导' }
+  );
+  assert.throws(() => sanitizeProviderPayload({ countryZh: '肯尼亚', category: 'shopping', name: 'x' }), /服务分类/);
+  assert.throws(() => sanitizeLeadPayload({ providerId: 1, contactName: '', contactValue: '', requestText: '' }), /联系人/);
 });

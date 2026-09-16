@@ -27,6 +27,8 @@ page {
 .travel-tools-card .landing-plan-eyebrow { color: #6f49a8; }
 .trip-review-card { background: linear-gradient(135deg, #f8f2ff 0%, #fff8ed 100%); }
 .trip-review-card .landing-plan-eyebrow { color: #8b5e3c; }
+.services-card { background: linear-gradient(135deg, #eef7fb 0%, #fff6e7 100%); }
+.services-card .landing-plan-eyebrow { color: #39738c; }
 .landing-plan-arrow { color: #6f49a8; font-size: 56rpx; line-height: 1; }
 
 /* =========================================

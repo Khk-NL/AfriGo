@@ -11,6 +11,7 @@ const { assertProductionConfig } = require('./config');
 const { createRateLimiter } = require('./rate-limit');
 const { sanitizeTripPayload } = require('./trip-plan');
 const { sanitizeExpensePayload, sanitizeReviewPayload } = require('./trip-review');
+const { LEAD_STATUSES, sanitizeLeadPayload, sanitizeProviderPayload } = require('./services');
 const { translateText } = require('./translate');
 
 const app = express();
@@ -184,6 +185,43 @@ function mapTripPlan(row) {
     checklist: parseJson(row.checklist_json, []),
     itineraryText: row.itinerary_text || '',
     bookings: parseJson(row.bookings_json, {}),
+    createTime: row.created_at,
+    updateTime: row.updated_at
+  };
+}
+
+function mapServiceProvider(row) {
+  return {
+    id: String(row.id),
+    _id: String(row.id),
+    countryCode: row.country_code,
+    countryZh: row.country_zh,
+    category: row.category,
+    name: row.name,
+    summary: row.summary || '',
+    qualificationNote: row.qualification_note || '',
+    sourceUrl: row.source_url || '',
+    contactChannel: row.contact_channel || '',
+    contactValue: row.contact_value || '',
+    status: row.status,
+    verifiedAt: row.verified_at,
+    updateTime: row.updated_at
+  };
+}
+
+function mapServiceLead(row) {
+  return {
+    id: String(row.id),
+    _id: String(row.id),
+    userId: String(row.user_id),
+    providerId: row.provider_id ? String(row.provider_id) : '',
+    providerName: row.provider_name || '',
+    countryCode: row.country_code,
+    category: row.category,
+    contactName: row.contact_name,
+    contactValue: row.contact_value,
+    requestText: row.request_text,
+    status: row.status,
     createTime: row.created_at,
     updateTime: row.updated_at
   };
@@ -830,12 +868,90 @@ app.post('/api/translate', authenticate, translateLimiter, async (req, res, next
   }
 });
 
+app.get('/api/services', async (req, res, next) => {
+  try {
+    const countryCode = normalizeCountryCode(req.query.countryCode, req.query.country);
+    const category = String(req.query.category || '').trim();
+    if (req.query.countryCode && !countryCode) {
+      res.status(400).json({ ok: false, message: '国家代码不合法' });
+      return;
+    }
+    if (category && !['hotel', 'transport', 'guide', 'insurance'].includes(category)) {
+      res.status(400).json({ ok: false, message: '服务分类不合法' });
+      return;
+    }
+    const conditions = ["status = 'approved'"];
+    const params = [];
+    if (countryCode) {
+      conditions.push('country_code = ?');
+      params.push(countryCode);
+    }
+    if (category) {
+      conditions.push('category = ?');
+      params.push(category);
+    }
+    const [rows] = await pool.query(
+      `SELECT id, country_code, country_zh, category, name, summary, qualification_note,
+        source_url, status, verified_at, updated_at
+       FROM service_providers WHERE ${conditions.join(' AND ')} ORDER BY verified_at DESC, id DESC`,
+      params
+    );
+    res.json({ ok: true, data: rows.map(mapServiceProvider) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/service-leads', authenticate, async (req, res, next) => {
+  try {
+    const lead = sanitizeLeadPayload(req.body || {});
+    const [providers] = await pool.query(
+      "SELECT id, country_code, category FROM service_providers WHERE id = ? AND status = 'approved' LIMIT 1",
+      [lead.providerId]
+    );
+    if (!providers[0]) {
+      res.status(404).json({ ok: false, message: '服务方不存在或尚未通过审核' });
+      return;
+    }
+    const provider = providers[0];
+    const [result] = await pool.query(
+      `INSERT INTO service_leads
+       (user_id, provider_id, country_code, category, contact_name, contact_value, request_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [req.user.id, provider.id, provider.country_code, provider.category, lead.contactName, lead.contactValue, lead.requestText]
+    );
+    res.status(201).json({ ok: true, id: String(result.insertId), status: 'new' });
+  } catch (error) {
+    if (/服务方|联系人|联系方式|服务需求/.test(error.message || '')) {
+      res.status(400).json({ ok: false, message: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+app.get('/api/me/service-leads', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT l.*, p.name AS provider_name FROM service_leads l
+       LEFT JOIN service_providers p ON p.id = l.provider_id
+       WHERE l.user_id = ? ORDER BY l.id DESC LIMIT 100`,
+      [req.user.id]
+    );
+    res.json({ ok: true, data: rows.map(mapServiceLead) });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res, next) => {
   const mappers = {
     attractions: mapAttraction,
     recommend: mapRecommend,
     posts: mapPost,
-    users: mapUser
+    users: mapUser,
+    service_providers: mapServiceProvider,
+    service_leads: mapServiceLead
   };
   const mapper = mappers[req.params.name];
   if (!mapper) {
@@ -891,6 +1007,23 @@ app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res, 
       return;
     }
 
+    if (req.params.name === 'service_providers') {
+      const provider = sanitizeProviderPayload(payload);
+      const [result] = await pool.query(
+        `INSERT INTO service_providers
+         (country_code, country_zh, category, name, summary, qualification_note, source_url,
+          contact_channel, contact_value, status, verified_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, IF(? = 'approved', NOW(), NULL))`,
+        [
+          provider.countryCode, provider.countryZh, provider.category, provider.name,
+          provider.summary, provider.qualificationNote, provider.sourceUrl,
+          provider.contactChannel, provider.contactValue, provider.status, provider.status
+        ]
+      );
+      res.json({ ok: true, _id: String(result.insertId) });
+      return;
+    }
+
     res.status(400).json({ ok: false, message: '该集合暂不支持新增' });
   } catch (error) {
     next(error);
@@ -916,6 +1049,22 @@ app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, re
     } else if (req.params.name === 'users') {
       const role = body.role === 'admin' ? 'admin' : 'user';
       await pool.query('UPDATE users SET nick_name = ?, role = ? WHERE id = ?', [body.nickName || '', role, req.params.id]);
+    } else if (req.params.name === 'service_providers') {
+      const provider = sanitizeProviderPayload(body);
+      await pool.query(
+        `UPDATE service_providers SET country_code = ?, country_zh = ?, category = ?, name = ?,
+         summary = ?, qualification_note = ?, source_url = ?, contact_channel = ?, contact_value = ?,
+         status = ?, verified_at = CASE WHEN ? = 'approved' THEN COALESCE(verified_at, NOW()) ELSE NULL END
+         WHERE id = ?`,
+        [
+          provider.countryCode, provider.countryZh, provider.category, provider.name,
+          provider.summary, provider.qualificationNote, provider.sourceUrl,
+          provider.contactChannel, provider.contactValue, provider.status, provider.status, req.params.id
+        ]
+      );
+    } else if (req.params.name === 'service_leads') {
+      const status = LEAD_STATUSES.has(body.status) ? body.status : 'new';
+      await pool.query('UPDATE service_leads SET status = ? WHERE id = ?', [status, req.params.id]);
     } else {
       res.status(404).json({ ok: false, message: '未知集合' });
       return;
@@ -927,7 +1076,7 @@ app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, re
 });
 
 app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res, next) => {
-  const allowed = ['attractions', 'recommend', 'posts', 'users'];
+  const allowed = ['attractions', 'recommend', 'posts', 'users', 'service_providers'];
   if (!allowed.includes(req.params.name)) {
     res.status(404).json({ ok: false, message: '未知集合' });
     return;

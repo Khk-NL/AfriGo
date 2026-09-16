@@ -40,11 +40,12 @@
 - 费用接口：`GET|POST /api/trips/:id/expenses`、`DELETE /api/trips/:tripId/expenses/:expenseId`，按分类对比行前预算和实际支出。
 - 评价接口：`GET|PUT /api/trips/:id/review`。所有旅后数据均校验行程所有权，不使用匿名远程存储。
 
-## 阶段 4 · 服务对接
+## 已实现：阶段 4 · 服务对接
 
-- 统一服务目录：`GET /api/services?countryCode=KE&category=hotel|transport|guide|insurance`。
-- 意向单：`POST /api/service-leads`，由后台分配给经过审核的供应商。
-- 在没有真实合作方、价格和售后规则前，只展示“待对接”，不制造虚假下单闭环。
+- 统一服务目录：`GET /api/services?countryCode=KE&category=hotel|transport|guide|insurance`，仅返回 `approved` 服务方且不下发内部联系方式。
+- 意向单：`POST /api/service-leads`、`GET /api/me/service-leads`，只能向已审核服务方提交，并记录跟进状态。
+- 管理后台新增 `service_providers` 与 `service_leads`，支持审核服务方、记录资质来源和更新意向状态。
+- 在没有真实合作方、价格和售后规则前，前端显示真实空状态，并明确意向不等于预订或付款。
 
 ## 阶段 5 · 内容可信机制
 

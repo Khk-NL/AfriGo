@@ -1,0 +1,40 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card service-hero">
+        <text class="hero-eyebrow">LOCAL SERVICE DESK</text>
+        <text class="hero-title">{{countryZh}}·服务对接</text>
+        <text class="hero-summary">只展示管理员审核通过的服务资料；提交意向不代表预订、报价或支付成功。</text>
+      </view>
+
+      <view class="category-strip"><view wx:for="{{categories}}" wx:key="key" class="category-pill {{activeCategory === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onCategoryTap">{{item.label}}</view></view>
+
+      <view wx:if="{{loading}}" class="section-card empty-state"><text class="empty-title">正在加载经审核的服务方…</text></view>
+      <view wx:elif="{{!providers.length}}" class="section-card empty-state"><text class="empty-title">当前国家暂无已审核服务方</text><text class="empty-desc">酒店、交通、导游和保险接口已经就绪；在真实合作方完成资质审核前不展示虚假商家。</text></view>
+      <view wx:else class="provider-list">
+        <view wx:for="{{providers}}" wx:key="id" class="section-card provider-card">
+          <view class="provider-head"><view><text class="provider-name">{{item.name}}</text><text class="provider-category">{{item.category}} · 已审核</text></view><text class="verified-mark">✓</text></view>
+          <text class="provider-summary">{{item.summary || '暂无服务说明'}}</text>
+          <text wx:if="{{item.qualificationNote}}" class="provider-note">资质说明：{{item.qualificationNote}}</text>
+          <view class="provider-meta"><text>核验：{{item.verifiedAt || '管理员已审核'}}</text><text wx:if="{{item.sourceUrl}}" class="source-link" data-url="{{item.sourceUrl}}" bindtap="onCopySource">复制来源</text></view>
+          <button class="consult-button" data-id="{{item.id}}" bindtap="onSelectProvider">提交咨询意向</button>
+        </view>
+      </view>
+
+      <view wx:if="{{selectedProvider}}" class="section-card lead-panel">
+        <view class="section-head"><text class="section-title">咨询 {{selectedProvider.name}}</text><text class="section-subtitle">联系方式仅用于本次服务跟进</text></view>
+        <input class="form-field" value="{{lead.contactName}}" data-field="contactName" bindinput="onLeadInput" placeholder="联系人姓名" />
+        <input class="form-field" value="{{lead.contactValue}}" data-field="contactValue" bindinput="onLeadInput" placeholder="微信号、手机号或邮箱" />
+        <textarea class="lead-textarea" value="{{lead.requestText}}" data-field="requestText" bindinput="onLeadInput" placeholder="说明日期、人数、城市和具体需求" />
+        <view class="lead-actions"><button class="cancel-button" bindtap="onCancelLead">取消</button><button class="submit-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onSubmitLead">提交意向</button></view>
+      </view>
+
+      <view wx:if="{{leads.length}}" class="section-card">
+        <view class="section-head"><text class="section-title">我的服务意向</text><text class="section-subtitle">最终交易条款需另行确认</text></view>
+        <view wx:for="{{leads}}" wx:key="id" class="lead-row"><view><text class="lead-name">{{item.providerName || '原服务方已下架'}}</text><text class="lead-request">{{item.requestText}}</text></view><text class="lead-status">{{item.statusLabel}}</text></view>
+      </view>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+</view>
