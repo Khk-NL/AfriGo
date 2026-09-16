@@ -228,26 +228,8 @@ Page({
     this.elephantRenderer = null;
   },
 
-  onFilterTap() {
-    wx.showToast({
-      title: this.data.language === 'zh' ? '筛选功能开发中' : this.data.language === 'en' ? 'Filter feature coming soon' : 'Fonction de filtre bientôt disponible',
-      icon: 'none'
-    });
-  },
-
-  onTagTap(e) {
-    const { tag } = e.currentTarget.dataset;
-    wx.showToast({
-      title: this.data.language === 'zh' ? `已选择${tag}` : this.data.language === 'en' ? `Selected ${tag}` : `Sélectionné ${tag}`,
-      icon: 'none',
-    });
-  },
-
   onMoreTap() {
-    wx.showToast({
-      title: this.data.language === 'zh' ? '更多安全资讯开发中' : this.data.language === 'en' ? 'More safety content coming soon' : 'Plus de contenu sécurité bientôt',
-      icon: 'none'
-    });
+    this.onOpenSecurityGuide();
   },
 
   onOpenSecurityGuide() {
@@ -318,13 +300,7 @@ Page({
     };
 
     const url = tabRouteMap[tab];
-    if (!url) {
-      wx.showToast({
-        title: `${tab}开发中`,
-        icon: 'none'
-      });
-      return;
-    }
+    if (!url) return;
 
     wx.switchTab({
       url,

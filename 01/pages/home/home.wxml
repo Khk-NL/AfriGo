@@ -33,7 +33,7 @@
       <view class="safety-card" bindtap="onOpenSecurityGuide">
         <view class="safety-header">
             <text class="safety-title">{{uiText.safetyTitle}}</text>
-            <text class="safety-more" bindtap="onMoreTap">{{uiText.safetyMore}}</text>
+            <text class="safety-more" catchtap="onMoreTap">{{uiText.safetyMore}}</text>
         </view>
         <view class="safety-level-row">
           <text class="safety-level">{{uiText.safetyLevel}}</text>

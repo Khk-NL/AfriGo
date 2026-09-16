@@ -114,7 +114,9 @@ function mapPost(row) {
     authorRole: row.author_role,
     status: row.status,
     destinationLabel: row.destination_label,
-    createTime: row.created_at
+    createTime: row.created_at,
+    likeCount: Number(row.like_count || 0),
+    commentCount: Number(row.comment_count || 0)
   };
 }
 
@@ -260,7 +262,12 @@ app.get('/api/guide', async (req, res) => {
 
 app.get('/api/posts', async (_req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM posts WHERE status = 'published' ORDER BY id DESC");
+    const [rows] = await pool.query(
+      `SELECT p.*,
+        (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS like_count,
+        (SELECT COUNT(*) FROM post_comments pc WHERE pc.post_id = p.id) AS comment_count
+       FROM posts p WHERE p.status = 'published' ORDER BY p.id DESC`
+    );
     res.json({ ok: true, data: rows.map(mapPost) });
   } catch (error) {
     res.status(500).json({ ok: false, message: error.message });
@@ -300,6 +307,83 @@ app.post('/api/posts', authenticate, async (req, res, next) => {
     );
 
     res.json({ ok: true, _id: String(result.insertId), id: result.insertId });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/posts/:id/like', authenticate, async (req, res, next) => {
+  try {
+    const postId = Number(req.params.id);
+    const [posts] = await pool.query("SELECT id FROM posts WHERE id = ? AND status = 'published' LIMIT 1", [postId]);
+    if (!posts[0]) {
+      res.status(404).json({ ok: false, message: '动态不存在' });
+      return;
+    }
+    const [insertResult] = await pool.query('INSERT IGNORE INTO post_likes (post_id, user_id) VALUES (?, ?)', [postId, req.user.id]);
+    const isLiked = insertResult.affectedRows === 1;
+    if (!isLiked) {
+      await pool.query('DELETE FROM post_likes WHERE post_id = ? AND user_id = ?', [postId, req.user.id]);
+    }
+    const [[countRow]] = await pool.query('SELECT COUNT(*) AS total FROM post_likes WHERE post_id = ?', [postId]);
+    res.json({ ok: true, isLiked, likeCount: Number(countRow.total || 0) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/posts/:id/engagement', authenticate, async (req, res, next) => {
+  try {
+    const postId = Number(req.params.id);
+    const [[likedRow]] = await pool.query(
+      'SELECT EXISTS(SELECT 1 FROM post_likes WHERE post_id = ? AND user_id = ?) AS is_liked',
+      [postId, req.user.id]
+    );
+    const [[bookmarkRow]] = await pool.query(
+      "SELECT id FROM bookmarks WHERE user_id = ? AND resource_type = 'post' AND resource_id = ? LIMIT 1",
+      [req.user.id, String(postId)]
+    );
+    res.json({ ok: true, isLiked: Boolean(likedRow.is_liked), isSaved: Boolean(bookmarkRow && bookmarkRow.id) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/posts/:id/comments', async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT id, author_name, content, created_at FROM post_comments WHERE post_id = ? ORDER BY id ASC LIMIT 100',
+      [Number(req.params.id)]
+    );
+    res.json({ ok: true, data: rows.map((row) => ({
+      id: String(row.id),
+      authorName: row.author_name || '微信用户',
+      content: row.content,
+      createTime: row.created_at
+    })) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/posts/:id/comments', authenticate, async (req, res, next) => {
+  try {
+    const postId = Number(req.params.id);
+    const content = String(req.body && req.body.content || '').trim();
+    if (!content || content.length > 500) {
+      res.status(400).json({ ok: false, message: '评论需为 1-500 个字符' });
+      return;
+    }
+    const [posts] = await pool.query("SELECT id FROM posts WHERE id = ? AND status = 'published' LIMIT 1", [postId]);
+    if (!posts[0]) {
+      res.status(404).json({ ok: false, message: '动态不存在' });
+      return;
+    }
+    const [result] = await pool.query(
+      'INSERT INTO post_comments (post_id, user_id, author_name, content) VALUES (?, ?, ?, ?)',
+      [postId, req.user.id, req.user.nickName || '微信用户', content]
+    );
+    res.status(201).json({ ok: true, id: String(result.insertId), comment: { authorName: req.user.nickName || '微信用户', content } });
   } catch (error) {
     next(error);
   }
@@ -389,7 +473,7 @@ app.get('/api/bookmarks', authenticate, async (req, res, next) => {
 app.post('/api/bookmarks', authenticate, async (req, res, next) => {
   try {
     const body = req.body || {};
-    const allowedTypes = ['attraction', 'recommend', 'phrase', 'visa'];
+    const allowedTypes = ['attraction', 'recommend', 'phrase', 'visa', 'post'];
     if (!allowedTypes.includes(body.resourceType) || !String(body.resourceId || '').trim() || !String(body.title || '').trim()) {
       res.status(400).json({ ok: false, message: '收藏参数不完整' });
       return;

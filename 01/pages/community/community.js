@@ -1,37 +1,37 @@
 import { buildCommunityText, getStoredLanguage } from '../../utils/i18n.js';
-import { loadCollection } from '../../utils/cloud-service.js';
+import { addBookmark, createPostComment, loadCollection, loadPostComments, loadPostEngagement, togglePostLike } from '../../utils/cloud-service.js';
+import { normalizeCountryCode } from '../../utils/countries.js';
 
 const STATS = [
-  { id: 1, value: '24.8K', label: '精选动态' },
-  { id: 2, value: '5.6K', label: '旅人收藏' },
-  { id: 3, value: '912', label: '灵感路线' }
-];
-
-const AVATARS = [
-  { id: 1, name: 'Lina', initials: 'LI', tone: 'tone-mint' },
-  { id: 2, name: 'Ayo', initials: 'AY', tone: 'tone-champagne' },
-  { id: 3, name: 'Nia', initials: 'NI', tone: 'tone-peach' },
-  { id: 4, name: 'Kofi', initials: 'KF', tone: 'tone-sky' },
-  { id: 5, name: 'Maya', initials: 'MY', tone: 'tone-blush' }
+  { id: 1, value: '0', label: '社区动态' },
+  { id: 2, value: '0', label: '获得点赞' },
+  { id: 3, value: '0', label: '旅行讨论' }
 ];
 
 const FEATURED_POST = {
-  author: 'Amani Studio',
-  role: '柔光旅行编录',
-  time: '3 分钟阅读',
-  title: '柔和日照落进非洲河岸，风景与故事都慢了下来',
-  body: '把首页的薄荷晨雾与发布页的暖金余晖接在一起，社区页就像一层会呼吸的轻雾背景。前景只保留干净的亚克力白卡片，让故事、照片和旅行线索以更从容的节奏被看见。',
-  image: '/assets/images/congo-drc.png',
-  tags: ['柔光河岸', '香槟余晖', '轻盈社区'],
-  location: 'African river bend',
-  light: 'Soft light journal',
-  likesText: '12.8K',
-  baseLikesText: '12.8K',
-  likedLikesText: '12.9K',
-  commentsText: '286',
-  savesText: '1.4K',
-  isLiked: false
+  id: '',
+  author: '非常行社区',
+  role: '社区提示',
+  time: '',
+  title: '还没有社区动态',
+  body: '发布第一条旅行见闻、图片或当地提醒，内容会显示在这里。',
+  image: '/assets/images/covers/kenya.jpg',
+  tags: ['社区动态'],
+  location: '等待第一条分享',
+  light: '',
+  likesText: '0',
+  commentsText: '0',
+  savesText: '收藏',
+  isLiked: false,
+  isSaved: false
 };
+
+function formatCount(value) {
+  const count = Number(value || 0);
+  if (count >= 10000) return `${(count / 10000).toFixed(1)}W`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return String(count);
+}
 
 Page({
   data: {
@@ -43,9 +43,14 @@ Page({
     description: '承接首页的薄荷清晨，过渡到发布页的香槟暖光，这里把旅途故事安放在更轻、更高级的社区流里。',
     journeyNote: '从首页的 mint 晨光，缓缓过渡到发布页的 champagne 暖色',
     stats: STATS,
-    avatars: AVATARS,
+    avatars: [],
     featuredPost: FEATURED_POST,
+    allFeedPosts: [],
     feedPosts: [],
+    activeTag: '',
+    totalLikes: 0,
+    totalComments: 0,
+    isLiking: false,
     isLoading: false,
     loadError: ''
   },
@@ -82,23 +87,61 @@ Page({
           ...post,
           image: image || '',
           displayTime: post.createTime ? String(post.createTime).slice(0, 16).replace('T', ' ') : '刚刚',
-          roleLabel: post.authorRole === 'admin' ? '管理员发布' : '旅行者'
+          roleLabel: post.authorRole === 'admin' ? '管理员发布' : '旅行者',
+          tags: ['社区动态', post.destinationLabel].filter(Boolean),
+          likesText: formatCount(post.likeCount),
+          commentsText: formatCount(post.commentCount),
+          savesText: '收藏',
+          isLiked: false,
+          isSaved: false
         };
       });
       const latest = normalizedPosts[0];
+      const feedPosts = latest ? normalizedPosts.slice(1) : [];
+      const tones = ['tone-mint', 'tone-champagne', 'tone-peach', 'tone-sky', 'tone-blush'];
+      const avatars = [...new Map(normalizedPosts.map((post) => [post.authorName || '微信用户', post])).values()]
+        .slice(0, 5)
+        .map((post, index) => {
+          const name = post.authorName || '微信用户';
+          return { id: post.authorOpenid || name, name, initials: name.slice(0, 2).toUpperCase(), tone: tones[index] };
+        });
+      const totalLikes = normalizedPosts.reduce((sum, post) => sum + Number(post.likeCount || 0), 0);
+      const totalComments = normalizedPosts.reduce((sum, post) => sum + Number(post.commentCount || 0), 0);
+      let engagement = {};
+      if (latest) {
+        try {
+          engagement = await loadPostEngagement(latest.id);
+        } catch (error) {
+          engagement = {};
+        }
+      }
       this.setData({
-        feedPosts: latest ? normalizedPosts.slice(1) : [],
+        allFeedPosts: feedPosts,
+        feedPosts,
+        activeTag: '',
+        avatars,
+        totalLikes,
+        totalComments,
+        stats: [
+          { id: 1, value: String(normalizedPosts.length), label: '社区动态' },
+          { id: 2, value: formatCount(totalLikes), label: '获得点赞' },
+          { id: 3, value: formatCount(totalComments), label: '旅行讨论' }
+        ],
         featuredPost: latest ? {
           ...this.data.featuredPost,
+          ...latest,
           author: latest.authorName || this.data.featuredPost.author,
           role: latest.roleLabel,
           time: latest.displayTime,
           title: latest.content ? latest.content.slice(0, 28) : '图片动态',
           body: latest.content || '分享了一组旅途照片',
           image: latest.image || this.data.featuredPost.image,
-          tags: ['社区动态'],
+          tags: latest.tags,
           location: latest.destinationLabel || this.data.welcomeCountryZh,
-          light: 'Live post'
+          light: 'Live post',
+          isLiked: Boolean(engagement.isLiked),
+          isSaved: Boolean(engagement.isSaved),
+          savesText: engagement.isSaved ? '已收藏' : '收藏'
         } : FEATURED_POST,
         isLoading: false
       });
@@ -137,34 +180,116 @@ Page({
 
   onTagTap(e) {
     const { tag } = e.currentTarget.dataset;
-    wx.showToast({
-      title: this.data.language === 'zh' ? `${tag} 筛选开发中` : this.data.language === 'en' ? `Filtering by ${tag} coming soon` : `Filtre ${tag} bientôt disponible`,
-      icon: 'none'
-    });
+    const activeTag = this.data.activeTag === tag ? '' : tag;
+    const feedPosts = activeTag
+      ? this.data.allFeedPosts.filter((post) => (post.tags || []).includes(activeTag))
+      : this.data.allFeedPosts;
+    this.setData({ activeTag, feedPosts });
   },
 
-  onLikeTap() {
+  async onLikeTap() {
     const { featuredPost } = this.data;
-    const isLiked = !featuredPost.isLiked;
+    if (this.data.isLiking) return;
+    if (!featuredPost.id) {
+      wx.showToast({ title: '暂无可互动的社区动态', icon: 'none' });
+      return;
+    }
+    try {
+      this.setData({ isLiking: true });
+      const result = await togglePostLike(featuredPost.id);
+      const totalLikes = Math.max(0, this.data.totalLikes + Number(result.likeCount || 0) - Number(featuredPost.likeCount || 0));
+      this.setData({
+        'featuredPost.isLiked': result.isLiked,
+        'featuredPost.likeCount': Number(result.likeCount || 0),
+        'featuredPost.likesText': formatCount(result.likeCount),
+        totalLikes,
+        stats: this.data.stats.map((item) => item.id === 2 ? { ...item, value: formatCount(totalLikes) } : item)
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || '请先登录后点赞', icon: 'none' });
+    } finally {
+      this.setData({ isLiking: false });
+    }
+  },
 
-    this.setData({
-      'featuredPost.isLiked': isLiked,
-      'featuredPost.likesText': isLiked ? featuredPost.likedLikesText : featuredPost.baseLikesText
+  async onActionTap(e) {
+    const { action } = e.currentTarget.dataset;
+    const post = this.data.featuredPost;
+    if (!post.id) {
+      wx.showToast({ title: '暂无可互动的社区动态', icon: 'none' });
+      return;
+    }
+    if (action === 'comment') {
+      try {
+        const comments = await loadPostComments(post.id);
+        const actions = comments.length ? ['发表评论', '查看最新评论'] : ['发表评论'];
+        wx.showActionSheet({
+          itemList: actions,
+          success: (result) => {
+            if (result.tapIndex === 0) this.openCommentComposer(post);
+            if (result.tapIndex === 1) {
+              const preview = comments.slice(-8).map((item) => `${item.authorName}：${item.content}`).join('\n\n');
+              wx.showModal({ title: '最新评论', content: preview, showCancel: false });
+            }
+          }
+        });
+      } catch (error) {
+        wx.showToast({ title: error.message || '评论加载失败', icon: 'none' });
+      }
+      return;
+    }
+    if (action === 'save') {
+      try {
+        const selected = wx.getStorageSync('selectedDestination') || {};
+        await addBookmark({
+          resourceType: 'post',
+          resourceId: String(post.id),
+          title: post.title || String(post.body || '社区动态').slice(0, 30),
+          category: '社区动态',
+          countryCode: normalizeCountryCode(selected.code, selected.zhName),
+          payload: { content: post.body, image: post.image, authorName: post.author }
+        });
+        this.setData({ 'featuredPost.isSaved': true, 'featuredPost.savesText': '已收藏' });
+        wx.showToast({ title: '已收藏', icon: 'success' });
+      } catch (error) {
+        wx.showToast({ title: error.message || '请先登录后收藏', icon: 'none' });
+      }
+    }
+  },
+
+  openCommentComposer(post) {
+    wx.showModal({
+      title: `发表评论（已有 ${post.commentsText} 条）`,
+      editable: true,
+      placeholderText: '输入 1-500 个字符',
+      success: async (result) => {
+        const content = String(result.content || '').trim();
+        if (!result.confirm || !content) return;
+        try {
+          await createPostComment(post.id, content);
+          const nextCount = Number(post.commentCount || 0) + 1;
+          const totalComments = this.data.totalComments + 1;
+          this.setData({
+            'featuredPost.commentCount': nextCount,
+            'featuredPost.commentsText': formatCount(nextCount),
+            totalComments,
+            stats: this.data.stats.map((item) => item.id === 3 ? { ...item, value: formatCount(totalComments) } : item)
+          });
+          wx.showToast({ title: '评论已发布', icon: 'success' });
+        } catch (error) {
+          wx.showToast({ title: error.message || '评论失败', icon: 'none' });
+        }
+      }
     });
   },
 
-  onActionTap(e) {
-    const { action } = e.currentTarget.dataset;
-    const actionText = this.data.uiText.actionTexts || {};
-
-    wx.showToast({
-      title: this.data.language === 'zh'
-        ? `${actionText[action] || '打开'}功能开发中`
-        : this.data.language === 'en'
-          ? `${actionText[action] || 'Open'} feature coming soon`
-          : `Fonction ${actionText[action] || 'ouvrir'} bientôt disponible`,
-      icon: 'none'
-    });
+  onShareAppMessage() {
+    const post = this.data.featuredPost;
+    return {
+      title: post.title || `${this.data.welcomeCountryZh}旅行动态`,
+      path: '/pages/community/community',
+      imageUrl: post.image || undefined
+    };
   },
 
   onTabTap(e) {

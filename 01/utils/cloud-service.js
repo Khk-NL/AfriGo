@@ -247,6 +247,23 @@ async function deleteMyPost(postId) {
   return request(`/api/posts/${postId}`, { method: 'DELETE' });
 }
 
+async function togglePostLike(postId) {
+  return request(`/api/posts/${postId}/like`, { method: 'POST' });
+}
+
+async function loadPostEngagement(postId) {
+  return request(`/api/posts/${postId}/engagement`);
+}
+
+async function loadPostComments(postId) {
+  const result = await request(`/api/posts/${postId}/comments`);
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function createPostComment(postId, content) {
+  return request(`/api/posts/${postId}/comments`, { method: 'POST', data: { content } });
+}
+
 function logoutCurrentUser() {
   request('/api/auth/logout', { method: 'POST' }).catch(() => {});
   cacheAuthToken('');
@@ -285,5 +302,9 @@ export {
   loadNotifications,
   markNotificationRead,
   loadMyPosts,
-  deleteMyPost
+  deleteMyPost,
+  togglePostLike,
+  loadPostEngagement,
+  loadPostComments,
+  createPostComment
 };

@@ -34,7 +34,7 @@
         </block>
       </view>
 
-      <view class="avatar-shell acrylic-card">
+      <view wx:if="{{avatars.length}}" class="avatar-shell acrylic-card">
         <view class="avatar-shell-head">
           <text class="avatar-shell-title">{{uiText.avatarShellTitle}}</text>
           <text class="avatar-shell-meta">{{uiText.avatarShellMeta}}</text>
@@ -87,6 +87,7 @@
             <text class="feature-tag" bindtap="onTagTap" data-tag="{{item}}">{{item}}</text>
           </block>
         </view>
+        <text wx:if="{{activeTag}}" class="active-filter" bindtap="onTagTap" data-tag="{{activeTag}}">正在筛选：{{activeTag}} · 点击清除</text>
 
         <view class="feature-actions">
           <view class="feature-action feature-action-primary {{featuredPost.isLiked ? 'feature-action-liked' : ''}}" bindtap="onLikeTap">
@@ -99,15 +100,15 @@
             <text class="feature-action-text secondary-text">{{featuredPost.commentsText}}</text>
           </view>
 
-          <view class="feature-action feature-action-secondary" bindtap="onActionTap" data-action="save">
+          <view class="feature-action feature-action-secondary {{featuredPost.isSaved ? 'feature-action-liked' : ''}}" bindtap="onActionTap" data-action="save">
             <text class="feature-action-icon secondary-icon">⌂</text>
             <text class="feature-action-text secondary-text">{{featuredPost.savesText}}</text>
           </view>
 
-          <view class="feature-action feature-action-secondary" bindtap="onActionTap" data-action="share">
+          <button class="feature-action feature-action-secondary share-action" open-type="share">
             <text class="feature-action-icon secondary-icon">↗</text>
             <text class="feature-action-text secondary-text">{{uiText.actionTexts.share}}</text>
-          </view>
+          </button>
         </view>
       </view>
 
@@ -126,9 +127,16 @@
             <text wx:if="{{item.content}}" class="feed-card-content">{{item.content}}</text>
             <image wx:if="{{item.image}}" class="feed-card-image" src="{{item.image}}" mode="aspectFill" />
             <text wx:if="{{item.destinationLabel}}" class="feature-location">{{item.destinationLabel}}</text>
+            <view class="feature-tags">
+              <block wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">
+                <text class="feature-tag" bindtap="onTagTap" data-tag="{{tag}}">{{tag}}</text>
+              </block>
+            </view>
           </view>
         </block>
       </view>
+
+      <view wx:if="{{activeTag && !feedPosts.length}}" class="feed-state acrylic-card">当前标签下没有更多动态，点击上方筛选标签可清除。</view>
 
       <view class="bottom-gap"></view>
     </view>

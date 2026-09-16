@@ -482,6 +482,13 @@
   color: #7b533e;
 }
 
+.share-action {
+  margin: 0;
+  line-height: normal;
+}
+.share-action::after { border: 0; }
+.active-filter { display: block; margin-top: 6rpx; color: #6f513f; font-size: 21rpx; }
+
 .bottom-gap {
   height: 36rpx;
 }
