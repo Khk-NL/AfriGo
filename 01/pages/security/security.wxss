@@ -94,6 +94,25 @@
   margin-top: -30px;
 }
 
+.security-empty {
+  margin: 24rpx;
+  padding: 72rpx 36rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  box-shadow: 0 12rpx 26rpx rgba(255, 77, 109, 0.1);
+}
+
+.security-empty-icon,
+.security-empty-title,
+.security-empty-desc {
+  display: block;
+}
+
+.security-empty-icon { font-size: 48rpx; }
+.security-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #232323; }
+.security-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #6b7280; }
+
 .pulse {
   animation: pulseSlow 3.4s ease-in-out infinite;
 }

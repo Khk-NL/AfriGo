@@ -1,6 +1,7 @@
 // 01/pages/recommend/recommend.js
 import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const recLib = require('../../data/recommend.js');
 
@@ -56,16 +57,17 @@ Page({
     searchKeyword: "",
     displayList: [],
     fullList: [],
-    summaryCount: 0
+    summaryCount: 0,
+    noData: false
   },
 
   onLoad: function() {
-    const selected = wx.getStorageSync('selectedDestination') || { zhName: "刚果金" };
+    const selected = getSelectedDestination();
     this.loadRecommendations(selected.zhName);
   },
 
   onShow: function() {
-    const selected = wx.getStorageSync('selectedDestination') || { zhName: "刚果金" };
+    const selected = getSelectedDestination();
     if (selected.zhName !== this.data.currentCountry || !this.data.fullList || !this.data.fullList.length) {
       this.loadRecommendations(selected.zhName);
     }
@@ -86,6 +88,7 @@ Page({
       displayList: nextList,
       fullList: nextList,
       summaryCount: nextList.length,
+      noData: !nextList.length,
       searchKeyword: '',
       activeCategory: '全部'
     });

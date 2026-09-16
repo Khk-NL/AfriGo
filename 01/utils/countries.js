@@ -24,6 +24,14 @@ const COUNTRY_CODE_BY_ZH = {
   '阿尔及利亚': 'DZ'
 };
 
+const DEFAULT_DESTINATION = {
+  id: 'kenya',
+  code: 'KE',
+  zhName: '肯尼亚',
+  enName: 'Kenya',
+  image: '/assets/images/covers/kenya.jpg'
+};
+
 function normalizeCountryCode(value, countryZh = '') {
   const direct = String(value || '').trim().toUpperCase();
   if (/^[A-Z]{2}$/.test(direct)) {
@@ -36,16 +44,21 @@ function getSelectedDestination() {
   try {
     const destination = wx.getStorageSync('selectedDestination') || {};
     return {
+      ...DEFAULT_DESTINATION,
       ...destination,
-      code: normalizeCountryCode(destination.code || destination.countryCode, destination.zhName)
+      code: normalizeCountryCode(
+        destination.code || destination.countryCode || DEFAULT_DESTINATION.code,
+        destination.zhName || DEFAULT_DESTINATION.zhName
+      )
     };
   } catch (error) {
-    return {};
+    return { ...DEFAULT_DESTINATION };
   }
 }
 
 export {
   COUNTRY_CODE_BY_ZH,
+  DEFAULT_DESTINATION,
   normalizeCountryCode,
   getSelectedDestination
 };

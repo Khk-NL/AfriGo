@@ -15,6 +15,7 @@
       <text class="hero-title">{{pageTitle}}</text>
     </view>
 
+    <block wx:if="{{hasData}}">
     <view class="bento-grid">
       <view class="card card-half">
         <text class="card-title">行为红线</text>
@@ -44,25 +45,15 @@
     </view>
 
     <view class="card card-full dress-card">
-      <text class="card-title">着装规范 (严格执行)</text>
+      <text class="card-title">着装建议</text>
       <view class="dress-layout">
         <view class="dress-col">
           <text class="dress-title">男士 👔</text>
           <text class="dress-text">{{dressMen}}</text>
-          <text class="dress-sub">部族/宗教场景避免高对比撞色与过于暴露的装束。</text>
-          <view class="taboo-pill">
-            <text class="taboo-icon">⚠️</text>
-            <text class="taboo-label">绝对禁忌：迷彩/军绿色、矿区化纤衣物</text>
-          </view>
         </view>
         <view class="dress-col">
           <text class="dress-title">女士 👗</text>
           <text class="dress-text">{{dressWomen}}</text>
-          <text class="dress-sub">进入宗教或部族场所时，优先选择保守、得体的穿着。</text>
-          <view class="taboo-pill">
-            <text class="taboo-icon">⚠️</text>
-            <text class="taboo-label">绝对禁忌：无袖、短裙、紧身露肩、公开亲密着装</text>
-          </view>
         </view>
       </view>
     </view>
@@ -84,6 +75,13 @@
     <view class="card card-full">
       <text class="card-title">官方信息来源</text>
       <text class="source-line" wx:for="{{sourceLines}}" wx:key="*this">{{item}}</text>
+    </view>
+    </block>
+
+    <view wx:else class="customs-empty">
+      <text class="customs-empty-icon">🌍</text>
+      <text class="customs-empty-title">暂无该国家风俗资料</text>
+      <text class="customs-empty-desc">我们不会把其他国家的禁忌当作本地建议，请等待来源核验后更新。</text>
     </view>
 
     <view class="page-gap"></view>

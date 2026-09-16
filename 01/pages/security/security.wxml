@@ -45,7 +45,7 @@
       </view>
     </view>
 
-    <view class="modules-grid">
+    <view wx:if="{{hasData}}" class="modules-grid">
       <view class="module-card card-index">
         <text class="card-title">整体犯罪指数</text>
         <view class="gauge-wrap">
@@ -154,9 +154,14 @@
         </view>
       </view>
     </view>
+    <view wx:else class="security-empty">
+      <text class="security-empty-icon">🛡️</text>
+      <text class="security-empty-title">暂无{{countryNameZh}}安全资料</text>
+      <text class="security-empty-desc">当前不会借用其他国家的风险信息，请等待后台补充并核验来源。</text>
+    </view>
   </scroll-view>
 
-  <view class="action-bar">
+  <view wx:if="{{hasData}}" class="action-bar">
     <view class="action-row">
       <button class="emergency-btn pulse" bindtap="onCallEmbassy">
         <text class="phone-icon">📞</text>

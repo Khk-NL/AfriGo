@@ -12,7 +12,7 @@
     <view class="nav-space"></view>
   </view>
 
-  <view class="ticker-wrap">
+  <view wx:if="{{hasData}}" class="ticker-wrap">
     <view class="ticker-track">
       <text class="ticker-text">{{tickerText}}</text>
       <text class="ticker-text">{{tickerText}}</text>
@@ -23,6 +23,7 @@
 
   <scroll-view class="content-scroll" scroll-y="true" show-scrollbar="false">
     <view class="content-wrap">
+      <block wx:if="{{hasData}}">
       <view class="floating-card card-top">
         <view class="must-tag">{{uiText.entryMustTag}}</view>
         <view class="title-row">
@@ -72,12 +73,19 @@
           <text class="tip-note">{{uiText.malariaNote}}</text>
         </view>
       </view>
+      </block>
+
+      <view wx:else class="health-empty">
+        <text class="health-empty-icon">🏥</text>
+        <text class="health-empty-title">暂无{{countryName}}健康资料</text>
+        <text class="health-empty-desc">医院、疫苗和急救信息涉及人身安全，未核验前不展示其他国家的数据。</text>
+      </view>
 
       <view class="bottom-gap"></view>
     </view>
   </scroll-view>
 
-  <view class="life-channel">
+  <view wx:if="{{hasData}}" class="life-channel">
     <view class="life-btn" bindtap="onCallEmergency">
       <view class="life-shimmer"></view>
       <text class="life-text">{{uiText.emergencyButton}}</text>

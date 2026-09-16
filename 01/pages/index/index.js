@@ -1,5 +1,6 @@
 import { buildIndexText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
 import { getStoredCurrentUser, isAdminUser, isLoggedIn, logoutCurrentUser, syncWeChatLogin } from '../../utils/cloud-service.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const getCountryImages = (country) => {
   if (country && Array.isArray(country.images) && country.images.length) {
@@ -16,19 +17,19 @@ Page({
     currentUser: null,
     isLogin: false,
     isAdmin: false,
-    currentCountryId: 'drc',
-    currentCountryCode: 'CD',
-    currentCountryZh: '刚果(金)',
-    currentCountryEn: 'DR Congo',
-    currentCountryLabel: getCountryName('刚果(金)', getStoredLanguage()),
-    currentCountryImage: '/assets/images/covers/drc.jpg',
-    currentCountryBg: 'radial-gradient(circle at 70% 20%, #cfdbef 0%, #b7c7e4 40%, #8ea8d4 100%)',
-    currentCoverImages: ['/assets/images/covers/drc.jpg', '/assets/images/covers/roc.jpg'],
+    currentCountryId: 'kenya',
+    currentCountryCode: 'KE',
+    currentCountryZh: '肯尼亚',
+    currentCountryEn: 'Kenya',
+    currentCountryLabel: getCountryName('肯尼亚', getStoredLanguage()),
+    currentCountryImage: '/assets/images/covers/kenya.jpg',
+    currentCountryBg: 'radial-gradient(circle at 70% 20%, #d8cfbf 0%, #cabca5 38%, #aa9575 100%)',
+    currentCoverImages: ['/assets/images/covers/kenya.jpg', '/assets/images/covers/kenya-2.jpg'],
     currentCoverIndex: 0,
     ctaPressed: false,
     sheetVisible: false,
     countryKeyword: '',
-    pendingCountryId: 'drc',
+    pendingCountryId: 'kenya',
     isCountryTransition: false,
     countries: [
       {
@@ -332,17 +333,26 @@ Page({
     // 页面加载触觉反馈
     this.triggerHaptic('medium');
 
-    this.applyLanguage(this.data.language);
-    this.refreshAuthState();
-    const currentCountry = this.data.countries.find((item) => item.id === this.data.currentCountryId);
+    const selectedDestination = getSelectedDestination();
+    const currentCountry = this.data.countries.find((item) => (
+      item.id === selectedDestination.id || item.code === selectedDestination.code
+    )) || this.data.countries.find((item) => item.id === 'kenya');
     const coverImages = getCountryImages(currentCountry);
     this.setData({
       filteredCountries: this.data.countries,
-      currentCountryLabel: getCountryName(this.data.currentCountryZh, this.data.language),
+      currentCountryId: currentCountry.id,
+      currentCountryCode: currentCountry.code,
+      currentCountryZh: currentCountry.zhName,
+      currentCountryEn: currentCountry.enName,
+      currentCountryLabel: getCountryName(currentCountry.zhName, this.data.language),
+      currentCountryBg: currentCountry.bg,
       currentCoverImages: coverImages,
       currentCoverIndex: 0,
-      currentCountryImage: coverImages[0] || this.data.currentCountryImage
+      currentCountryImage: coverImages[0] || currentCountry.image || '',
+      pendingCountryId: currentCountry.id
     });
+    this.applyLanguage(this.data.language);
+    this.refreshAuthState();
   },
 
   onShow() {

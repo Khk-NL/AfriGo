@@ -1,5 +1,6 @@
 // 01/pages/labor/labor.js
 import { loadGuide } from '../../utils/cloud-service.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const laborLib = require('../../data/labor.js');
 
@@ -13,7 +14,7 @@ Page({
   },
 
   async onLoad() {
-    const selected = wx.getStorageSync('selectedDestination') || { zhName: '刚果(金)' };
+    const selected = getSelectedDestination();
     const countryZh = selected.zhName;
     const localList = laborLib.labor[countryZh] || [];
     this.setData({

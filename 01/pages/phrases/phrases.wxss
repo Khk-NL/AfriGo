@@ -1,48 +1,11 @@
-/* 01/pages/phrases/phrases.wxss */
-@import "../home/home.wxss";
+@import "../../templates/content-shell.wxss";
 
-/* 分类选中的小修饰 */
-.active-pill {
-        background: #65c79c !important;
-}
-.active-pill .tag-text {
-        color: #ffffff !important;
-}
-
-/* 列表容器 */
-.phrase-list {
-        padding-bottom: 100rpx;
-}
-
-@import "../home/home.wxss";
-
-.search-input {
-        flex: 1;
-        height: 70rpx;
-        font-size: 28rpx;
-        padding: 0 20rpx;
-}
-
-.clear-icon {
-        font-size: 40rpx;
-        color: #ccc;
-        padding: 0 20rpx;
-        z-index: 10;
-}
-
-.active-pill {
-        background: #7949c6 !important;
-}
-
-.active-pill .tag-text {
-        color: #fff !important;
-}
-.bookmark-action {
-  margin-top: 18rpx;
-  color: #7a6848;
-  font-size: 26rpx;
-}
-
-.bookmark-action.bookmarked {
-  color: #c28a24;
-}
+.phrase-tags { margin-top: 20rpx; }
+.active-pill { color: #ffffff; background: #65a985; border-color: #65a985; }
+.phrase-type { padding: 8rpx 14rpx; border-radius: 999rpx; color: #39775b; background: #e7f6ee; font-size: 20rpx; }
+.phrase-audio { font-size: 34rpx; }
+.phrase-cn { margin-top: 18rpx; }
+.phrase-foreign { display: block; margin-top: 10rpx; color: #5f24b6; font-size: 30rpx; font-weight: 600; line-height: 1.45; }
+.phrase-pronunciation { display: inline-flex; margin-top: 14rpx; padding: 10rpx 16rpx; border-radius: 14rpx; color: #9a5a18; background: #fff5e8; font-size: 24rpx; }
+.bookmark-action { margin-top: 18rpx; color: #7a6848; font-size: 26rpx; }
+.bookmark-action.bookmarked { color: #c28a24; }

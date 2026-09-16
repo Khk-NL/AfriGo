@@ -1,4 +1,5 @@
 import { loadGuide } from '../../utils/cloud-service.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const DEFAULT_THEME_START = '#FFF3E0';
 const DEFAULT_THEME_END = '#FFE0B2';
@@ -37,14 +38,15 @@ Page({
     summary: '',
     pulseItems: [],
     serviceItems: [],
-    livingTips: []
+    livingTips: [],
+    isGeneralFallback: true
   },
 
   onLoad(options) {
     const themeStart = decodeURIComponent((options && options.themeStart) || DEFAULT_THEME_START);
     const themeEnd = decodeURIComponent((options && options.themeEnd) || DEFAULT_THEME_END);
-    const selectedDestination = wx.getStorageSync('selectedDestination') || {};
-    const countryName = selectedDestination.zhName || '肯尼亚';
+    const selectedDestination = getSelectedDestination();
+    const countryName = selectedDestination.zhName;
     const cityName = COUNTRY_CITY_MAP[countryName] || '主要城市';
     const content = this.buildContent(countryName, cityName);
 
@@ -66,7 +68,8 @@ Page({
       summary: content.summary,
       pulseItems: content.pulseItems,
       serviceItems: content.serviceItems,
-      livingTips: content.livingTips
+      livingTips: content.livingTips,
+      isGeneralFallback: true
     });
     this.loadGuideLocalInfo(countryName, content);
   },
@@ -78,6 +81,7 @@ Page({
         return;
       }
       this.setData({
+        isGeneralFallback: false,
         summary: guide.localInfo.summary || fallback.summary,
         pulseItems: (guide.localInfo.pulseItems && guide.localInfo.pulseItems.length) ? guide.localInfo.pulseItems : fallback.pulseItems,
         livingTips: (guide.localInfo.livingTips && guide.localInfo.livingTips.length) ? guide.localInfo.livingTips : fallback.livingTips
@@ -89,18 +93,18 @@ Page({
 
   buildContent(countryName, cityName) {
     return {
-      summary: `${cityName}近期整体节奏平稳，建议把夜间交通、证件保管和本地支付方式作为优先关注项。`,
+      summary: `${countryName}实时资讯尚待核验，下方先提供通用落地清单，不代表当地实时情况。`,
       pulseItems: [
         {
-          tag: '实时提醒',
-          title: `${cityName}晚高峰通勤压力上升`,
-          desc: '工作日 17:00 以后建议优先选择主干道或正规网约车，尽量避免临时换乘。',
+          tag: '通用建议',
+          title: `抵达${cityName}后先确认可靠交通方式`,
+          desc: '优先使用酒店、接待方或已核验的平台安排交通，避免临时上车或频繁换线。',
           action: 'recommend'
         },
         {
-          tag: '生活资讯',
-          title: `${countryName}常用支付以现金和移动支付并行为主`,
-          desc: '大额消费建议提前确认是否支持刷卡，日常小额场景保留零钱会更稳妥。',
+          tag: '通用建议',
+          title: '支付前先确认可用方式',
+          desc: '到达后向酒店或接待方核实现金、银行卡与移动支付的覆盖情况，不预设某一方式全国通用。',
           action: 'tips'
         },
         {

@@ -2,6 +2,22 @@ page {
   background: #F0F7F4;
 }
 
+.health-empty {
+  margin-top: 80rpx;
+  padding: 72rpx 36rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  box-shadow: 0 14rpx 30rpx rgba(16, 185, 129, 0.1);
+}
+
+.health-empty-icon,
+.health-empty-title,
+.health-empty-desc { display: block; }
+.health-empty-icon { font-size: 48rpx; }
+.health-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #243447; }
+.health-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #6b7280; }
+
 .health-page {
   min-height: 100vh;
   position: relative;

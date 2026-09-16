@@ -1,6 +1,7 @@
 // 01/pages/attractions/attractions.js
 import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const attrLib = require('../../data/attractions.js');
 
@@ -12,7 +13,7 @@ const hasUsableImage = (image) => {
 };
 
 const applyCountryCover = (list, coverImage) => {
-  const fallback = coverImage || '/assets/images/covers/drc.jpg';
+  const fallback = coverImage || '/assets/images/covers/kenya.jpg';
   return (list || []).map((item) => ({
     ...item,
     image: hasUsableImage(item.image) ? item.image : fallback
@@ -75,20 +76,20 @@ Page({
   },
 
   onLoad: function() {
-    const selected = wx.getStorageSync('selectedDestination') || { zhName: "刚果金" };
+    const selected = getSelectedDestination();
     this.loadAttractions(selected.zhName);
   },
 
   onShow: function() {
-    const selected = wx.getStorageSync('selectedDestination') || { zhName: "刚果金" };
+    const selected = getSelectedDestination();
     if (selected.zhName !== this.data.currentCountry || !this.data.list.length) {
       this.loadAttractions(selected.zhName);
     }
   },
 
   async loadAttractions(countryZh) {
-    const selected = wx.getStorageSync('selectedDestination') || {};
-    const coverImage = selected.image || '/assets/images/covers/drc.jpg';
+    const selected = getSelectedDestination();
+    const coverImage = selected.image;
     const localFallback = applyCountryCover(pickCountryList(attrLib.attractions, countryZh), coverImage);
     const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
     const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);

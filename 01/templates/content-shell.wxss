@@ -125,6 +125,10 @@ page {
   line-height: 1;
 }
 
+.hero-chip-row {
+  margin-top: 20rpx;
+}
+
 .tag-text {
   color: inherit;
   font-size: inherit;

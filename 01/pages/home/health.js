@@ -1,25 +1,16 @@
 import { buildHealthText, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
 import { loadGuide } from '../../utils/cloud-service.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 Page({
   data: {
     language: getStoredLanguage(),
-    countryName: '刚果(金)',
-    uiText: buildHealthText(getStoredLanguage(), '刚果(金)'),
+    countryName: '肯尼亚',
+    uiText: buildHealthText(getStoredLanguage(), '肯尼亚'),
+    hasData: false,
     tickerText: '',
     emergencyPhone: '112',
-    hospitals: [
-      {
-        name: '中刚医疗中心（金沙萨）',
-        address: '金沙萨市中心大道 21 号',
-        phone: '+243818888888'
-      },
-      {
-        name: '瑞辰医院（卢本巴希）',
-        address: '卢本巴希矿业新区健康街 9 号',
-        phone: '+243816666666'
-      }
-    ],
+    hospitals: [],
     malariaOpen: false,
     malariaTips: []
   },
@@ -36,14 +27,15 @@ Page({
   },
 
   onLoad() {
-    const cached = wx.getStorageSync('selectedDestination') || {};
-    const countryName = cached.zhName || '刚果(金)';
+    const cached = getSelectedDestination();
+    const countryName = cached.zhName;
     this.setData({ countryName });
     this.applyLanguage(getStoredLanguage(), countryName);
     this.loadGuideHealth(countryName);
   },
 
   async loadGuideHealth(countryName) {
+    this.setData({ hasData: false });
     try {
       const guide = await loadGuide(countryName);
       if (!guide || !guide.health) {
@@ -54,10 +46,11 @@ Page({
         entryMustDesc: guide.health.entryMustDesc || this.data.uiText.entryMustDesc
       };
       this.setData({
+        hasData: true,
         uiText,
         tickerText: guide.health.tickerText || this.data.tickerText,
-        hospitals: (guide.health.hospitals && guide.health.hospitals.length) ? guide.health.hospitals : this.data.hospitals,
-        malariaTips: (guide.health.malariaTips && guide.health.malariaTips.length) ? guide.health.malariaTips : this.data.malariaTips,
+        hospitals: Array.isArray(guide.health.hospitals) ? guide.health.hospitals : [],
+        malariaTips: Array.isArray(guide.health.malariaTips) ? guide.health.malariaTips : [],
         emergencyPhone: guide.health.emergencyPhone || this.data.emergencyPhone
       });
     } catch (error) {

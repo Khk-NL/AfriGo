@@ -1,7 +1,8 @@
-/* 01/pages/labor/labor.wxss */
-@import "../home/home.wxss";
+@import "../../templates/content-shell.wxss";
 
-/* 针对强制性政策的特殊卡片颜色修饰 */
-.labor-list {
-        padding-top: 20rpx;
-}
+.labor-pill-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8rpx; }
+.labor-tag,
+.labor-level { padding: 8rpx 12rpx; border-radius: 999rpx; background: #f2f6fa; color: #5a6677; font-size: 20rpx; }
+.labor-level--strict { background: #fff0f3; color: #b23d53; }
+.labor-card--strict { border-color: rgba(255, 143, 163, 0.55); }
+.labor-tip-text { font-size: 24rpx; color: #5d6674; line-height: 1.7; }

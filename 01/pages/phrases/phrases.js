@@ -1,5 +1,6 @@
 import { loadGuide } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const phraseLib = require('../../data/phrases.js');
 
@@ -15,7 +16,7 @@ Page({
   },
 
   onLoad: async function() {
-    const cached = wx.getStorageSync('selectedDestination') || { zhName: "肯尼亚" };
+    const cached = getSelectedDestination();
     const countryName = cached.zhName;
     let list = (phraseLib.phrases && phraseLib.phrases[countryName]) ? phraseLib.phrases[countryName] : [];
 

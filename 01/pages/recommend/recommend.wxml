@@ -73,8 +73,8 @@
 
         <view wx:else class="empty-state">
           <text class="empty-icon">🧭</text>
-          <text class="empty-title">当前分类暂时没有内容</text>
-          <text class="empty-desc">试试切换到“全部”或其他类别，看看有没有更多可用推荐。</text>
+          <text class="empty-title">{{noData ? '该国家暂无经核验的推荐资料' : '当前分类暂时没有内容'}}</text>
+          <text class="empty-desc">{{noData ? '未核验内容不会从其他国家复制，请等待后台补充。' : '试试切换到“全部”或其他类别。'}}</text>
         </view>
       </view>
     </view>

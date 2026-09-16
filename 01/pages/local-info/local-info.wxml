@@ -11,7 +11,7 @@
         <text class="hero-subtitle">{{cityName}} · 城市脉搏、生活线索与安全观察</text>
         <text class="hero-summary">{{summary}}</text>
         <view class="hero-chip-row">
-          <text class="hero-chip">24h 更新</text>
+          <text class="hero-chip">{{isGeneralFallback ? '通用落地清单' : '资料已核验'}}</text>
           <text class="hero-chip">生活观察</text>
           <text class="hero-chip">安全优先</text>
         </view>
@@ -20,7 +20,7 @@
       <view class="section-card">
         <view class="section-head">
           <view>
-            <text class="section-title">今日脉搏</text>
+            <text class="section-title">{{isGeneralFallback ? '落地先看' : '今日脉搏'}}</text>
             <text class="section-subtitle">给初到当地的人一份先看什么的排序</text>
           </view>
         </view>

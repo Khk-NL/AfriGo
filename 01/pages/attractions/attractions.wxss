@@ -1,88 +1,11 @@
-/* 01/pages/attractions/attractions.wxss */
-@import "../home/home.wxss";
+@import "../../templates/content-shell.wxss";
 
-.attr-card {
-    background: #ffffff;
-    border-radius: 28rpx;
-    overflow: hidden;
-    margin-bottom: 34rpx;
-    box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.05);
-}
-
-.attr-img-box {
-    position: relative;
-    width: 100%;
-    height: 340rpx;
-}
-
-.attr-img {
-    width: 100%;
-    height: 100%;
-    background: #eef1f3; /* 图片加载前的占位色 */
-}
-
-.attr-tag-box {
-    position: absolute;
-    left: 20rpx;
-    bottom: 20rpx;
-    display: flex;
-    gap: 10rpx;
-}
-
-.attr-tag {
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    font-size: 20rpx;
-    padding: 6rpx 16rpx;
-    border-radius: 8rpx;
-    backdrop-filter: blur(4px);
-}
-
-.attr-info {
-    padding: 24rpx;
-}
-
-.attr-name {
-    display: block;
-    font-size: 34rpx;
-    font-weight: 700;
-    color: #111827;
-}
-
-.attr-desc {
-    display: block;
-    margin-top: 10rpx;
-    font-size: 24rpx;
-    color: #6b7280;
-    line-height: 1.6;
-}
-
-.attr-tips {
-    margin-top: 16rpx;
-    background: #fdf2f2;
-    padding: 16rpx;
-    border-radius: 12rpx;
-    display: flex;
-    gap: 10rpx;
-}
-
-.tips-icon { font-size: 24rpx; }
-.tips-text { font-size: 22rpx; color: #b91c1c; flex: 1; }
-.bookmark-action {
-  margin-top: 20rpx;
-  color: #7a6848;
-  font-size: 26rpx;
-}
-
-.bookmark-action.bookmarked {
-  color: #c28a24;
-}
-
-.attr-tag-scroll { margin: 0 0 24rpx; white-space: nowrap; }
-.attr-filter-row { display: inline-flex; gap: 14rpx; padding: 2rpx; }
-.attr-filter { padding: 12rpx 24rpx; border-radius: 999rpx; background: #fff; color: #566071; font-size: 24rpx; }
-.attr-filter.active { background: #5f24b6; color: #fff; }
-.attr-empty { padding: 70rpx 32rpx; text-align: center; background: #fff; border-radius: 24rpx; }
-.attr-empty-title, .attr-empty-desc { display: block; }
-.attr-empty-title { color: #1f2937; font-size: 28rpx; font-weight: 700; }
-.attr-empty-desc { margin-top: 14rpx; color: #6b7280; font-size: 23rpx; line-height: 1.6; }
+.attraction-tags { margin-top: 20rpx; }
+.active-pill { color: #ffffff; background: #c18a3c; border-color: #c18a3c; }
+.attraction-card { padding: 0; overflow: hidden; }
+.attraction-image { display: block; width: 100%; height: 330rpx; background: #eef1f3; }
+.attraction-body { padding: 24rpx; }
+.attraction-item-tags { margin-bottom: 14rpx; }
+.attraction-tag { padding: 8rpx 14rpx; border-radius: 999rpx; background: #fff0d9; color: #9a6a1b; font-size: 20rpx; }
+.bookmark-action { margin-top: 18rpx; color: #7a6848; font-size: 26rpx; }
+.bookmark-action.bookmarked { color: #c28a24; }

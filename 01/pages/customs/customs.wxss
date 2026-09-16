@@ -4,6 +4,22 @@
   position: relative;
 }
 
+.customs-empty {
+  margin: 36rpx 24rpx;
+  padding: 72rpx 36rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.94);
+  text-align: center;
+  box-shadow: 0 14rpx 30rpx rgba(84, 70, 51, 0.08);
+}
+
+.customs-empty-icon,
+.customs-empty-title,
+.customs-empty-desc { display: block; }
+.customs-empty-icon { font-size: 48rpx; }
+.customs-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #282521; }
+.customs-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #6b7280; }
+
 .bg-watermark {
   position: absolute;
   right: -40rpx;

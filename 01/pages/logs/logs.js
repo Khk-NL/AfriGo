@@ -1,10 +1,11 @@
 import { loadGuide } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 Page({
   data: {
-    countryName: '刚果金',
-    countryFlag: '🇨🇩',
+    countryName: '肯尼亚',
+    countryFlag: '🇰🇪',
     themeStart: '#edf6ff',
     themeEnd: '#ffffff',
     pageThemeStyle: '--theme-start:#edf6ff;--theme-end:#ffffff;',
@@ -41,8 +42,8 @@ Page({
 
     this.initNavMetrics()
 
-    const selectedDestination = wx.getStorageSync('selectedDestination') || {}
-    const rawCountryName = selectedDestination.zhName || '刚果金'
+    const selectedDestination = getSelectedDestination()
+    const rawCountryName = selectedDestination.zhName
     const countryName = this.normalizeCountryName(rawCountryName)
     this.loadVisaData(countryName)
   },
