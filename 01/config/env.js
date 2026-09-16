@@ -17,6 +17,9 @@ function getApiBase() {
   if (!REMOTE_API_BASE) {
     throw new Error('远程 API 域名尚未配置');
   }
+  if (!REMOTE_API_BASE.startsWith('https://')) {
+    throw new Error('远程 API 必须使用 HTTPS');
+  }
   return REMOTE_API_BASE.replace(/\/$/, '');
 }
 

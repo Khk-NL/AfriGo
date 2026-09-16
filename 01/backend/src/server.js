@@ -6,12 +6,16 @@ const multer = require('multer');
 const { createPool } = require('./db');
 const { countryCandidates, normalizeCountryCode } = require('./countries');
 const { exchangeWechatCode, issueSession, createAuthMiddleware, requireAdmin, hashToken } = require('./auth');
-const { getObjectUrl, uploadImage, resolveMedia } = require('./oss');
+const { getObjectUrl, initializeOssClient, uploadImage, resolveMedia } = require('./oss');
+const { assertProductionConfig } = require('./config');
+const { createRateLimiter } = require('./rate-limit');
 
 const app = express();
 const pool = createPool();
 const port = Number(process.env.PORT || 3001);
 const authenticate = createAuthMiddleware(pool);
+const loginLimiter = createRateLimiter({ windowMs: 10 * 60_000, max: 20, prefix: 'login' });
+const mutationLimiter = createRateLimiter({ windowMs: 60_000, max: 120, prefix: 'mutation' });
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -22,6 +26,17 @@ const allowedOrigins = String(process.env.CORS_ORIGINS || '')
   .split(',')
   .map((item) => item.trim())
   .filter(Boolean);
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+app.use((_req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'no-referrer',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+  });
+  next();
+});
 app.use(cors({
   origin(origin, callback) {
     if (!origin || process.env.NODE_ENV !== 'production' || allowedOrigins.includes(origin)) {
@@ -32,6 +47,11 @@ app.use(cors({
   }
 }));
 app.use(express.json({ limit: '2mb' }));
+app.use('/api/auth/login', loginLimiter);
+app.use('/api', (req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+  return mutationLimiter(req, res, next);
+});
 
 function toPublicUrl(image) {
   if (!image) {
@@ -196,34 +216,35 @@ app.put('/api/attractions/:id', authenticate, requireAdmin, async (req, res, nex
   }
 });
 
-app.get('/api/health', async (_req, res) => {
+app.get('/api/health', async (_req, res, next) => {
   try {
     await pool.query('SELECT 1');
     res.json({ ok: true });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    error.statusCode = 503;
+    next(error);
   }
 });
 
-app.get('/api/attractions', async (req, res) => {
+app.get('/api/attractions', async (req, res, next) => {
   try {
     const data = await listByCountry('attractions', mapAttraction, req.query.countryCode, req.query.country);
     res.json({ ok: true, data });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.get('/api/recommend', async (req, res) => {
+app.get('/api/recommend', async (req, res, next) => {
   try {
     const data = await listByCountry('recommend', mapRecommend, req.query.countryCode, req.query.country);
     res.json({ ok: true, data });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.get('/api/guide', async (req, res) => {
+app.get('/api/guide', async (req, res, next) => {
   try {
     const countryCode = normalizeCountryCode(req.query.countryCode, req.query.country);
     const candidates = countryCandidates(req.query.country);
@@ -256,11 +277,11 @@ app.get('/api/guide', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.get('/api/posts', async (_req, res) => {
+app.get('/api/posts', async (_req, res, next) => {
   try {
     const [rows] = await pool.query(
       `SELECT p.*,
@@ -270,7 +291,7 @@ app.get('/api/posts', async (_req, res) => {
     );
     res.json({ ok: true, data: rows.map(mapPost) });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
@@ -546,7 +567,7 @@ app.patch('/api/notifications/:id/read', authenticate, async (req, res, next) =>
   }
 });
 
-app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res) => {
+app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res, next) => {
   const mappers = {
     attractions: mapAttraction,
     recommend: mapRecommend,
@@ -563,11 +584,11 @@ app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res) =
     const [rows] = await pool.query(`SELECT * FROM \`${req.params.name}\` ORDER BY id DESC`);
     res.json({ ok: true, data: rows.map(mapper) });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
-app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res) => {
+app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const payload = req.body || {};
     if (req.params.name === 'attractions') {
@@ -609,7 +630,7 @@ app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res) 
 
     res.status(400).json({ ok: false, message: '该集合暂不支持新增' });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
 });
 
@@ -642,7 +663,7 @@ app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, re
   }
 });
 
-app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res) => {
+app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res, next) => {
   const allowed = ['attractions', 'recommend', 'posts', 'users'];
   if (!allowed.includes(req.params.name)) {
     res.status(404).json({ ok: false, message: '未知集合' });
@@ -653,12 +674,8 @@ app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req,
     await pool.query(`DELETE FROM \`${req.params.name}\` WHERE id = ?`, [req.params.id]);
     res.json({ ok: true });
   } catch (error) {
-    res.status(500).json({ ok: false, message: error.message });
+    next(error);
   }
-});
-
-app.listen(port, '0.0.0.0', () => {
-  console.log(`API listening at http://127.0.0.1:${port}`);
 });
 
 app.use((error, _req, res, _next) => {
@@ -673,3 +690,21 @@ app.use((error, _req, res, _next) => {
       : error.message
   });
 });
+
+async function startServer() {
+  assertProductionConfig();
+  if (process.env.NODE_ENV === 'production') await initializeOssClient();
+  const host = process.env.HOST || (process.env.NODE_ENV === 'production' ? '127.0.0.1' : '0.0.0.0');
+  return app.listen(port, host, () => {
+    console.log(`API listening at http://${host}:${port}`);
+  });
+}
+
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error('API startup failed:', error.message);
+    process.exit(1);
+  });
+}
+
+module.exports = { app, startServer };

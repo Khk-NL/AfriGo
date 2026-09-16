@@ -10,12 +10,15 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@alicloud/credentials": "^2.4.7",
     "ali-oss": "^6.23.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "multer": "^2.4.0",
-    "mysql2": "^3.14.0",
+    "mysql2": "^3.14.0"
+  },
+  "devDependencies": {
     "xlsx": "^0.18.5"
   }
 }

@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const OSS = require('ali-oss');
+const Credential = require('@alicloud/credentials');
 
 const EXTENSION_BY_MIME = {
   'image/jpeg': '.jpg',
@@ -8,28 +9,68 @@ const EXTENSION_BY_MIME = {
 };
 
 let client;
+let credentialClient;
+
+function createOssClient(credentials) {
+  return new OSS({
+    region: process.env.OSS_REGION,
+    bucket: process.env.OSS_BUCKET,
+    accessKeyId: credentials.accessKeyId,
+    accessKeySecret: credentials.accessKeySecret,
+    stsToken: credentials.securityToken || process.env.OSS_SESSION_TOKEN,
+    refreshSTSTokenInterval: credentials.refreshSTSToken ? 0 : undefined,
+    refreshSTSToken: credentials.refreshSTSToken,
+    authorizationV4: true,
+    secure: true
+  });
+}
+
+async function initializeOssClient() {
+  if (client) return client;
+  const baseMissing = ['OSS_REGION', 'OSS_BUCKET'].filter((key) => !process.env[key]);
+  if (baseMissing.length) throw Object.assign(new Error(`OSS 配置缺失：${baseMissing.join(', ')}`), { statusCode: 503 });
+
+  if ((process.env.OSS_CREDENTIAL_MODE || 'environment') === 'ecs_ram_role') {
+    const credentialsConfig = new Credential.Config({
+      type: 'ecs_ram_role',
+      roleName: process.env.ALIBABA_CLOUD_ECS_METADATA || undefined
+    });
+    credentialClient = new Credential.default(credentialsConfig);
+    const current = await credentialClient.getCredential();
+    client = createOssClient({
+      ...current,
+      refreshSTSToken: async () => {
+        const refreshed = await credentialClient.getCredential();
+        return {
+          accessKeyId: refreshed.accessKeyId,
+          accessKeySecret: refreshed.accessKeySecret,
+          stsToken: refreshed.securityToken
+        };
+      }
+    });
+    return client;
+  }
+
+  const missing = ['OSS_ACCESS_KEY_ID', 'OSS_ACCESS_KEY_SECRET'].filter((key) => !process.env[key]);
+  if (missing.length) throw Object.assign(new Error(`OSS 配置缺失：${missing.join(', ')}`), { statusCode: 503 });
+  client = createOssClient({
+    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+    accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
+    securityToken: process.env.OSS_SESSION_TOKEN
+  });
+  return client;
+}
 
 function getClient() {
   if (client) {
     return client;
   }
-
-  const required = ['OSS_REGION', 'OSS_BUCKET', 'OSS_ACCESS_KEY_ID', 'OSS_ACCESS_KEY_SECRET'];
-  const missing = required.filter((key) => !process.env[key]);
-  if (missing.length) {
-    const error = new Error(`OSS 配置缺失：${missing.join(', ')}`);
-    error.statusCode = 503;
-    throw error;
+  if ((process.env.OSS_CREDENTIAL_MODE || 'environment') === 'ecs_ram_role') {
+    throw Object.assign(new Error('OSS ECS RAM Role 尚未初始化'), { statusCode: 503 });
   }
-
-  client = new OSS({
-    region: process.env.OSS_REGION,
-    bucket: process.env.OSS_BUCKET,
-    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
-    accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
-    authorizationV4: true,
-    secure: true
-  });
+  const missing = ['OSS_REGION', 'OSS_BUCKET', 'OSS_ACCESS_KEY_ID', 'OSS_ACCESS_KEY_SECRET'].filter((key) => !process.env[key]);
+  if (missing.length) throw Object.assign(new Error(`OSS 配置缺失：${missing.join(', ')}`), { statusCode: 503 });
+  client = createOssClient({ accessKeyId: process.env.OSS_ACCESS_KEY_ID, accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET });
   return client;
 }
 
@@ -107,5 +148,6 @@ module.exports = {
   createObjectKey,
   getObjectUrl,
   uploadImage,
-  resolveMedia
+  resolveMedia,
+  initializeOssClient
 };

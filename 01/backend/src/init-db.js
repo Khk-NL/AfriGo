@@ -132,18 +132,19 @@ async function connectWithProvidedAccounts() {
   const host = process.env.DB_HOST;
   const port = Number(process.env.DB_PORT || 3306);
   const dbName = process.env.DB_NAME;
-  const attempts = [
-    {
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: dbName
-    },
-    {
+  const attempts = [];
+  if (process.env.DB_ROOT_PASSWORD) {
+    attempts.push({
       user: 'root',
       password: process.env.DB_ROOT_PASSWORD,
       database: undefined
-    }
-  ];
+    });
+  }
+  attempts.push({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: dbName
+  });
 
   let lastError;
   for (const attempt of attempts) {
@@ -169,6 +170,7 @@ async function connectWithProvidedAccounts() {
 
 async function ensureDatabase(conn, user) {
   const dbName = process.env.DB_NAME;
+  if (!/^[A-Za-z0-9_]+$/.test(dbName || '')) throw new Error('DB_NAME 格式不合法');
   await conn.query(
     `CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
   );
@@ -177,10 +179,13 @@ async function ensureDatabase(conn, user) {
   if (user === 'root' && process.env.DB_USER && process.env.DB_PASSWORD) {
     const appUser = process.env.DB_USER;
     const appPassword = process.env.DB_PASSWORD;
+    const appHost = process.env.DB_APP_HOST || '127.0.0.1';
+    if (!/^[A-Za-z0-9_-]+$/.test(appUser)) throw new Error('DB_USER 格式不合法');
+    if (!/^[A-Za-z0-9.:%_-]+$/.test(appHost)) throw new Error('DB_APP_HOST 格式不合法');
     await conn.query(
-      `CREATE USER IF NOT EXISTS '${appUser}'@'%' IDENTIFIED BY '${appPassword.replace(/'/g, "''")}'`
+      `CREATE USER IF NOT EXISTS '${appUser}'@'${appHost}' IDENTIFIED BY '${appPassword.replace(/'/g, "''")}'`
     );
-    await conn.query(`GRANT ALL PRIVILEGES ON \`${dbName}\`.* TO '${appUser}'@'%'`);
+    await conn.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON \`${dbName}\`.* TO '${appUser}'@'${appHost}'`);
     await conn.query('FLUSH PRIVILEGES');
   }
 }

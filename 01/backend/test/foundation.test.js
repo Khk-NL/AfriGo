@@ -6,6 +6,8 @@ const { hashToken } = require('../src/auth');
 const { assertImage, createObjectKey } = require('../src/oss');
 const { loadGuideWorkbook } = require('../src/excel-guide');
 const { withStableIds } = require('../src/export-miniprogram-data');
+const { validateProductionConfig } = require('../src/config');
+const { createRateLimiter } = require('../src/rate-limit');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -43,4 +45,40 @@ test('workbook guides export supported countries with stable content ids', () =>
   assert.ok(kenya.attractionsList.length > 0);
   assert.equal(kenya.attractionsList[0].id, 'KE-attraction-1');
   assert.equal(kenya.recommendList[0].id, 'KE-recommend-1');
+});
+
+test('production config requires HTTPS and ECS role credentials', () => {
+  const base = {
+    NODE_ENV: 'production',
+    PUBLIC_BASE_URL: 'https://api.example.com',
+    DB_HOST: '127.0.0.1',
+    DB_NAME: 'app',
+    DB_USER: 'app',
+    DB_PASSWORD: 'strong-password',
+    WECHAT_APP_ID: 'wx-example-id',
+    WECHAT_APP_SECRET: 'strong-secret',
+    OSS_REGION: 'oss-cn-hangzhou',
+    OSS_BUCKET: 'private-bucket',
+    OSS_CREDENTIAL_MODE: 'ecs_ram_role',
+    ALIBABA_CLOUD_ECS_METADATA: 'liunianun-oss-role'
+  };
+  assert.deepEqual(validateProductionConfig(base), []);
+  assert.match(validateProductionConfig({ ...base, PUBLIC_BASE_URL: 'http://api.example.com' }).join('；'), /HTTPS/);
+  assert.match(validateProductionConfig({ ...base, ALLOW_DEV_AUTH: 'true' }).join('；'), /ALLOW_DEV_AUTH/);
+});
+
+test('rate limiter rejects requests after the configured limit', () => {
+  const limiter = createRateLimiter({ max: 1, windowMs: 60_000, prefix: 'test' });
+  const req = { ip: '127.0.0.1', socket: {} };
+  const response = {
+    headers: {},
+    set(name, value) { this.headers[name] = value; },
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; }
+  };
+  let nextCalls = 0;
+  limiter(req, response, () => { nextCalls += 1; });
+  limiter(req, response, () => { nextCalls += 1; });
+  assert.equal(nextCalls, 1);
+  assert.equal(response.statusCode, 429);
 });
