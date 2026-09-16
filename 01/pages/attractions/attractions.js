@@ -56,7 +56,7 @@ const pickCloudCountryList = (docs, countryZh) => {
   const candidates = getCountryCandidates(countryZh);
   const matched = docs.filter((item) => candidates.includes(item.countryZh || item.country || item.destination || item.region || item.area));
   const anonymous = docs.filter((item) => !item.countryZh && !item.country && !item.destination && !item.region && !item.area);
-  const list = matched.length ? matched : (anonymous.length ? anonymous : docs);
+  const list = matched.length ? matched : anonymous;
 
   return list.map((item) => ({
     ...item,

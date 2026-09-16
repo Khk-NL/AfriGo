@@ -8,6 +8,7 @@ const { loadGuideWorkbook } = require('../src/excel-guide');
 const { withStableIds } = require('../src/export-miniprogram-data');
 const { validateProductionConfig } = require('../src/config');
 const { createRateLimiter } = require('../src/rate-limit');
+const { sanitizeTripPayload } = require('../src/trip-plan');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -81,4 +82,25 @@ test('rate limiter rejects requests after the configured limit', () => {
   limiter(req, response, () => { nextCalls += 1; });
   assert.equal(nextCalls, 1);
   assert.equal(response.statusCode, 429);
+});
+
+test('trip plans normalize budget, purpose and checklist input', () => {
+  const plan = sanitizeTripPayload({
+    countryZh: '肯尼亚',
+    purpose: 'business',
+    startDate: '2026-10-01',
+    endDate: '2026-10-08',
+    travelers: 2,
+    budget: { transport: '1200.5', food: -20 },
+    checklist: [{ title: '护照', done: 1 }, { title: '' }]
+  });
+  assert.equal(plan.countryCode, 'KE');
+  assert.equal(plan.purpose, 'business');
+  assert.equal(plan.budget.transport, 1200.5);
+  assert.equal(plan.budget.food, 0);
+  assert.deepEqual(plan.checklist, [{ id: 'item-1', title: '护照', done: true }]);
+  assert.throws(
+    () => sanitizeTripPayload({ countryZh: '肯尼亚', startDate: '2026-10-08', endDate: '2026-10-01' }),
+    /返程日期/
+  );
 });

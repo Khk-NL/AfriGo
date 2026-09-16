@@ -1,11 +1,10 @@
 import { ElephantRenderer } from '../../utils/elephant-renderer.js';
 import { createPost, loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
+import { getSelectedDestination } from '../../utils/countries.js';
 
 const { attractions: localAttractionsData } = require('../../data/attractions.js');
 const { recommend: localRecommendData } = require('../../data/recommend.js');
-
-const DEFAULT_COUNTRY = '肯尼亚';
 
 const getCountryCandidates = (countryZh) => {
   const candidates = [];
@@ -18,10 +17,6 @@ const getCountryCandidates = (countryZh) => {
   const aliasCountry = rawCountry.replace(/[()]/g, '');
   if (aliasCountry && aliasCountry !== rawCountry) {
     candidates.push(aliasCountry);
-  }
-
-  if (!candidates.includes(DEFAULT_COUNTRY)) {
-    candidates.push(DEFAULT_COUNTRY);
   }
 
   return candidates;
@@ -53,8 +48,9 @@ const pickCloudCountryList = (docs, countryZh) => {
     return docCountry && candidates.includes(docCountry);
   });
 
-  const matchedList = withCountryField.length ? withCountryField : docs.filter(item => !item.countryZh && !item.country && !item.destination && !item.region && !item.area);
-  const finalList = matchedList.length ? matchedList : docs;
+  const finalList = withCountryField.length
+    ? withCountryField
+    : docs.filter(item => !item.countryZh && !item.country && !item.destination && !item.region && !item.area);
 
   return finalList.map(item => ({
     ...item,
@@ -71,7 +67,8 @@ Page({
     currentCountryZh: '肯尼亚',
     uiText: buildHomeText(getStoredLanguage(), '肯尼亚'),
     attractionsList: [],
-    recommendList: []
+    recommendList: [],
+    tripPreview: { progress: 0, label: '开始制定行前计划' }
   },
 
   applyLanguage(language, countryZh = this.data.currentCountryZh) {
@@ -85,8 +82,8 @@ Page({
 
   onLoad() {
     const language = getStoredLanguage();
-    const cached = wx.getStorageSync('selectedDestination') || {};
-    const countryZh = cached.zhName || '肯尼亚';
+    const cached = getSelectedDestination();
+    const countryZh = cached.zhName;
 
     wx.setNavigationBarColor({
       frontColor: '#000000',
@@ -99,24 +96,35 @@ Page({
 
     this.applyLanguage(language, countryZh);
     this.loadHomeCollections(countryZh);
+    this.loadTripPreview(cached.code);
   },
 
   onShow() {
-    const cached = wx.getStorageSync('selectedDestination');
-    const countryZh = cached && cached.zhName ? cached.zhName : '肯尼亚';
+    const cached = getSelectedDestination();
+    const countryZh = cached.zhName;
     const language = getStoredLanguage();
-
-    if (cached && cached.zhName) {
-      this.applyLanguage(language, cached.zhName);
-      if (this._homeCollectionsCountry !== cached.zhName) {
-        this.loadHomeCollections(cached.zhName);
-      }
-      return;
-    }
 
     this.applyLanguage(language, countryZh);
     if (this._homeCollectionsCountry !== countryZh) {
       this.loadHomeCollections(countryZh);
+    }
+    this.loadTripPreview(cached.code);
+  },
+
+  loadTripPreview(countryCode) {
+    try {
+      const plans = wx.getStorageSync('landingAssistantTripPlans') || {};
+      const plan = plans[countryCode];
+      if (!plan) {
+        this.setData({ tripPreview: { progress: 0, label: '开始制定行前计划' } });
+        return;
+      }
+      const checklist = Array.isArray(plan.checklist) ? plan.checklist : [];
+      const done = checklist.filter((item) => item.done).length;
+      const progress = checklist.length ? Math.round(done / checklist.length * 100) : 0;
+      this.setData({ tripPreview: { progress, label: `${plan.name || '安全落地计划'} · ${progress}%` } });
+    } catch (error) {
+      this.setData({ tripPreview: { progress: 0, label: '开始制定行前计划' } });
     }
   },
 
@@ -237,6 +245,10 @@ Page({
     wx.navigateTo({
       url: '/pages/security/security'
     });
+  },
+
+  onTripPlanTap() {
+    wx.navigateTo({ url: '/pages/trip-plan/trip-plan' });
   },
 
   onFeatureTap(e) {

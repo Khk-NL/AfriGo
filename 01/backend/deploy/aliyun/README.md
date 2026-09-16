@@ -17,7 +17,7 @@
 3. 正式环境设置 `OSS_CREDENTIAL_MODE=ecs_ram_role`、`ALIBABA_CLOUD_ECS_METADATA=<角色名>` 和 `ALIBABA_CLOUD_IMDSV1_DISABLE=true`；不要配置长期 AccessKey。SDK 会从实例元数据获取并自动刷新 STS 凭据。
 4. 把 `nginx.conf.example` 中的域名和证书路径替换为真实值。
 5. 把 `liunianun-api.service.example` 安装为 systemd service。
-6. 运行 `npm ci`、`npm run init-db`，再按需运行 `npm run import-excel`；导入完成后执行 `npm prune --omit=dev`，生产进程不加载仅用于可信工作簿导入的 `xlsx`。
+6. 运行 `npm ci`、`npm run init-db`，再按需运行 `npm run import-excel`；导入完成后执行 `npm prune --omit=dev`，生产进程不加载仅用于可信工作簿导入的 `xlsx`。升级版本后也要重新执行 `npm run init-db`，用于创建新增表；初始化脚本使用 `CREATE TABLE IF NOT EXISTS`，不会删除已有数据。
 7. 将 HTTPS API 域名加入微信公众平台的 request 和 uploadFile 合法域名。
 8. 将小程序 `config/env.js` 中的 `REMOTE_API_BASE` 改成正式 HTTPS API 地址。
 9. 启动后先访问 `https://你的域名/api/health`，确认返回 `{"ok":true}`，再配置体验版。

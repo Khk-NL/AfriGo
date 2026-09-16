@@ -43,6 +43,15 @@
         <text class="safety-date">{{uiText.safetyDate}}</text>
       </view>
 
+      <view class="landing-plan-card" bindtap="onTripPlanTap">
+        <view class="landing-plan-copy">
+          <text class="landing-plan-eyebrow">SAFE LANDING ASSISTANT</text>
+          <text class="landing-plan-title">我的安全落地计划</text>
+          <text class="landing-plan-desc">{{tripPreview.label}}</text>
+        </view>
+        <view class="landing-plan-progress"><text>{{tripPreview.progress}}%</text></view>
+      </view>
+
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">

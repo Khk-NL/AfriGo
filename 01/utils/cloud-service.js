@@ -254,6 +254,24 @@ async function deleteCurrentAccount() {
   return result;
 }
 
+async function loadTrips() {
+  const result = await request('/api/trips');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function saveTrip(trip) {
+  const id = trip && trip.id;
+  const result = await request(id ? `/api/trips/${id}` : '/api/trips', {
+    method: id ? 'PUT' : 'POST',
+    data: trip
+  });
+  return result.trip;
+}
+
+async function deleteTrip(tripId) {
+  return request(`/api/trips/${tripId}`, { method: 'DELETE' });
+}
+
 async function togglePostLike(postId) {
   return request(`/api/posts/${postId}/like`, { method: 'POST' });
 }
@@ -311,6 +329,9 @@ export {
   loadMyPosts,
   deleteMyPost,
   deleteCurrentAccount,
+  loadTrips,
+  saveTrip,
+  deleteTrip,
   togglePostLike,
   loadPostEngagement,
   loadPostComments,

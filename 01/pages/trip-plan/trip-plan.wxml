@@ -1,0 +1,62 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card landing-hero">
+        <text class="hero-eyebrow">SAFE LANDING PLAN</text>
+        <text class="hero-title">{{countryZh}}·安全落地计划</text>
+        <text class="hero-summary">把签证、材料、预算、机酒和逐日行程放进同一份可离线清单。</text>
+        <view class="hero-chip-row"><text class="hero-chip">{{syncLabel}}</text><text class="hero-chip">准备度 {{checklistProgress}}%</text></view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">出行概况</text><text class="section-subtitle">不同身份会自动切换材料清单</text></view>
+        <input class="form-input" value="{{name}}" data-field="name" bindinput="onFieldInput" placeholder="计划名称" />
+        <view class="choice-row">
+          <view wx:for="{{purposeOptions}}" wx:key="key" class="choice-pill {{purpose === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onPurposeTap">{{item.label}}</view>
+        </view>
+        <view class="date-grid">
+          <picker mode="date" value="{{startDate}}" data-field="startDate" bindchange="onDateChange"><view class="picker-field"><text class="field-label">出发</text><text>{{startDate || '选择日期'}}</text></view></picker>
+          <picker mode="date" value="{{endDate}}" data-field="endDate" bindchange="onDateChange"><view class="picker-field"><text class="field-label">返程</text><text>{{endDate || '选择日期'}}</text></view></picker>
+        </view>
+        <view class="inline-field"><text class="field-label">出行人数</text><input type="number" value="{{travelers}}" data-field="travelers" bindinput="onFieldInput" /></view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">签证进度</text><text class="section-subtitle">只记录进度，具体要求仍以签证指南和官方信息为准</text></view>
+        <view class="choice-row">
+          <view wx:for="{{visaStages}}" wx:key="key" class="choice-pill {{visa.stage === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onVisaStageTap">{{item.label}}</view>
+        </view>
+        <textarea class="form-textarea compact" value="{{visa.note}}" data-field="visa.note" bindinput="onFieldInput" placeholder="记录预约时间、受理编号或待补材料" />
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">行前材料清单</text><text class="section-subtitle">已完成 {{checklistDone}} / {{checklist.length}}</text></view>
+        <view class="progress-track"><view class="progress-fill" style="width: {{checklistProgress}}%;"></view></view>
+        <view wx:for="{{checklist}}" wx:key="id" class="check-row {{item.done ? 'done' : ''}}" data-id="{{item.id}}" bindtap="onChecklistTap"><view class="check-box">{{item.done ? '✓' : ''}}</view><text>{{item.title}}</text></view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">预算盘点</text><text class="section-subtitle">当前合计：{{currency}} {{budgetTotal}}</text></view>
+        <view class="budget-grid">
+          <view wx:for="{{budgetFields}}" wx:key="key" class="budget-field"><text>{{item.label}}</text><input type="digit" value="{{budget[item.key]}}" data-key="{{item.key}}" bindinput="onBudgetInput" /></view>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">机酒与当地交通</text><text class="section-subtitle">可粘贴订单号、时间、地址和联系方式</text></view>
+        <textarea class="form-textarea compact" value="{{bookings.flight}}" data-field="bookings.flight" bindinput="onFieldInput" placeholder="航班号、机场、起降时间" />
+        <textarea class="form-textarea compact" value="{{bookings.hotel}}" data-field="bookings.hotel" bindinput="onFieldInput" placeholder="酒店名称、地址、订单号" />
+        <textarea class="form-textarea compact" value="{{bookings.localTransport}}" data-field="bookings.localTransport" bindinput="onFieldInput" placeholder="接机人、车牌或当地交通安排" />
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">逐日行程</text><text class="section-subtitle">建议按“日期 + 城市 + 联系人 + 备用方案”记录</text></view>
+        <textarea class="form-textarea itinerary" value="{{itineraryText}}" data-field="itineraryText" bindinput="onFieldInput" placeholder="10月1日：抵达内罗毕，酒店接机……" />
+      </view>
+
+      <button class="save-button" loading="{{saving}}" disabled="{{saving}}" bindtap="onSaveTap">保存落地计划</button>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+</view>

@@ -6,6 +6,24 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
 }
 
+.landing-plan-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border-radius: 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  background: linear-gradient(135deg, #fff8e9 0%, #eef8f2 100%);
+  border: 1rpx solid rgba(101, 169, 133, 0.25);
+  box-shadow: 0 14rpx 30rpx rgba(57, 119, 91, 0.1);
+}
+
+.landing-plan-copy { flex: 1; }
+.landing-plan-eyebrow { display: block; color: #9a6a1b; font-size: 18rpx; letter-spacing: 2rpx; }
+.landing-plan-title { display: block; margin-top: 10rpx; color: #243447; font-size: 31rpx; font-weight: 800; }
+.landing-plan-desc { display: block; margin-top: 10rpx; color: #667085; font-size: 23rpx; }
+.landing-plan-progress { width: 92rpx; height: 92rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #39775b; background: rgba(255,255,255,0.9); border: 8rpx solid #9ecbb5; font-size: 22rpx; font-weight: 800; }
+
 /* =========================================
    大体 ?AI 伴游互动 ?(AI Hero Container)
    ========================================= */

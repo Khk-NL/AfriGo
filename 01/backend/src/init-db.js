@@ -126,6 +126,29 @@ CREATE TABLE IF NOT EXISTS country_guides (
   payload JSON NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS trip_plans (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(80) NOT NULL,
+  country_code CHAR(2) NOT NULL,
+  country_zh VARCHAR(64) NOT NULL,
+  purpose VARCHAR(24) NOT NULL DEFAULT 'travel',
+  start_date DATE NULL,
+  end_date DATE NULL,
+  travelers TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  currency CHAR(3) NOT NULL DEFAULT 'CNY',
+  budget_json JSON,
+  visa_json JSON,
+  checklist_json JSON,
+  itinerary_text TEXT,
+  bookings_json JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_trip_plans_user_country (user_id, country_code),
+  INDEX idx_trip_plans_user_updated (user_id, updated_at),
+  CONSTRAINT fk_trip_plans_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `;
 
 async function connectWithProvidedAccounts() {

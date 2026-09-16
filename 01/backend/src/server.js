@@ -9,6 +9,7 @@ const { exchangeWechatCode, issueSession, createAuthMiddleware, requireAdmin, ha
 const { getObjectUrl, initializeOssClient, uploadImage, resolveMedia } = require('./oss');
 const { assertProductionConfig } = require('./config');
 const { createRateLimiter } = require('./rate-limit');
+const { sanitizeTripPayload } = require('./trip-plan');
 
 const app = express();
 const pool = createPool();
@@ -163,6 +164,34 @@ function mapNotification(row) {
     createTime: row.created_at
   };
 }
+
+function mapTripPlan(row) {
+  return {
+    id: String(row.id),
+    name: row.name,
+    countryCode: row.country_code,
+    countryZh: row.country_zh,
+    purpose: row.purpose,
+    startDate: row.start_date || '',
+    endDate: row.end_date || '',
+    travelers: Number(row.travelers || 1),
+    currency: row.currency,
+    budget: parseJson(row.budget_json, {}),
+    visa: parseJson(row.visa_json, {}),
+    checklist: parseJson(row.checklist_json, []),
+    itineraryText: row.itinerary_text || '',
+    bookings: parseJson(row.bookings_json, {}),
+    createTime: row.created_at,
+    updateTime: row.updated_at
+  };
+}
+
+const TRIP_SELECT = `SELECT id, name, country_code, country_zh, purpose,
+  DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+  DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date,
+  travelers, currency, budget_json, visa_json, checklist_json,
+  itinerary_text, bookings_json, created_at, updated_at
+  FROM trip_plans`;
 
 async function listByCountry(table, mapper, countryCode, country) {
   const normalizedCode = normalizeCountryCode(countryCode, country);
@@ -561,6 +590,85 @@ app.get('/api/notifications', authenticate, async (req, res, next) => {
 app.patch('/api/notifications/:id/read', authenticate, async (req, res, next) => {
   try {
     await pool.query('UPDATE notifications SET read_at = COALESCE(read_at, NOW()) WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/trips', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(`${TRIP_SELECT} WHERE user_id = ? ORDER BY updated_at DESC`, [req.user.id]);
+    res.json({ ok: true, data: rows.map(mapTripPlan) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/trips', authenticate, async (req, res, next) => {
+  try {
+    const plan = sanitizeTripPayload(req.body || {});
+    await pool.query(
+      `INSERT INTO trip_plans
+       (user_id, name, country_code, country_zh, purpose, start_date, end_date, travelers, currency,
+        budget_json, visa_json, checklist_json, itinerary_text, bookings_json)
+       VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE name = VALUES(name), country_zh = VALUES(country_zh), purpose = VALUES(purpose),
+       start_date = VALUES(start_date), end_date = VALUES(end_date), travelers = VALUES(travelers),
+       currency = VALUES(currency), budget_json = VALUES(budget_json), visa_json = VALUES(visa_json),
+       checklist_json = VALUES(checklist_json), itinerary_text = VALUES(itinerary_text),
+       bookings_json = VALUES(bookings_json)`,
+      [
+        req.user.id, plan.name, plan.countryCode, plan.countryZh, plan.purpose,
+        plan.startDate, plan.endDate, plan.travelers, plan.currency,
+        JSON.stringify(plan.budget), JSON.stringify(plan.visa), JSON.stringify(plan.checklist),
+        plan.itineraryText, JSON.stringify(plan.bookings)
+      ]
+    );
+    const [rows] = await pool.query(`${TRIP_SELECT} WHERE user_id = ? AND country_code = ? LIMIT 1`, [req.user.id, plan.countryCode]);
+    res.status(201).json({ ok: true, trip: mapTripPlan(rows[0]) });
+  } catch (error) {
+    if (/请选择有效|返程日期/.test(error.message || '')) {
+      res.status(400).json({ ok: false, message: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+app.put('/api/trips/:id', authenticate, async (req, res, next) => {
+  try {
+    const plan = sanitizeTripPayload(req.body || {});
+    const [result] = await pool.query(
+      `UPDATE trip_plans SET name = ?, country_code = ?, country_zh = ?, purpose = ?,
+       start_date = NULLIF(?, ''), end_date = NULLIF(?, ''), travelers = ?, currency = ?,
+       budget_json = ?, visa_json = ?, checklist_json = ?, itinerary_text = ?, bookings_json = ?
+       WHERE id = ? AND user_id = ?`,
+      [
+        plan.name, plan.countryCode, plan.countryZh, plan.purpose, plan.startDate, plan.endDate,
+        plan.travelers, plan.currency, JSON.stringify(plan.budget), JSON.stringify(plan.visa),
+        JSON.stringify(plan.checklist), plan.itineraryText, JSON.stringify(plan.bookings),
+        req.params.id, req.user.id
+      ]
+    );
+    if (!result.affectedRows) {
+      res.status(404).json({ ok: false, message: '行程不存在' });
+      return;
+    }
+    const [rows] = await pool.query(`${TRIP_SELECT} WHERE id = ? AND user_id = ? LIMIT 1`, [req.params.id, req.user.id]);
+    res.json({ ok: true, trip: mapTripPlan(rows[0]) });
+  } catch (error) {
+    if (/请选择有效|返程日期/.test(error.message || '')) {
+      res.status(400).json({ ok: false, message: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+app.delete('/api/trips/:id', authenticate, async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM trip_plans WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     res.json({ ok: true });
   } catch (error) {
     next(error);

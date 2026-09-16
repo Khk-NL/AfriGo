@@ -15,7 +15,8 @@
     "pages/recommend/recommend",
     "pages/message/message",
     "pages/profile/profile",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/trip-plan/trip-plan"
   ],
   "window": {
     "navigationBarTextStyle": "black",
