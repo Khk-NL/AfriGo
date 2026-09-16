@@ -10,6 +10,7 @@ const { getObjectUrl, initializeOssClient, uploadImage, resolveMedia } = require
 const { assertProductionConfig } = require('./config');
 const { createRateLimiter } = require('./rate-limit');
 const { sanitizeTripPayload } = require('./trip-plan');
+const { translateText } = require('./translate');
 
 const app = express();
 const pool = createPool();
@@ -17,6 +18,7 @@ const port = Number(process.env.PORT || 3001);
 const authenticate = createAuthMiddleware(pool);
 const loginLimiter = createRateLimiter({ windowMs: 10 * 60_000, max: 20, prefix: 'login' });
 const mutationLimiter = createRateLimiter({ windowMs: 60_000, max: 120, prefix: 'mutation' });
+const translateLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'translate' });
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -670,6 +672,15 @@ app.delete('/api/trips/:id', authenticate, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM trip_plans WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/translate', authenticate, translateLimiter, async (req, res, next) => {
+  try {
+    const data = await translateText(req.body || {});
+    res.json({ ok: true, data });
   } catch (error) {
     next(error);
   }

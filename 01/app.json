@@ -16,7 +16,8 @@
     "pages/message/message",
     "pages/profile/profile",
     "pages/logs/logs",
-    "pages/trip-plan/trip-plan"
+    "pages/trip-plan/trip-plan",
+    "pages/travel-tools/travel-tools"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -27,6 +28,12 @@
   "style": "v2",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于选择和打开旅途中的目的地位置"
+    }
+  },
+  "requiredPrivateInfos": ["chooseLocation", "getLocation"],
 
   "tabBar": {
     "custom": true,

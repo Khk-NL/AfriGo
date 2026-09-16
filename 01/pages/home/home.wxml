@@ -52,6 +52,15 @@
         <view class="landing-plan-progress"><text>{{tripPreview.progress}}%</text></view>
       </view>
 
+      <view class="landing-plan-card travel-tools-card" bindtap="onTravelToolsTap">
+        <view class="landing-plan-copy">
+          <text class="landing-plan-eyebrow">ON-TRIP TOOLKIT</text>
+          <text class="landing-plan-title">旅中工具箱</text>
+          <text class="landing-plan-desc">导航、翻译、离线包与紧急求助</text>
+        </view>
+        <view class="landing-plan-arrow">›</view>
+      </view>
+
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">

@@ -23,6 +23,9 @@ page {
 .landing-plan-title { display: block; margin-top: 10rpx; color: #243447; font-size: 31rpx; font-weight: 800; }
 .landing-plan-desc { display: block; margin-top: 10rpx; color: #667085; font-size: 23rpx; }
 .landing-plan-progress { width: 92rpx; height: 92rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #39775b; background: rgba(255,255,255,0.9); border: 8rpx solid #9ecbb5; font-size: 22rpx; font-weight: 800; }
+.travel-tools-card { background: linear-gradient(135deg, #f7f2ff 0%, #eef8f2 100%); }
+.travel-tools-card .landing-plan-eyebrow { color: #6f49a8; }
+.landing-plan-arrow { color: #6f49a8; font-size: 56rpx; line-height: 1; }
 
 /* =========================================
    大体 ?AI 伴游互动 ?(AI Hero Container)

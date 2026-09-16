@@ -1,0 +1,51 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card tool-hero">
+        <text class="hero-eyebrow">ON-TRIP TOOLKIT</text>
+        <text class="hero-title">{{countryZh}}·旅中工具箱</text>
+        <text class="hero-summary">导航、翻译、离线资料和紧急联系放在一页，尽量减少旅途中切换应用的次数。</text>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">位置与导航</text><text class="section-subtitle">当前使用微信地图能力；海外路线规划待高德权限开通后接入</text></view>
+        <view wx:if="{{destination}}" class="place-card"><text class="place-name">{{destination.name}}</text><text class="place-address">{{destination.address}}</text></view>
+        <view class="action-grid">
+          <button class="tool-button primary" bindtap="onChooseLocation">选择目的地</button>
+          <button class="tool-button" bindtap="onOpenLocation">打开目的地</button>
+          <button class="tool-button" bindtap="onShowCurrentLocation">查看我的位置</button>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">离线安全包</text><text class="section-subtitle">缓存当前国家指南、常用语、应急号码和行前计划</text></view>
+        <view class="offline-row"><view><text class="offline-status">{{offlineStatus}}</text><text wx:if="{{offlineUpdatedAt}}" class="offline-time">更新：{{offlineUpdatedAt}}</text></view><button class="mini-button" bindtap="onSaveOfflinePack">更新离线包</button></view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">实时文本翻译</text><text class="section-subtitle">由 Express 代理调用阿里云机器翻译，小程序不接触云凭据</text></view>
+        <view class="language-row">
+          <picker mode="selector" range="{{languages}}" range-key="label" value="{{sourceIndex}}" data-field="sourceIndex" bindchange="onLanguageChange"><view class="language-picker">{{languages[sourceIndex].label}}</view></picker>
+          <text class="language-arrow">→</text>
+          <picker mode="selector" range="{{languages}}" range-key="label" value="{{targetIndex}}" data-field="targetIndex" bindchange="onLanguageChange"><view class="language-picker">{{languages[targetIndex].label}}</view></picker>
+        </view>
+        <textarea class="translate-input" maxlength="5000" value="{{sourceText}}" bindinput="onSourceInput" placeholder="输入需要翻译的句子" />
+        <button class="translate-button" loading="{{translating}}" disabled="{{translating}}" bindtap="onTranslateTap">开始翻译</button>
+        <view wx:if="{{translatedText}}" class="translation-result" bindtap="onCopyTranslation"><text>{{translatedText}}</text><text class="copy-tip">点击复制</text></view>
+        <view class="phrase-link" bindtap="onOpenPhrases">无网络？打开离线常用语 ›</view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">紧急求助</text><text class="section-subtitle">号码来自当前国家资料，拨打前请核对所在地</text></view>
+        <block wx:if="{{security}}">
+          <button class="emergency-button" data-phone="{{security.embassyPhone}}" bindtap="onCall">🏛 使馆 {{security.embassyPhone}}</button>
+          <button class="emergency-button danger" data-phone="{{security.policePhone}}" bindtap="onCall">🚨 报警 {{security.policePhone}}</button>
+          <text class="emergency-note">{{security.embassyWarning}}</text>
+        </block>
+        <view wx:else class="empty-state"><text class="empty-title">当前国家暂无经核验的紧急号码</text></view>
+      </view>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+</view>

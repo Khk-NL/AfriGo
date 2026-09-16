@@ -272,6 +272,14 @@ async function deleteTrip(tripId) {
   return request(`/api/trips/${tripId}`, { method: 'DELETE' });
 }
 
+async function translateText({ text, sourceLanguage = 'auto', targetLanguage }) {
+  const result = await request('/api/translate', {
+    method: 'POST',
+    data: { text, sourceLanguage, targetLanguage }
+  });
+  return result.data;
+}
+
 async function togglePostLike(postId) {
   return request(`/api/posts/${postId}/like`, { method: 'POST' });
 }
@@ -332,6 +340,7 @@ export {
   loadTrips,
   saveTrip,
   deleteTrip,
+  translateText,
   togglePostLike,
   loadPostEngagement,
   loadPostComments,

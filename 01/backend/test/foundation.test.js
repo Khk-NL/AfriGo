@@ -9,6 +9,7 @@ const { withStableIds } = require('../src/export-miniprogram-data');
 const { validateProductionConfig } = require('../src/config');
 const { createRateLimiter } = require('../src/rate-limit');
 const { sanitizeTripPayload } = require('../src/trip-plan');
+const { translateText, validateTranslationInput } = require('../src/translate');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -103,4 +104,24 @@ test('trip plans normalize budget, purpose and checklist input', () => {
     () => sanitizeTripPayload({ countryZh: '肯尼亚', startDate: '2026-10-08', endDate: '2026-10-01' }),
     /返程日期/
   );
+});
+
+test('translation input enforces language codes and provider limits', () => {
+  assert.deepEqual(
+    validateTranslationInput({ text: ' 你好 ', sourceLanguage: 'ZH', targetLanguage: 'en' }),
+    { text: '你好', sourceLanguage: 'zh', targetLanguage: 'en' }
+  );
+  assert.throws(() => validateTranslationInput({ text: '', targetLanguage: 'en' }), /请输入/);
+  assert.throws(() => validateTranslationInput({ text: 'hello', sourceLanguage: 'en', targetLanguage: 'en' }), /不能相同/);
+});
+
+test('translation provider stays closed until explicitly enabled', async () => {
+  const previous = process.env.ALIYUN_TRANSLATE_ENABLED;
+  process.env.ALIYUN_TRANSLATE_ENABLED = 'false';
+  await assert.rejects(
+    () => translateText({ text: '你好', sourceLanguage: 'zh', targetLanguage: 'en' }),
+    (error) => error.statusCode === 503 && /尚未配置/.test(error.message)
+  );
+  if (previous === undefined) delete process.env.ALIYUN_TRANSLATE_ENABLED;
+  else process.env.ALIYUN_TRANSLATE_ENABLED = previous;
 });

@@ -1,0 +1,38 @@
+@import "../../templates/content-shell.wxss";
+
+.tool-hero { background: linear-gradient(135deg, #eef8f2 0%, #f8f2ff 100%); }
+.place-card { padding: 20rpx; border-radius: 20rpx; background: #f7faf8; border: 1rpx solid #dcebe2; }
+.place-name,
+.place-address { display: block; }
+.place-name { color: #243447; font-size: 28rpx; font-weight: 700; }
+.place-address { margin-top: 8rpx; color: #6b7280; font-size: 22rpx; line-height: 1.5; }
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; margin-top: 16rpx; }
+.tool-button,
+.mini-button,
+.translate-button,
+.emergency-button { border: none; }
+.tool-button::after,
+.mini-button::after,
+.translate-button::after,
+.emergency-button::after { border: none; }
+.tool-button { min-height: 76rpx; padding: 0 16rpx; border-radius: 20rpx; color: #39775b; background: #edf7f1; font-size: 23rpx; display: flex; align-items: center; justify-content: center; }
+.tool-button.primary { color: #fff; background: #4b8f70; }
+.offline-row { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; }
+.offline-row > view { flex: 1; }
+.offline-status,
+.offline-time { display: block; }
+.offline-status { color: #243447; font-size: 27rpx; font-weight: 700; }
+.offline-time { margin-top: 8rpx; color: #7a8491; font-size: 20rpx; word-break: break-all; }
+.mini-button { margin: 0; padding: 0 20rpx; border-radius: 999rpx; color: #fff; background: #5f7f70; font-size: 22rpx; }
+.language-row { display: flex; align-items: center; justify-content: center; gap: 18rpx; }
+.language-picker { min-width: 200rpx; padding: 16rpx; text-align: center; border-radius: 18rpx; color: #4b5563; background: #f4f1f9; font-size: 24rpx; }
+.language-arrow { color: #8b7a67; font-size: 30rpx; }
+.translate-input { box-sizing: border-box; width: 100%; height: 210rpx; margin-top: 18rpx; padding: 20rpx; border-radius: 20rpx; background: #f8fafc; border: 1rpx solid #e2e8f0; font-size: 25rpx; line-height: 1.6; }
+.translate-button { margin-top: 16rpx; color: #fff; background: linear-gradient(90deg, #5f24b6, #7b4fc3); border-radius: 999rpx; font-size: 25rpx; }
+.translation-result { margin-top: 16rpx; padding: 22rpx; border-radius: 20rpx; color: #243447; background: #f7f2ff; font-size: 27rpx; line-height: 1.6; }
+.copy-tip { display: block; margin-top: 12rpx; color: #8b70ad; font-size: 20rpx; }
+.phrase-link { margin-top: 18rpx; text-align: center; color: #5f24b6; font-size: 23rpx; }
+.emergency-button { margin-top: 14rpx; color: #8a3f4f; background: #fff0f3; border-radius: 20rpx; font-size: 25rpx; }
+.emergency-button.danger { color: #fff; background: #d45a6e; }
+.emergency-note { display: block; margin-top: 16rpx; color: #6b7280; font-size: 22rpx; line-height: 1.65; }
+.bottom-space { height: 50rpx; }

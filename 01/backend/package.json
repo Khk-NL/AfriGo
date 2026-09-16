@@ -10,6 +10,7 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@alicloud/alimt20181012": "^1.4.2",
     "@alicloud/credentials": "^2.4.7",
     "ali-oss": "^6.23.0",
     "cors": "^2.8.5",

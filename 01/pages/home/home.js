@@ -251,6 +251,10 @@ Page({
     wx.navigateTo({ url: '/pages/trip-plan/trip-plan' });
   },
 
+  onTravelToolsTap() {
+    wx.navigateTo({ url: '/pages/travel-tools/travel-tools' });
+  },
+
   onFeatureTap(e) {
     const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
     if (key === 'attractions') return;

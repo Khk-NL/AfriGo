@@ -12,26 +12,26 @@
 
 覆盖出行目的、日期、人数、预算、签证进度、材料清单、机酒/当地交通备注和逐日行程。
 
-## 阶段 2 · 旅中工具
+## 已实现：阶段 2 · 旅中工具
 
 ### 地图与路线
 
-- 小程序内的单点导航优先使用微信 `wx.openLocation`，无需把密钥下发到客户端。
+- 小程序内已使用 `wx.chooseLocation`、`wx.getLocation` 和 `wx.openLocation` 完成位置选择与地图打开，无需把密钥下发到客户端。
 - 路线规划预留 Express 接口：`POST /api/navigation/routes`。
 - 供应商选择：高德地图海外 Web Service（阿里生态）。官方文档说明海外路线需先申请 Web Service Key 并工单开通海外权限：https://lbs.amap.com/api/web-service/guide/routes
 - 密钥仅放在阿里云 ECS 环境变量 `AMAP_WEB_SERVICE_KEY`，由 Express 代理请求。
 
 ### 翻译
 
-- 预留 Express 接口：`POST /api/translate`，请求字段为 `text`、`sourceLanguage`、`targetLanguage`。
+- 已实现 Express 接口：`POST /api/translate`，请求字段为 `text`、`sourceLanguage`、`targetLanguage`；接口需登录且有独立限流。
 - 供应商选择：阿里云机器翻译 `TranslateGeneral`。官方接口限制为单次最多 5000 字符：https://help.aliyun.com/zh/machine-translation/developer-reference/api-reference-machine-translation-universal-version-call-guide
-- 实施时使用 RAM 最小权限和 ECS RAM Role/短期凭据，禁止在小程序中保存 AccessKey。
+- 已接入官方 Node.js SDK，使用 ECS RAM Role/短期凭据；最小权限模板位于 `01/backend/deploy/aliyun/ram-translate-policy.json`。未开通服务时保持 `ALIYUN_TRANSLATE_ENABLED=false`，接口会明确返回 503。
 
 ### 风险和应急
 
 - 预留接口：`GET /api/risk-alerts?countryCode=KE`、`POST /api/emergency-sessions`。
 - 第一版以驻外使领馆/领事服务等可核验来源为主，后台人工审核后发布。
-- 常用语、应急联系人、酒店地址和行程快照纳入离线包。
+- 已将当前国家指南、常用语、应急联系人和行前计划纳入本机离线包。
 
 ## 阶段 3 · 旅后闭环
 
