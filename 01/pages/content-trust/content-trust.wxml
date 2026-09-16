@@ -15,16 +15,31 @@
         <text wx:else class="source-empty">当前资料没有可提取的来源链接，请按“需复核”处理。</text>
       </view>
 
-      <view class="section-card">
-        <view class="section-head"><text class="section-title">当前已审核风险提醒</text><text class="section-subtitle">只显示已发布且未过期的服务端提醒</text></view>
-        <view wx:if="{{alerts.length}}" wx:for="{{alerts}}" wx:key="id" class="alert-card severity-{{item.severity}}">
-          <view class="alert-head"><text class="alert-title">{{item.title}}</text><text class="alert-level">{{item.severity}}</text></view>
+    <view class="section-card">
+      <view class="section-head">
+        <text class="section-title">当前已审核风险提醒</text>
+        <text class="section-subtitle">只显示已发布且未过期的服务端提醒</text>
+      </view>
+
+      <block wx:if="{{alerts.length}}">
+        <view wx:for="{{alerts}}" wx:key="id" class="alert-card severity-{{item.severity}}">
+          <view class="alert-head">
+            <text class="alert-title">{{item.title}}</text>
+            <text class="alert-level">{{item.severity}}</text>
+          </view>
           <text class="alert-summary">{{item.summary}}</text>
           <text class="alert-meta">来源：{{item.sourceName}} · 发布 {{item.publishedLabel}} · 核验 {{item.verifiedLabel}} · 有效至 {{item.expiresLabel}}</text>
           <text class="source-link" data-url="{{item.sourceUrl}}" bindtap="onCopyUrl">复制风险来源</text>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">暂无正在生效的审核提醒</text><text class="source-empty">这不代表没有风险，请同时核对领事服务、使领馆和目的地官方渠道。</text></view>
-      </view>
+      </block>
+
+      <block wx:else>
+        <view class="empty-state">
+          <text class="empty-title">暂无正在生效的审核提醒</text>
+          <text class="source-empty">这不代表没有风险，请同时核对领事服务、使领馆和目的地官方渠道。</text>
+        </view>
+      </block>
+    </view>
 
       <view class="section-card">
         <view class="section-head"><text class="section-title">提交信息纠错</text><text class="section-subtitle">请说明具体错误，来源链接可帮助管理员核验</text></view>

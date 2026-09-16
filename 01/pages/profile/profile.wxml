@@ -159,14 +159,16 @@
                 <view wx:if="{{myPosts.length === 0}}" class="empty-bookmarks">
                     <text class="empty-title">还没有发布动态</text>
                 </view>
-                <block wx:else wx:for="{{myPosts}}" wx:key="id">
-                    <view class="bookmark-item">
-                        <view class="bookmark-main">
-                            <text class="bookmark-title">{{item.content || '图片动态'}}</text>
-                            <text class="bookmark-date">{{item.createTime}}</text>
+                <block wx:else>
+                    <block wx:for="{{myPosts}}" wx:key="id">
+                        <view class="bookmark-item">
+                            <view class="bookmark-main">
+                                <text class="bookmark-title">{{item.content || '图片动态'}}</text>
+                                <text class="bookmark-date">{{item.createTime}}</text>
+                            </view>
+                            <view class="bookmark-remove" bindtap="onDeletePost" data-id="{{item.id}}">删除</view>
                         </view>
-                        <view class="bookmark-remove" bindtap="onDeletePost" data-id="{{item.id}}">删除</view>
-                    </view>
+                    </block>
                 </block>
             </view>
 
