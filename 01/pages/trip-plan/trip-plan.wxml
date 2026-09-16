@@ -56,6 +56,7 @@
       </view>
 
       <button class="save-button" loading="{{saving}}" disabled="{{saving}}" bindtap="onSaveTap">保存落地计划</button>
+      <button class="review-link-button" bindtap="onOpenReview">进入旅后复盘</button>
       <view class="bottom-space"></view>
     </view>
   </scroll-view>

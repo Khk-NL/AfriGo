@@ -272,6 +272,34 @@ async function deleteTrip(tripId) {
   return request(`/api/trips/${tripId}`, { method: 'DELETE' });
 }
 
+async function cloneTrip(tripId, name = '') {
+  const result = await request(`/api/trips/${tripId}/clone`, { method: 'POST', data: { name } });
+  return result.trip;
+}
+
+async function loadTripExpenses(tripId) {
+  const result = await request(`/api/trips/${tripId}/expenses`);
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function addTripExpense(tripId, expense) {
+  return request(`/api/trips/${tripId}/expenses`, { method: 'POST', data: expense });
+}
+
+async function deleteTripExpense(tripId, expenseId) {
+  return request(`/api/trips/${tripId}/expenses/${expenseId}`, { method: 'DELETE' });
+}
+
+async function loadTripReview(tripId) {
+  const result = await request(`/api/trips/${tripId}/review`);
+  return result.review || null;
+}
+
+async function saveTripReview(tripId, review) {
+  const result = await request(`/api/trips/${tripId}/review`, { method: 'PUT', data: review });
+  return result.review;
+}
+
 async function translateText({ text, sourceLanguage = 'auto', targetLanguage }) {
   const result = await request('/api/translate', {
     method: 'POST',
@@ -340,6 +368,12 @@ export {
   loadTrips,
   saveTrip,
   deleteTrip,
+  cloneTrip,
+  loadTripExpenses,
+  addTripExpense,
+  deleteTripExpense,
+  loadTripReview,
+  saveTripReview,
   translateText,
   togglePostLike,
   loadPostEngagement,

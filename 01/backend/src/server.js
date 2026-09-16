@@ -10,6 +10,7 @@ const { getObjectUrl, initializeOssClient, uploadImage, resolveMedia } = require
 const { assertProductionConfig } = require('./config');
 const { createRateLimiter } = require('./rate-limit');
 const { sanitizeTripPayload } = require('./trip-plan');
+const { sanitizeExpensePayload, sanitizeReviewPayload } = require('./trip-review');
 const { translateText } = require('./translate');
 
 const app = express();
@@ -610,16 +611,11 @@ app.get('/api/trips', authenticate, async (req, res, next) => {
 app.post('/api/trips', authenticate, async (req, res, next) => {
   try {
     const plan = sanitizeTripPayload(req.body || {});
-    await pool.query(
+    const [result] = await pool.query(
       `INSERT INTO trip_plans
        (user_id, name, country_code, country_zh, purpose, start_date, end_date, travelers, currency,
         budget_json, visa_json, checklist_json, itinerary_text, bookings_json)
-       VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?, ?, ?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE name = VALUES(name), country_zh = VALUES(country_zh), purpose = VALUES(purpose),
-       start_date = VALUES(start_date), end_date = VALUES(end_date), travelers = VALUES(travelers),
-       currency = VALUES(currency), budget_json = VALUES(budget_json), visa_json = VALUES(visa_json),
-       checklist_json = VALUES(checklist_json), itinerary_text = VALUES(itinerary_text),
-       bookings_json = VALUES(bookings_json)`,
+       VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id, plan.name, plan.countryCode, plan.countryZh, plan.purpose,
         plan.startDate, plan.endDate, plan.travelers, plan.currency,
@@ -627,7 +623,7 @@ app.post('/api/trips', authenticate, async (req, res, next) => {
         plan.itineraryText, JSON.stringify(plan.bookings)
       ]
     );
-    const [rows] = await pool.query(`${TRIP_SELECT} WHERE user_id = ? AND country_code = ? LIMIT 1`, [req.user.id, plan.countryCode]);
+    const [rows] = await pool.query(`${TRIP_SELECT} WHERE id = ? AND user_id = ? LIMIT 1`, [result.insertId, req.user.id]);
     res.status(201).json({ ok: true, trip: mapTripPlan(rows[0]) });
   } catch (error) {
     if (/请选择有效|返程日期/.test(error.message || '')) {
@@ -673,6 +669,154 @@ app.delete('/api/trips/:id', authenticate, async (req, res, next) => {
     await pool.query('DELETE FROM trip_plans WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     res.json({ ok: true });
   } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/trips/:id/clone', authenticate, async (req, res, next) => {
+  try {
+    const [sourceRows] = await pool.query(`${TRIP_SELECT} WHERE id = ? AND user_id = ? LIMIT 1`, [req.params.id, req.user.id]);
+    if (!sourceRows[0]) {
+      res.status(404).json({ ok: false, message: '行程不存在' });
+      return;
+    }
+    const source = mapTripPlan(sourceRows[0]);
+    const checklist = (source.checklist || []).map((item) => ({ ...item, done: false }));
+    const plan = sanitizeTripPayload({
+      ...source,
+      name: String((req.body && req.body.name) || `${source.name}（复用）`).slice(0, 80),
+      startDate: '',
+      endDate: '',
+      visa: { stage: 'not_started', note: '' },
+      checklist,
+      bookings: { flight: '', hotel: '', localTransport: '' }
+    });
+    const [result] = await pool.query(
+      `INSERT INTO trip_plans
+       (user_id, name, country_code, country_zh, purpose, start_date, end_date, travelers, currency,
+        budget_json, visa_json, checklist_json, itinerary_text, bookings_json)
+       VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        req.user.id, plan.name, plan.countryCode, plan.countryZh, plan.purpose, plan.travelers,
+        plan.currency, JSON.stringify(plan.budget), JSON.stringify(plan.visa),
+        JSON.stringify(plan.checklist), plan.itineraryText, JSON.stringify(plan.bookings)
+      ]
+    );
+    const [rows] = await pool.query(`${TRIP_SELECT} WHERE id = ? AND user_id = ? LIMIT 1`, [result.insertId, req.user.id]);
+    res.status(201).json({ ok: true, trip: mapTripPlan(rows[0]) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/trips/:id/expenses', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT e.id, e.category, e.amount, e.currency,
+        DATE_FORMAT(e.spent_on, '%Y-%m-%d') AS spent_on, e.note, e.created_at
+       FROM trip_expenses e JOIN trip_plans t ON t.id = e.trip_id
+       WHERE e.trip_id = ? AND t.user_id = ? ORDER BY COALESCE(e.spent_on, DATE(e.created_at)) DESC, e.id DESC`,
+      [req.params.id, req.user.id]
+    );
+    res.json({
+      ok: true,
+      data: rows.map((row) => ({
+        id: String(row.id),
+        category: row.category,
+        amount: Number(row.amount),
+        currency: row.currency,
+        spentOn: row.spent_on || '',
+        note: row.note || '',
+        createTime: row.created_at
+      }))
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/trips/:id/expenses', authenticate, async (req, res, next) => {
+  try {
+    const [trips] = await pool.query('SELECT id, currency FROM trip_plans WHERE id = ? AND user_id = ? LIMIT 1', [req.params.id, req.user.id]);
+    if (!trips[0]) {
+      res.status(404).json({ ok: false, message: '行程不存在' });
+      return;
+    }
+    const expense = sanitizeExpensePayload(req.body || {});
+    const [result] = await pool.query(
+      `INSERT INTO trip_expenses (trip_id, user_id, category, amount, currency, note, spent_on)
+       VALUES (?, ?, ?, ?, ?, ?, NULLIF(?, ''))`,
+      [req.params.id, req.user.id, expense.category, expense.amount, trips[0].currency, expense.note, expense.spentOn]
+    );
+    res.status(201).json({ ok: true, id: String(result.insertId) });
+  } catch (error) {
+    if (/费用|金额|日期/.test(error.message || '')) {
+      res.status(400).json({ ok: false, message: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+app.delete('/api/trips/:tripId/expenses/:expenseId', authenticate, async (req, res, next) => {
+  try {
+    const [result] = await pool.query(
+      `DELETE e FROM trip_expenses e JOIN trip_plans t ON t.id = e.trip_id
+       WHERE e.id = ? AND e.trip_id = ? AND t.user_id = ?`,
+      [req.params.expenseId, req.params.tripId, req.user.id]
+    );
+    if (!result.affectedRows) {
+      res.status(404).json({ ok: false, message: '费用记录不存在' });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/trips/:id/review', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT r.rating, r.summary, r.highlights, r.lessons, r.updated_at
+       FROM trip_reviews r JOIN trip_plans t ON t.id = r.trip_id
+       WHERE r.trip_id = ? AND t.user_id = ? LIMIT 1`,
+      [req.params.id, req.user.id]
+    );
+    const review = rows[0] ? {
+      rating: Number(rows[0].rating),
+      summary: rows[0].summary || '',
+      highlights: rows[0].highlights || '',
+      lessons: rows[0].lessons || '',
+      updateTime: rows[0].updated_at
+    } : null;
+    res.json({ ok: true, review });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put('/api/trips/:id/review', authenticate, async (req, res, next) => {
+  try {
+    const [trips] = await pool.query('SELECT id FROM trip_plans WHERE id = ? AND user_id = ? LIMIT 1', [req.params.id, req.user.id]);
+    if (!trips[0]) {
+      res.status(404).json({ ok: false, message: '行程不存在' });
+      return;
+    }
+    const review = sanitizeReviewPayload(req.body || {});
+    await pool.query(
+      `INSERT INTO trip_reviews (trip_id, user_id, rating, summary, highlights, lessons)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE rating = VALUES(rating), summary = VALUES(summary),
+       highlights = VALUES(highlights), lessons = VALUES(lessons)`,
+      [req.params.id, req.user.id, review.rating, review.summary, review.highlights, review.lessons]
+    );
+    res.json({ ok: true, review });
+  } catch (error) {
+    if (/评分|复盘内容/.test(error.message || '')) {
+      res.status(400).json({ ok: false, message: error.message });
+      return;
+    }
     next(error);
   }
 });

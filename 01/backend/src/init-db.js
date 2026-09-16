@@ -145,9 +145,36 @@ CREATE TABLE IF NOT EXISTS trip_plans (
   bookings_json JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY uk_trip_plans_user_country (user_id, country_code),
   INDEX idx_trip_plans_user_updated (user_id, updated_at),
   CONSTRAINT fk_trip_plans_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS trip_expenses (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  trip_id BIGINT NOT NULL,
+  user_id INT NOT NULL,
+  category VARCHAR(24) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  currency CHAR(3) NOT NULL DEFAULT 'CNY',
+  note VARCHAR(300) DEFAULT '',
+  spent_on DATE NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_trip_expenses_trip_created (trip_id, created_at),
+  CONSTRAINT fk_trip_expenses_trip FOREIGN KEY (trip_id) REFERENCES trip_plans(id) ON DELETE CASCADE,
+  CONSTRAINT fk_trip_expenses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS trip_reviews (
+  trip_id BIGINT PRIMARY KEY,
+  user_id INT NOT NULL,
+  rating TINYINT UNSIGNED NOT NULL,
+  summary TEXT,
+  highlights TEXT,
+  lessons TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_trip_reviews_trip FOREIGN KEY (trip_id) REFERENCES trip_plans(id) ON DELETE CASCADE,
+  CONSTRAINT fk_trip_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `;
 
@@ -229,6 +256,15 @@ async function migrateLegacySchema(conn) {
   await ensureColumn(conn, 'recommend', 'country_code', "CHAR(2) NOT NULL DEFAULT '' AFTER item_key");
   await ensureColumn(conn, 'country_guides', 'country_code', "CHAR(2) NOT NULL DEFAULT '' AFTER id");
   await ensureColumn(conn, 'posts', 'author_id', 'INT NULL AFTER media_urls');
+
+  const [tripUniqueIndexes] = await conn.query(
+    `SELECT COUNT(*) AS total FROM information_schema.STATISTICS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'trip_plans' AND INDEX_NAME = 'uk_trip_plans_user_country'`,
+    [process.env.DB_NAME]
+  );
+  if (tripUniqueIndexes[0].total) {
+    await conn.query('ALTER TABLE trip_plans DROP INDEX uk_trip_plans_user_country');
+  }
 
   for (const [countryZh, countryCode] of Object.entries(COUNTRY_CODE_BY_ZH)) {
     for (const table of ['attractions', 'recommend', 'country_guides']) {

@@ -17,7 +17,8 @@
     "pages/profile/profile",
     "pages/logs/logs",
     "pages/trip-plan/trip-plan",
-    "pages/travel-tools/travel-tools"
+    "pages/travel-tools/travel-tools",
+    "pages/trip-review/trip-review"
   ],
   "window": {
     "navigationBarTextStyle": "black",

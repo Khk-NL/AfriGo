@@ -30,4 +30,6 @@
 .budget-field input { margin-top: 8rpx; color: #1f2937; font-size: 27rpx; }
 .save-button { margin-top: 28rpx; height: 92rpx; border-radius: 999rpx; color: #fff; background: linear-gradient(90deg, #39775b, #65a985); font-size: 28rpx; font-weight: 700; box-shadow: 0 14rpx 28rpx rgba(57, 119, 91, 0.22); }
 .save-button::after { border: none; }
+.review-link-button { margin-top: 16rpx; border: none; border-radius: 999rpx; color: #5f4779; background: #f4effa; font-size: 25rpx; }
+.review-link-button::after { border: none; }
 .bottom-space { height: 50rpx; }

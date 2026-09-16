@@ -1,0 +1,53 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card review-hero">
+        <text class="hero-eyebrow">POST-TRIP REVIEW</text>
+        <text class="hero-title">{{countryZh}}·旅后复盘</text>
+        <text class="hero-summary">把真实花费、踩坑经验和可复用路线沉淀下来，让下一次出发更省心。</text>
+      </view>
+
+      <view wx:if="{{loading}}" class="section-card empty-state"><text class="empty-title">正在加载行程复盘…</text></view>
+      <view wx:elif="{{loginRequired}}" class="section-card empty-state"><text class="empty-title">登录后可进行跨设备费用与路线复盘</text><text class="empty-desc">旅后数据涉及个人行程，不使用匿名远程存储。</text></view>
+      <view wx:elif="{{emptyTrip}}" class="section-card empty-state"><text class="empty-title">还没有可复盘的行程</text><text class="empty-desc">先创建并保存一份安全落地计划。</text><button class="secondary-button" bindtap="onOpenPlan">创建行程</button></view>
+
+      <block wx:elif="{{trip}}">
+        <view class="section-card">
+          <view class="section-head"><text class="section-title">{{trip.name}}</text><text class="section-subtitle">{{trip.startDate || '未定日期'}} 至 {{trip.endDate || '未定日期'}} · {{trip.currency}}</text></view>
+          <view class="summary-grid">
+            <view class="summary-cell"><text>计划预算</text><text class="summary-value">{{plannedTotal}}</text></view>
+            <view class="summary-cell"><text>实际支出</text><text class="summary-value">{{actualTotal}}</text></view>
+            <view class="summary-cell accent"><text>预算结果</text><text class="summary-value">{{balanceLabel}}</text></view>
+          </view>
+          <view class="category-row" wx:for="{{categoryTotals}}" wx:key="key"><text>{{item.label}}</text><text>{{trip.currency}} {{item.amount}}</text></view>
+        </view>
+
+        <view class="section-card">
+          <view class="section-head"><text class="section-title">记录一笔费用</text><text class="section-subtitle">仅记录本次行程的实际支出</text></view>
+          <view class="expense-grid">
+            <picker mode="selector" range="{{categories}}" range-key="label" value="{{categoryIndex}}" bindchange="onCategoryChange"><view class="form-field">{{categories[categoryIndex].label}}</view></picker>
+            <input class="form-field" type="digit" value="{{expense.amount}}" data-field="amount" bindinput="onExpenseInput" placeholder="金额" />
+          </view>
+          <picker mode="date" value="{{expense.spentOn}}" bindchange="onExpenseDateChange"><view class="form-field wide">{{expense.spentOn || '选择消费日期（可选）'}}</view></picker>
+          <input class="form-field wide" value="{{expense.note}}" data-field="note" bindinput="onExpenseInput" placeholder="备注，如机场到酒店打车" />
+          <button class="primary-button" loading="{{savingExpense}}" disabled="{{savingExpense}}" bindtap="onAddExpense">添加费用</button>
+          <view wx:if="{{expenses.length}}" class="expense-list">
+            <view wx:for="{{expenses}}" wx:key="id" class="expense-row"><view><text class="expense-name">{{item.note || item.category}}</text><text class="expense-date">{{item.spentOn || '未填日期'}}</text></view><view class="expense-actions"><text>{{item.currency}} {{item.amount}}</text><text class="delete-link" data-id="{{item.id}}" bindtap="onDeleteExpense">删除</text></view></view>
+          </view>
+        </view>
+
+        <view class="section-card">
+          <view class="section-head"><text class="section-title">评价与经验</text><text class="section-subtitle">保存后可整理为社区游记</text></view>
+          <view class="rating-row"><text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="star {{review.rating >= item ? 'active' : ''}}" data-value="{{item}}" bindtap="onRatingTap">★</text></view>
+          <textarea class="review-input" value="{{review.summary}}" data-field="summary" bindinput="onReviewInput" placeholder="总体评价与行程回顾" />
+          <textarea class="review-input" value="{{review.highlights}}" data-field="highlights" bindinput="onReviewInput" placeholder="最值得推荐的路线、地点或服务" />
+          <textarea class="review-input" value="{{review.lessons}}" data-field="lessons" bindinput="onReviewInput" placeholder="踩坑、风险与下次要改进的地方" />
+          <button class="primary-button" loading="{{savingReview}}" disabled="{{savingReview}}" bindtap="onSaveReview">保存复盘</button>
+          <view class="dual-actions"><button class="secondary-button" loading="{{publishing}}" disabled="{{publishing}}" bindtap="onPublishNote">发布为游记</button><button class="secondary-button" loading="{{cloning}}" disabled="{{cloning}}" bindtap="onCloneTrip">复用这条路线</button></view>
+        </view>
+      </block>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+</view>

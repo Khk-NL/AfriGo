@@ -61,6 +61,15 @@
         <view class="landing-plan-arrow">›</view>
       </view>
 
+      <view class="landing-plan-card trip-review-card" bindtap="onTripReviewTap">
+        <view class="landing-plan-copy">
+          <text class="landing-plan-eyebrow">POST-TRIP REVIEW</text>
+          <text class="landing-plan-title">旅后复盘与路线复用</text>
+          <text class="landing-plan-desc">费用、评价、游记和下一次路线模板</text>
+        </view>
+        <view class="landing-plan-arrow">›</view>
+      </view>
+
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">

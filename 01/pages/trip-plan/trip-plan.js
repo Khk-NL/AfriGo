@@ -217,6 +217,11 @@ Page({
     }
   },
 
+  onOpenReview() {
+    const query = this.data.id ? `?tripId=${encodeURIComponent(this.data.id)}` : '';
+    wx.navigateTo({ url: `/pages/trip-review/trip-review${query}` });
+  },
+
   onGoBack() {
     wx.navigateBack({ delta: 1, fail: () => wx.switchTab({ url: '/pages/home/home' }) });
   }

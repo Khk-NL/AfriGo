@@ -255,6 +255,10 @@ Page({
     wx.navigateTo({ url: '/pages/travel-tools/travel-tools' });
   },
 
+  onTripReviewTap() {
+    wx.navigateTo({ url: '/pages/trip-review/trip-review' });
+  },
+
   onFeatureTap(e) {
     const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
     if (key === 'attractions') return;

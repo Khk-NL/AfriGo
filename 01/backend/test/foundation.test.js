@@ -9,6 +9,7 @@ const { withStableIds } = require('../src/export-miniprogram-data');
 const { validateProductionConfig } = require('../src/config');
 const { createRateLimiter } = require('../src/rate-limit');
 const { sanitizeTripPayload } = require('../src/trip-plan');
+const { sanitizeExpensePayload, sanitizeReviewPayload } = require('../src/trip-review');
 const { translateText, validateTranslationInput } = require('../src/translate');
 
 test('country names resolve to stable ISO codes', () => {
@@ -113,6 +114,20 @@ test('translation input enforces language codes and provider limits', () => {
   );
   assert.throws(() => validateTranslationInput({ text: '', targetLanguage: 'en' }), /请输入/);
   assert.throws(() => validateTranslationInput({ text: 'hello', sourceLanguage: 'en', targetLanguage: 'en' }), /不能相同/);
+});
+
+test('trip expenses and reviews reject invalid values', () => {
+  assert.deepEqual(
+    sanitizeExpensePayload({ category: 'food', amount: '38.456', currency: 'USD', note: '午餐', spentOn: '2026-10-02' }),
+    { category: 'food', amount: 38.46, currency: 'USD', note: '午餐', spentOn: '2026-10-02' }
+  );
+  assert.throws(() => sanitizeExpensePayload({ category: 'unknown', amount: 1 }), /费用分类/);
+  assert.throws(() => sanitizeExpensePayload({ category: 'food', amount: 0 }), /费用金额/);
+  assert.deepEqual(
+    sanitizeReviewPayload({ rating: '5', summary: '顺利完成', highlights: '', lessons: '保留现金' }),
+    { rating: 5, summary: '顺利完成', highlights: '', lessons: '保留现金' }
+  );
+  assert.throws(() => sanitizeReviewPayload({ rating: 6, summary: 'test' }), /评分/);
 });
 
 test('translation provider stays closed until explicitly enabled', async () => {

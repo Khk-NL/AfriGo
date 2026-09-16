@@ -25,6 +25,8 @@ page {
 .landing-plan-progress { width: 92rpx; height: 92rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #39775b; background: rgba(255,255,255,0.9); border: 8rpx solid #9ecbb5; font-size: 22rpx; font-weight: 800; }
 .travel-tools-card { background: linear-gradient(135deg, #f7f2ff 0%, #eef8f2 100%); }
 .travel-tools-card .landing-plan-eyebrow { color: #6f49a8; }
+.trip-review-card { background: linear-gradient(135deg, #f8f2ff 0%, #fff8ed 100%); }
+.trip-review-card .landing-plan-eyebrow { color: #8b5e3c; }
 .landing-plan-arrow { color: #6f49a8; font-size: 56rpx; line-height: 1; }
 
 /* =========================================
