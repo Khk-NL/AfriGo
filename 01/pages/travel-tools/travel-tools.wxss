@@ -32,6 +32,12 @@
 .translation-result { margin-top: 16rpx; padding: 22rpx; border-radius: 20rpx; color: #243447; background: #f7f2ff; font-size: 27rpx; line-height: 1.6; }
 .copy-tip { display: block; margin-top: 12rpx; color: #8b70ad; font-size: 20rpx; }
 .phrase-link { margin-top: 18rpx; text-align: center; color: #5f24b6; font-size: 23rpx; }
+.risk-alert { margin-top: 14rpx; padding: 18rpx; border-left: 7rpx solid #d49a3c; border-radius: 18rpx; background: #fff8ea; }
+.risk-alert.severity-critical, .risk-alert.severity-high { border-left-color: #c95365; background: #fff0f3; }
+.risk-title, .risk-summary, .risk-source { display: block; }
+.risk-title { color: #293845; font-size: 25rpx; font-weight: 800; }
+.risk-summary { margin-top: 8rpx; color: #4b5563; font-size: 22rpx; line-height: 1.6; }
+.risk-source { margin-top: 10rpx; color: #7b8490; font-size: 19rpx; word-break: break-all; }
 .emergency-button { margin-top: 14rpx; color: #8a3f4f; background: #fff0f3; border-radius: 20rpx; font-size: 25rpx; }
 .emergency-button.danger { color: #fff; background: #d45a6e; }
 .emergency-note { display: block; margin-top: 16rpx; color: #6b7280; font-size: 22rpx; line-height: 1.65; }

@@ -316,6 +316,20 @@ async function loadMyServiceLeads() {
   return Array.isArray(result.data) ? result.data : [];
 }
 
+async function loadRiskAlerts(countryCode) {
+  const result = await request(`/api/risk-alerts?countryCode=${encodeURIComponent(countryCode || '')}`);
+  return Array.isArray(result.data) ? result.data : [];
+}
+
+async function submitContentCorrection(payload) {
+  return request('/api/content-corrections', { method: 'POST', data: payload });
+}
+
+async function loadMyContentCorrections() {
+  const result = await request('/api/me/content-corrections');
+  return Array.isArray(result.data) ? result.data : [];
+}
+
 async function translateText({ text, sourceLanguage = 'auto', targetLanguage }) {
   const result = await request('/api/translate', {
     method: 'POST',
@@ -393,6 +407,9 @@ export {
   loadServices,
   submitServiceLead,
   loadMyServiceLeads,
+  loadRiskAlerts,
+  submitContentCorrection,
+  loadMyContentCorrections,
   translateText,
   togglePostLike,
   loadPostEngagement,

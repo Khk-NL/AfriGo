@@ -1,5 +1,5 @@
 import { getSelectedDestination } from '../../utils/countries.js';
-import { getStoredCurrentUser, loadGuide, translateText } from '../../utils/cloud-service.js';
+import { getStoredCurrentUser, loadGuide, loadRiskAlerts, translateText } from '../../utils/cloud-service.js';
 
 const LANGUAGES = [
   { code: 'zh', label: '中文' },
@@ -16,6 +16,7 @@ Page({
     countryZh: '肯尼亚',
     destination: null,
     security: null,
+    riskAlerts: [],
     offlineUpdatedAt: '',
     offlineStatus: '尚未保存离线包',
     languages: LANGUAGES,
@@ -42,6 +43,16 @@ Page({
       this.setData({ security: guide && guide.security ? guide.security : null });
     } catch (error) {
       if (offline && offline.guide) this.setData({ security: offline.guide.security || null });
+    }
+    await this.refreshRiskAlerts();
+  },
+
+  async refreshRiskAlerts() {
+    try {
+      const riskAlerts = await loadRiskAlerts(this.data.countryCode);
+      this.setData({ riskAlerts });
+    } catch (error) {
+      this.setData({ riskAlerts: [] });
     }
   },
 
@@ -137,6 +148,10 @@ Page({
 
   onOpenPhrases() {
     wx.navigateTo({ url: '/pages/phrases/phrases' });
+  },
+
+  onOpenContentTrust() {
+    wx.navigateTo({ url: '/pages/content-trust/content-trust' });
   },
 
   onCall(e) {

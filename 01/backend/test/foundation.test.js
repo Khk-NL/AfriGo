@@ -11,6 +11,7 @@ const { createRateLimiter } = require('../src/rate-limit');
 const { sanitizeTripPayload } = require('../src/trip-plan');
 const { sanitizeExpensePayload, sanitizeReviewPayload } = require('../src/trip-review');
 const { sanitizeLeadPayload, sanitizeProviderPayload } = require('../src/services');
+const { sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('../src/content-trust');
 const { translateText, validateTranslationInput } = require('../src/translate');
 
 test('country names resolve to stable ISO codes', () => {
@@ -158,4 +159,26 @@ test('service providers and leads require auditable fields', () => {
   );
   assert.throws(() => sanitizeProviderPayload({ countryZh: '肯尼亚', category: 'shopping', name: 'x' }), /服务分类/);
   assert.throws(() => sanitizeLeadPayload({ providerId: 1, contactName: '', contactValue: '', requestText: '' }), /联系人/);
+});
+
+test('risk alerts require sources and corrections stay scoped to a country', () => {
+  const alert = sanitizeRiskAlertPayload({
+    countryZh: '肯尼亚',
+    severity: 'high',
+    title: '局部道路中断',
+    summary: '请绕行并关注后续通知',
+    sourceName: '官方机构',
+    sourceUrl: 'https://example.com/alert',
+    publishedAt: '2026-10-01T00:00:00Z',
+    expiresAt: '2026-10-02T00:00:00Z',
+    status: 'published'
+  });
+  assert.equal(alert.countryCode, 'KE');
+  assert.equal(alert.status, 'published');
+  assert.equal(
+    sanitizeCorrectionPayload({ countryZh: '肯尼亚', contentType: 'security', title: '电话已变更', description: '建议复核使馆电话' }).contentType,
+    'security'
+  );
+  assert.throws(() => sanitizeRiskAlertPayload({ countryZh: '肯尼亚', severity: 'high', title: 'x', summary: 'x' }), /来源/);
+  assert.throws(() => sanitizeCorrectionPayload({ countryZh: '肯尼亚', contentType: 'unknown', title: 'x', description: 'x' }), /内容类型/);
 });

@@ -16,7 +16,8 @@ Page({
     embassyPhone: '',
     policePhone: '',
     medicalPhone: '',
-    gaugeSweep: 0
+    gaugeSweep: 0,
+    sourceUpdatedLabel: '暂无核验时间'
   },
 
   onLoad() {
@@ -39,6 +40,7 @@ Page({
       this.setData({
         ...guide.security,
         countryNameZh: guide.security.countryNameZh || countryNameZh,
+        sourceUpdatedLabel: guide.source && guide.source.updatedAt ? String(guide.source.updatedAt).slice(0, 10) : '本地初始资料',
         hasData: true
       });
     } catch (error) {
@@ -80,6 +82,10 @@ Page({
         });
       }
     });
+  },
+
+  onOpenContentTrust() {
+    wx.navigateTo({ url: '/pages/content-trust/content-trust' });
   },
 
   onGoBack() {

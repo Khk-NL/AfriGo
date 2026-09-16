@@ -56,17 +56,9 @@
             <text class="index-number">{{overallCrimeIndex}}/100</text>
           </view>
         </view>
-        <view class="sparkline-box">
-          <text class="sparkline-label">近7日风险波动</text>
-          <view class="sparkline-bars">
-            <view class="spark-bar h1"></view>
-            <view class="spark-bar h2"></view>
-            <view class="spark-bar h3"></view>
-            <view class="spark-bar h4"></view>
-            <view class="spark-bar h5"></view>
-            <view class="spark-bar h6"></view>
-            <view class="spark-bar h7"></view>
-          </view>
+        <view class="sparkline-box" bindtap="onOpenContentTrust">
+          <text class="sparkline-label">资料核验：{{sourceUpdatedLabel}}</text>
+          <text class="sparkline-label">并非实时犯罪统计，点击查看来源与有效风险提醒</text>
         </view>
       </view>
 

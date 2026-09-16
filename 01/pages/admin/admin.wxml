@@ -33,6 +33,8 @@
       <text class="editor-title">JSON 编辑器</text>
       <text wx:if="{{activeCollection === 'service_providers'}}" class="editor-hint">服务方只有 status=approved 才会公开；请填写 countryZh、category、name、qualificationNote 和 sourceUrl。</text>
       <text wx:if="{{activeCollection === 'service_leads'}}" class="editor-hint">意向单仅允许修改 status：new、contacted、closed 或 rejected。</text>
+      <text wx:if="{{activeCollection === 'risk_alerts'}}" class="editor-hint">风险提醒必须填写来源名称、链接、发布时间和有效期；status=published 后才会公开。</text>
+      <text wx:if="{{activeCollection === 'content_corrections'}}" class="editor-hint">纠错仅允许更新 status（pending、accepted、rejected）和 reviewerNote。</text>
       <textarea class="editor-textarea" value="{{editorText}}" bindinput="onEditorInput" placeholder="在这里编辑 JSON 对象" auto-height="true" />
       <view class="action-row">
         <view class="action-btn action-add" bindtap="onAddTap">新增</view>

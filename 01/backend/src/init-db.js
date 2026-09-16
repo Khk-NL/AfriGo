@@ -212,6 +212,48 @@ CREATE TABLE IF NOT EXISTS service_leads (
   CONSTRAINT fk_service_leads_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_service_leads_provider FOREIGN KEY (provider_id) REFERENCES service_providers(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS risk_alerts (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  country_code CHAR(2) NOT NULL,
+  country_zh VARCHAR(64) NOT NULL,
+  severity VARCHAR(16) NOT NULL,
+  title VARCHAR(160) NOT NULL,
+  summary TEXT NOT NULL,
+  source_name VARCHAR(160) NOT NULL,
+  source_url VARCHAR(500) NOT NULL,
+  published_at TIMESTAMP NOT NULL,
+  verified_at TIMESTAMP NULL,
+  expires_at TIMESTAMP NULL,
+  status VARCHAR(24) NOT NULL DEFAULT 'draft',
+  created_by INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_risk_alerts_country_status (country_code, status, expires_at),
+  CONSTRAINT fk_risk_alerts_creator FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS content_corrections (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  country_code CHAR(2) NOT NULL,
+  country_zh VARCHAR(64) NOT NULL,
+  content_type VARCHAR(32) NOT NULL,
+  content_id VARCHAR(128) DEFAULT '',
+  title VARCHAR(160) NOT NULL,
+  description TEXT NOT NULL,
+  source_url VARCHAR(500) DEFAULT '',
+  status VARCHAR(24) NOT NULL DEFAULT 'pending',
+  reviewer_note VARCHAR(1000) DEFAULT '',
+  reviewed_by INT NULL,
+  reviewed_at TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_content_corrections_user_created (user_id, created_at),
+  INDEX idx_content_corrections_status_created (status, created_at),
+  CONSTRAINT fk_content_corrections_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_content_corrections_reviewer FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `;
 
 async function connectWithProvidedAccounts() {

@@ -12,6 +12,7 @@ const { createRateLimiter } = require('./rate-limit');
 const { sanitizeTripPayload } = require('./trip-plan');
 const { sanitizeExpensePayload, sanitizeReviewPayload } = require('./trip-review');
 const { LEAD_STATUSES, sanitizeLeadPayload, sanitizeProviderPayload } = require('./services');
+const { CORRECTION_STATUSES, sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('./content-trust');
 const { translateText } = require('./translate');
 
 const app = express();
@@ -145,6 +146,11 @@ function mapPost(row) {
   };
 }
 
+function extractSourceUrls(...values) {
+  const urls = values.flatMap((value) => String(value || '').match(/https?:\/\/[^\s，。；、)）]+/g) || []);
+  return [...new Set(urls)];
+}
+
 function mapBookmark(row) {
   return {
     id: String(row.id),
@@ -222,6 +228,45 @@ function mapServiceLead(row) {
     contactValue: row.contact_value,
     requestText: row.request_text,
     status: row.status,
+    createTime: row.created_at,
+    updateTime: row.updated_at
+  };
+}
+
+function mapRiskAlert(row) {
+  return {
+    id: String(row.id),
+    _id: String(row.id),
+    countryCode: row.country_code,
+    countryZh: row.country_zh,
+    severity: row.severity,
+    title: row.title,
+    summary: row.summary,
+    sourceName: row.source_name,
+    sourceUrl: row.source_url,
+    publishedAt: row.published_at,
+    verifiedAt: row.verified_at,
+    expiresAt: row.expires_at,
+    status: row.status,
+    updateTime: row.updated_at
+  };
+}
+
+function mapContentCorrection(row) {
+  return {
+    id: String(row.id),
+    _id: String(row.id),
+    userId: String(row.user_id),
+    countryCode: row.country_code,
+    countryZh: row.country_zh,
+    contentType: row.content_type,
+    contentId: row.content_id || '',
+    title: row.title,
+    description: row.description,
+    sourceUrl: row.source_url || '',
+    status: row.status,
+    reviewerNote: row.reviewer_note || '',
+    reviewedAt: row.reviewed_at,
     createTime: row.created_at,
     updateTime: row.updated_at
   };
@@ -342,7 +387,10 @@ app.get('/api/guide', async (req, res, next) => {
           type: 'database',
           label: '服务端整合资料',
           updatedAt: rows[0].updated_at,
-          urls: [guide.visa && guide.visa.url, guide.extras && guide.extras.officialSites].filter(Boolean)
+          verifiedAt: rows[0].updated_at,
+          trustLevel: 'curated',
+          reviewStatus: 'published',
+          urls: extractSourceUrls(guide.visa && guide.visa.url, guide.extras && guide.extras.officialSites)
         }
       }
     });
@@ -944,6 +992,56 @@ app.get('/api/me/service-leads', authenticate, async (req, res, next) => {
   }
 });
 
+app.get('/api/risk-alerts', async (req, res, next) => {
+  try {
+    const countryCode = normalizeCountryCode(req.query.countryCode, req.query.country);
+    if (!countryCode) {
+      res.status(400).json({ ok: false, message: '请选择有效的风险国家' });
+      return;
+    }
+    const [rows] = await pool.query(
+      `SELECT * FROM risk_alerts
+       WHERE country_code = ? AND status = 'published'
+       AND (expires_at IS NULL OR expires_at > NOW())
+       ORDER BY FIELD(severity, 'critical', 'high', 'medium', 'low', 'info'), published_at DESC`,
+      [countryCode]
+    );
+    res.json({ ok: true, data: rows.map(mapRiskAlert) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/content-corrections', authenticate, async (req, res, next) => {
+  try {
+    const correction = sanitizeCorrectionPayload(req.body || {});
+    const [result] = await pool.query(
+      `INSERT INTO content_corrections
+       (user_id, country_code, country_zh, content_type, content_id, title, description, source_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        req.user.id, correction.countryCode, correction.countryZh, correction.contentType,
+        correction.contentId, correction.title, correction.description, correction.sourceUrl
+      ]
+    );
+    res.status(201).json({ ok: true, id: String(result.insertId), status: 'pending' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/me/content-corrections', authenticate, async (req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM content_corrections WHERE user_id = ? ORDER BY id DESC LIMIT 100',
+      [req.user.id]
+    );
+    res.json({ ok: true, data: rows.map(mapContentCorrection) });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res, next) => {
   const mappers = {
     attractions: mapAttraction,
@@ -951,7 +1049,9 @@ app.get('/api/collections/:name', authenticate, requireAdmin, async (req, res, n
     posts: mapPost,
     users: mapUser,
     service_providers: mapServiceProvider,
-    service_leads: mapServiceLead
+    service_leads: mapServiceLead,
+    risk_alerts: mapRiskAlert,
+    content_corrections: mapContentCorrection
   };
   const mapper = mappers[req.params.name];
   if (!mapper) {
@@ -1024,6 +1124,23 @@ app.post('/api/collections/:name', authenticate, requireAdmin, async (req, res, 
       return;
     }
 
+    if (req.params.name === 'risk_alerts') {
+      const alert = sanitizeRiskAlertPayload(payload);
+      const [result] = await pool.query(
+        `INSERT INTO risk_alerts
+         (country_code, country_zh, severity, title, summary, source_name, source_url,
+          published_at, verified_at, expires_at, status, created_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, IF(? = 'published', NOW(), NULL), NULLIF(?, ''), ?, ?)`,
+        [
+          alert.countryCode, alert.countryZh, alert.severity, alert.title, alert.summary,
+          alert.sourceName, alert.sourceUrl, alert.publishedAt, alert.status,
+          alert.expiresAt, alert.status, req.user.id
+        ]
+      );
+      res.json({ ok: true, _id: String(result.insertId) });
+      return;
+    }
+
     res.status(400).json({ ok: false, message: '该集合暂不支持新增' });
   } catch (error) {
     next(error);
@@ -1065,6 +1182,26 @@ app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, re
     } else if (req.params.name === 'service_leads') {
       const status = LEAD_STATUSES.has(body.status) ? body.status : 'new';
       await pool.query('UPDATE service_leads SET status = ? WHERE id = ?', [status, req.params.id]);
+    } else if (req.params.name === 'risk_alerts') {
+      const alert = sanitizeRiskAlertPayload(body);
+      await pool.query(
+        `UPDATE risk_alerts SET country_code = ?, country_zh = ?, severity = ?, title = ?, summary = ?,
+         source_name = ?, source_url = ?, published_at = ?, expires_at = NULLIF(?, ''), status = ?,
+         verified_at = CASE WHEN ? = 'published' THEN NOW() ELSE NULL END WHERE id = ?`,
+        [
+          alert.countryCode, alert.countryZh, alert.severity, alert.title, alert.summary,
+          alert.sourceName, alert.sourceUrl, alert.publishedAt, alert.expiresAt,
+          alert.status, alert.status, req.params.id
+        ]
+      );
+    } else if (req.params.name === 'content_corrections') {
+      const status = CORRECTION_STATUSES.has(body.status) ? body.status : 'pending';
+      const reviewerNote = String(body.reviewerNote || '').trim().slice(0, 1000);
+      await pool.query(
+        `UPDATE content_corrections SET status = ?, reviewer_note = ?, reviewed_by = ?,
+         reviewed_at = CASE WHEN ? = 'pending' THEN NULL ELSE NOW() END WHERE id = ?`,
+        [status, reviewerNote, req.user.id, status, req.params.id]
+      );
     } else {
       res.status(404).json({ ok: false, message: '未知集合' });
       return;
@@ -1076,7 +1213,7 @@ app.put('/api/collections/:name/:id', authenticate, requireAdmin, async (req, re
 });
 
 app.delete('/api/collections/:name/:id', authenticate, requireAdmin, async (req, res, next) => {
-  const allowed = ['attractions', 'recommend', 'posts', 'users', 'service_providers'];
+  const allowed = ['attractions', 'recommend', 'posts', 'users', 'service_providers', 'risk_alerts'];
   if (!allowed.includes(req.params.name)) {
     res.status(404).json({ ok: false, message: '未知集合' });
     return;

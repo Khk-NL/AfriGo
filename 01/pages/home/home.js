@@ -263,6 +263,10 @@ Page({
     wx.navigateTo({ url: '/pages/services/services' });
   },
 
+  onContentTrustTap() {
+    wx.navigateTo({ url: '/pages/content-trust/content-trust' });
+  },
+
   onFeatureTap(e) {
     const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
     if (key === 'attractions') return;

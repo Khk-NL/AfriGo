@@ -1,0 +1,45 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content">
+      <view class="hero-card trust-hero">
+        <text class="hero-eyebrow">CONTENT TRUST</text>
+        <text class="hero-title">{{countryZh}}·信息来源与纠错</text>
+        <text class="hero-summary">显示资料更新时间、可信边界和风险来源；发现错误时可提交证据并跟踪审核结果。</text>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">国家资料可信说明</text><text class="section-subtitle">整合资料不等同于官方原文，出发前仍应点击来源复核</text></view>
+        <view class="trust-grid"><view><text>资料类型</text><text class="trust-value">{{source.trustLabel}}</text></view><view><text>最近同步</text><text class="trust-value">{{source.updatedLabel}}</text></view><view><text>时效判断</text><text class="trust-value">{{source.freshnessLabel}}</text></view></view>
+        <view wx:if="{{source.urls.length}}" class="source-list"><text wx:for="{{source.urls}}" wx:key="*this" class="source-link" data-url="{{item}}" bindtap="onCopyUrl">复制来源 {{index + 1}}</text></view>
+        <text wx:else class="source-empty">当前资料没有可提取的来源链接，请按“需复核”处理。</text>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">当前已审核风险提醒</text><text class="section-subtitle">只显示已发布且未过期的服务端提醒</text></view>
+        <view wx:if="{{alerts.length}}" wx:for="{{alerts}}" wx:key="id" class="alert-card severity-{{item.severity}}">
+          <view class="alert-head"><text class="alert-title">{{item.title}}</text><text class="alert-level">{{item.severity}}</text></view>
+          <text class="alert-summary">{{item.summary}}</text>
+          <text class="alert-meta">来源：{{item.sourceName}} · 发布 {{item.publishedLabel}} · 核验 {{item.verifiedLabel}} · 有效至 {{item.expiresLabel}}</text>
+          <text class="source-link" data-url="{{item.sourceUrl}}" bindtap="onCopyUrl">复制风险来源</text>
+        </view>
+        <view wx:else class="empty-state"><text class="empty-title">暂无正在生效的审核提醒</text><text class="source-empty">这不代表没有风险，请同时核对领事服务、使领馆和目的地官方渠道。</text></view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head"><text class="section-title">提交信息纠错</text><text class="section-subtitle">请说明具体错误，来源链接可帮助管理员核验</text></view>
+        <picker mode="selector" range="{{contentTypes}}" range-key="label" value="{{contentTypeIndex}}" bindchange="onTypeChange"><view class="form-field">{{contentTypes[contentTypeIndex].label}}</view></picker>
+        <input class="form-field" value="{{correction.title}}" data-field="title" bindinput="onCorrectionInput" placeholder="问题标题，如“使馆电话已更新”" />
+        <textarea class="correction-textarea" value="{{correction.description}}" data-field="description" bindinput="onCorrectionInput" placeholder="说明原内容、建议修改内容和核验依据" />
+        <input class="form-field" value="{{correction.sourceUrl}}" data-field="sourceUrl" bindinput="onCorrectionInput" placeholder="来源链接（可选）" />
+        <button class="submit-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onSubmitCorrection">提交审核</button>
+      </view>
+
+      <view wx:if="{{corrections.length}}" class="section-card">
+        <view class="section-head"><text class="section-title">我的纠错记录</text><text class="section-subtitle">审核结论会保留说明</text></view>
+        <view wx:for="{{corrections}}" wx:key="id" class="correction-row"><view><text class="correction-title">{{item.title}}</text><text class="correction-note">{{item.reviewerNote || item.description}}</text></view><text class="correction-status">{{item.statusLabel}}</text></view>
+      </view>
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+</view>

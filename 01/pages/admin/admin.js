@@ -6,7 +6,9 @@ const COLLECTIONS = [
   { key: 'attractions', label: '景点攻略' },
   { key: 'recommend', label: '出行推荐' },
   { key: 'service_providers', label: '服务方审核' },
-  { key: 'service_leads', label: '服务意向单' }
+  { key: 'service_leads', label: '服务意向单' },
+  { key: 'risk_alerts', label: '风险提醒' },
+  { key: 'content_corrections', label: '用户纠错' }
 ];
 
 Page({

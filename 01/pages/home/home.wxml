@@ -79,6 +79,15 @@
         <view class="landing-plan-arrow">›</view>
       </view>
 
+      <view class="landing-plan-card content-trust-card" bindtap="onContentTrustTap">
+        <view class="landing-plan-copy">
+          <text class="landing-plan-eyebrow">CONTENT TRUST</text>
+          <text class="landing-plan-title">信息来源、风险与纠错</text>
+          <text class="landing-plan-desc">查看核验时间、有效期和用户纠错进度</text>
+        </view>
+        <view class="landing-plan-arrow">›</view>
+      </view>
+
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">

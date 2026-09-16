@@ -29,8 +29,8 @@
 
 ### 风险和应急
 
-- 预留接口：`GET /api/risk-alerts?countryCode=KE`、`POST /api/emergency-sessions`。
-- 第一版以驻外使领馆/领事服务等可核验来源为主，后台人工审核后发布。
+- 已实现 `GET /api/risk-alerts?countryCode=KE`；提醒必须有来源、核验时间和有效期，并经后台人工审核后发布。`POST /api/emergency-sessions` 仍后置。
+- 第一版以驻外使领馆/领事服务等可核验来源为主，不自动发布抓取结果。
 - 已将当前国家指南、常用语、应急联系人和行前计划纳入本机离线包。
 
 ## 已实现：阶段 3 · 旅后闭环
@@ -47,12 +47,12 @@
 - 管理后台新增 `service_providers` 与 `service_leads`，支持审核服务方、记录资质来源和更新意向状态。
 - 在没有真实合作方、价格和售后规则前，前端显示真实空状态，并明确意向不等于预订或付款。
 
-## 阶段 5 · 内容可信机制
+## 已实现：阶段 5 · 内容可信机制
 
-- 每条内容存储 `sourceUrl`、`sourceName`、`verifiedAt`、`expiresAt`、`reviewStatus`。
-- 用户纠错：`POST /api/content-corrections`。
-- 管理员审核：`GET /api/admin/content-corrections`、`PATCH /api/admin/content-corrections/:id`。
-- 前端统一显示来源、核验日期和“可能过期”状态。
+- 国家整合资料返回来源链接、同步/核验时间、可信类型和发布状态；前端按 180 天提示时效风险。
+- 风险提醒存储 `sourceUrl`、`sourceName`、`publishedAt`、`verifiedAt`、`expiresAt` 和 `status`；`GET /api/risk-alerts` 只返回已发布且未过期内容。
+- 用户纠错：`POST /api/content-corrections`、`GET /api/me/content-corrections`，登录用户可查看采纳或驳回说明。
+- 管理后台新增 `risk_alerts` 与 `content_corrections`，用于发布风险信息和审核纠错；旅中工具同步显示有效提醒。
 
 ## 后置项
 
