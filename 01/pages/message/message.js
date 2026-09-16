@@ -6,7 +6,8 @@ Page({
         language: getStoredLanguage(),
         uiText: buildMessageText(getStoredLanguage()),
         notices: [],
-        isLoading: false
+        isLoading: false,
+        remindersEnabled: wx.getStorageSync('inAppRemindersEnabled') !== false
     },
 
     applyLanguage(language) {
@@ -24,6 +25,8 @@ Page({
     },
 
     onShow() {
+        this.applyLanguage(getStoredLanguage());
+        this.setData({ remindersEnabled: wx.getStorageSync('inAppRemindersEnabled') !== false });
         this.refreshNotices();
     },
 

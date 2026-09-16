@@ -247,6 +247,13 @@ async function deleteMyPost(postId) {
   return request(`/api/posts/${postId}`, { method: 'DELETE' });
 }
 
+async function deleteCurrentAccount() {
+  const result = await request('/api/auth/account', { method: 'DELETE' });
+  cacheAuthToken('');
+  cacheCurrentUser(null);
+  return result;
+}
+
 async function togglePostLike(postId) {
   return request(`/api/posts/${postId}/like`, { method: 'POST' });
 }
@@ -303,6 +310,7 @@ export {
   markNotificationRead,
   loadMyPosts,
   deleteMyPost,
+  deleteCurrentAccount,
   togglePostLike,
   loadPostEngagement,
   loadPostComments,

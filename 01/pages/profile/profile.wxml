@@ -92,6 +92,31 @@
                 </block>
             </view>
 
+            <view wx:if="{{settingsVisible}}" class="section-card settings-card">
+                <view class="section-head section-head-row">
+                    <view>
+                        <text class="section-title">{{settingsText.title}}</text>
+                        <text class="section-subtitle">{{settingsText.subtitle}}</text>
+                    </view>
+                    <text class="settings-close" bindtap="onCloseSettings">{{settingsText.close}}</text>
+                </view>
+                <picker mode="selector" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="onLanguageChange">
+                    <view class="settings-row">
+                        <view><text class="settings-title">{{settingsText.language}}</text><text class="settings-desc">{{languageOptions[languageIndex]}}</text></view>
+                        <text class="service-arrow">›</text>
+                    </view>
+                </picker>
+                <view class="settings-row">
+                    <view><text class="settings-title">{{settingsText.reminders}}</text><text class="settings-desc">{{settingsText.remindersDesc}}</text></view>
+                    <switch checked="{{remindersEnabled}}" bindchange="onReminderChange" color="#58c796" />
+                </view>
+                <view class="settings-row" bindtap="onPrivacyTap">
+                    <view><text class="settings-title">{{settingsText.privacy}}</text><text class="settings-desc">{{settingsText.privacyDesc}}</text></view>
+                    <text class="service-arrow">›</text>
+                </view>
+                <button wx:if="{{isLogin}}" class="delete-account-btn" bindtap="onDeleteAccount">{{settingsText.deleteAccount}}</button>
+            </view>
+
             <view class="section-card bookmark-card">
                 <view class="section-head section-head-row">
                     <view>

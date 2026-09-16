@@ -434,6 +434,23 @@ app.get('/api/auth/me', authenticate, (req, res) => {
   res.json({ ok: true, user: mapUser(req.user) });
 });
 
+app.delete('/api/auth/account', authenticate, async (req, res, next) => {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    await connection.query('DELETE FROM posts WHERE author_id = ?', [req.user.id]);
+    await connection.query('DELETE FROM users WHERE id = ?', [req.user.id]);
+    await connection.commit();
+    res.json({ ok: true });
+  } catch (error) {
+    if (connection) await connection.rollback();
+    next(error);
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
 app.get('/api/me/posts', authenticate, async (req, res, next) => {
   try {
     const [rows] = await pool.query('SELECT * FROM posts WHERE author_id = ? ORDER BY id DESC', [req.user.id]);

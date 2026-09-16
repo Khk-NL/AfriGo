@@ -8,6 +8,9 @@
       { "type": "folder", "value": "backend" },
       { "type": "folder", "value": "node_modules" },
       { "type": "folder", "value": "scripts" },
+      { "type": "folder", "value": "miniprogram_npm" },
+      { "type": "file", "value": "utils/lottie-miniprogram.js" },
+      { "type": "file", "value": "assets/images/congo-drc.png" },
       { "type": "file", "value": "package.json" },
       { "type": "file", "value": "package-lock.json" }
     ],

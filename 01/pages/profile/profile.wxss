@@ -575,3 +575,11 @@ page {
     line-height: 1;
 }
 
+.settings-close { color: #6b7280; font-size: 23rpx; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24rpx; padding: 24rpx 0; border-bottom: 1rpx solid rgba(148, 163, 184, 0.18); }
+.settings-title, .settings-desc { display: block; }
+.settings-title { color: #1f2937; font-size: 27rpx; font-weight: 700; }
+.settings-desc { margin-top: 8rpx; color: #7b8492; font-size: 21rpx; }
+.delete-account-btn { margin-top: 24rpx; border-radius: 999rpx; background: #fff3f5; color: #c2415d; font-size: 24rpx; }
+.delete-account-btn::after { border: 0; }
+

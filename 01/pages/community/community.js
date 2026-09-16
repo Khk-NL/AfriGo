@@ -68,11 +68,13 @@ Page({
 
   onShow() {
     const cached = wx.getStorageSync('selectedDestination');
-    if (cached && cached.zhName) {
-      this.setData({
-        welcomeCountryZh: cached.zhName
-      });
-    }
+    const welcomeCountryZh = cached && cached.zhName ? cached.zhName : '肯尼亚';
+    const language = getStoredLanguage();
+    this.setData({
+      language,
+      welcomeCountryZh,
+      uiText: buildCommunityText(language, welcomeCountryZh)
+    });
     this.refreshCommunityFeed();
   },
 

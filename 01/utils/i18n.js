@@ -196,7 +196,7 @@ const PROFILE_TEXT = {
       security: { title: '安全出行提醒', subtitle: '同步最新风险等级与夜间出行建议' },
       recommend: { title: '本地推荐路线', subtitle: '把住宿、交通和补给点排进同一条路线' },
       phrases: { title: '常用沟通词句', subtitle: '紧急场景、问路和支付对话都能快速找到' },
-      settings: { title: '偏好与设置', subtitle: '通知、语言和隐私能力会在后续继续完善' }
+      settings: { title: '偏好与设置', subtitle: '管理界面语言、应用内提醒和账号数据' }
     }
   },
   en: {
@@ -247,7 +247,7 @@ const PROFILE_TEXT = {
       security: { title: 'Safety reminders', subtitle: 'Sync the latest risk level and night-travel advice' },
       recommend: { title: 'Recommended routes', subtitle: 'Arrange accommodation, transport, and supply stops into one route' },
       phrases: { title: 'Useful phrases', subtitle: 'Find emergency, navigation, and payment lines quickly' },
-      settings: { title: 'Preferences & settings', subtitle: 'Notifications, language, and privacy features will keep improving' }
+      settings: { title: 'Preferences & settings', subtitle: 'Manage language, in-app reminders, and account data' }
     }
   },
   fr: {
@@ -298,7 +298,7 @@ const PROFILE_TEXT = {
       security: { title: 'Conseils de sécurité', subtitle: 'Synchronisez le niveau de risque et les conseils de déplacement nocturne' },
       recommend: { title: 'Itinéraires recommandés', subtitle: 'Regroupez hébergement, transport et ravitaillement sur un même trajet' },
       phrases: { title: 'Phrases utiles', subtitle: 'Trouvez rapidement les formules d’urgence, de route et de paiement' },
-      settings: { title: 'Préférences & réglages', subtitle: 'Les notifications, la langue et la confidentialité s’amélioreront encore' }
+      settings: { title: 'Préférences & réglages', subtitle: 'Gérez la langue, les rappels intégrés et les données du compte' }
     }
   }
 };

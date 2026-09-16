@@ -1,5 +1,18 @@
-import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
-import { deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark } from '../../utils/cloud-service.js';
+import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
+import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark } from '../../utils/cloud-service.js';
+
+const REMINDER_STORAGE_KEY = 'inAppRemindersEnabled';
+const LANGUAGE_OPTIONS = [
+    { code: 'zh', label: '简体中文' },
+    { code: 'en', label: 'English' },
+    { code: 'fr', label: 'Français' }
+];
+
+const SETTINGS_TEXT = {
+    zh: { title: '偏好与设置', subtitle: '设置仅影响当前设备上的小程序体验', close: '关闭', language: '界面语言', reminders: '应用内未读提醒', remindersDesc: '关闭后消息仍保留，但不显示未读红点', privacy: '隐私与数据说明', privacyDesc: '查看本地与服务端保存的数据', deleteAccount: '删除账号及关联数据' },
+    en: { title: 'Preferences & settings', subtitle: 'These settings apply to this device', close: 'Close', language: 'Interface language', reminders: 'In-app unread reminders', remindersDesc: 'Messages remain available when unread dots are hidden', privacy: 'Privacy & data', privacyDesc: 'Review locally and remotely stored data', deleteAccount: 'Delete account and related data' },
+    fr: { title: 'Préférences & réglages', subtitle: 'Ces réglages s’appliquent à cet appareil', close: 'Fermer', language: 'Langue de l’interface', reminders: 'Rappels non lus intégrés', remindersDesc: 'Les messages restent disponibles sans pastille rouge', privacy: 'Confidentialité et données', privacyDesc: 'Voir les données locales et distantes', deleteAccount: 'Supprimer le compte et ses données' }
+};
 
 const COUNTRY_CITY_MAP = {
     '刚果(金)': '金沙萨',
@@ -44,7 +57,12 @@ Page({
         myPosts: [],
         quickActions: [],
         serviceEntries: [],
-        profileStats: []
+        profileStats: [],
+        settingsVisible: false,
+        languageOptions: LANGUAGE_OPTIONS.map((item) => item.label),
+        languageIndex: Math.max(0, LANGUAGE_OPTIONS.findIndex((item) => item.code === getStoredLanguage())),
+        remindersEnabled: wx.getStorageSync(REMINDER_STORAGE_KEY) !== false,
+        settingsText: SETTINGS_TEXT[getStoredLanguage()] || SETTINGS_TEXT.zh
     },
 
     applyLanguage(language, currentCountry = this.data.currentCountry, bookmarksCount = this.data.bookmarks.length, isLogin = this.data.isLogin) {
@@ -53,7 +71,8 @@ Page({
         this.setData({
             language: nextLanguage,
             currentCountryLabel,
-            uiText: buildProfileText(nextLanguage, currentCountry, currentCountryLabel, bookmarksCount, isLogin)
+            uiText: buildProfileText(nextLanguage, currentCountry, currentCountryLabel, bookmarksCount, isLogin),
+            settingsText: SETTINGS_TEXT[nextLanguage] || SETTINGS_TEXT.zh
         });
     },
 
@@ -212,10 +231,12 @@ Page({
             return;
         }
 
-        wx.showToast({
-            title: title || (this.data.language === 'zh' ? '功能开发中' : this.data.language === 'en' ? 'Feature coming soon' : 'Fonction bientôt disponible'),
-            icon: 'none'
-        });
+        if (action === 'settings') {
+            this.setData({ settingsVisible: true });
+            return;
+        }
+
+        if (title) wx.showToast({ title, icon: 'none' });
     },
 
     onBookmarkTap(e) {
@@ -243,6 +264,53 @@ Page({
         } catch (error) {
             wx.showToast({ title: '移除失败，请稍后重试', icon: 'none' });
         }
+    },
+
+    onLanguageChange(e) {
+        const languageIndex = Number(e.detail.value || 0);
+        const language = LANGUAGE_OPTIONS[languageIndex] ? LANGUAGE_OPTIONS[languageIndex].code : 'zh';
+        setStoredLanguage(language);
+        this.setData({ languageIndex });
+        this.applyLanguage(language);
+        this.refreshProfile();
+    },
+
+    onReminderChange(e) {
+        const remindersEnabled = Boolean(e.detail.value);
+        wx.setStorageSync(REMINDER_STORAGE_KEY, remindersEnabled);
+        this.setData({ remindersEnabled });
+    },
+
+    onPrivacyTap() {
+        wx.showModal({
+            title: '隐私与数据',
+            content: '本地保存语言、目的地和登录会话。服务端保存账号、收藏、动态、评论与消息；身份和权限以服务端记录为准。你可以在此删除账号及关联数据。',
+            showCancel: false
+        });
+    },
+
+    onCloseSettings() {
+        this.setData({ settingsVisible: false });
+    },
+
+    onDeleteAccount() {
+        wx.showModal({
+            title: '删除账号及数据',
+            content: '将永久删除账号、动态、评论、点赞、收藏、消息和登录会话，且无法恢复。确认继续吗？',
+            confirmText: '永久删除',
+            confirmColor: '#c2415d',
+            success: async (result) => {
+                if (!result.confirm) return;
+                try {
+                    await deleteCurrentAccount();
+                    this.setData({ settingsVisible: false });
+                    await this.refreshProfile();
+                    wx.showToast({ title: '账号已删除', icon: 'success' });
+                } catch (error) {
+                    wx.showToast({ title: error.message || '删除失败', icon: 'none' });
+                }
+            }
+        });
     },
 
     onDeletePost(e) {
@@ -301,13 +369,7 @@ Page({
         };
 
         const url = tabRouteMap[tab];
-        if (!url) {
-            wx.showToast({
-                title: '页面开发中',
-                icon: 'none'
-            });
-            return;
-        }
+        if (!url) return;
 
         wx.switchTab({
             url,
