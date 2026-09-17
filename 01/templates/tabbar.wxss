@@ -48,6 +48,17 @@
     margin-bottom: 4rpx;
 }
 
+.tab-icon-image {
+    width: 32rpx;
+    height: 32rpx;
+    margin-bottom: 4rpx;
+}
+
+.publish-icon-image {
+    width: 38rpx;
+    height: 38rpx;
+}
+
 .tab-text {
     font-size: 10px;
 }

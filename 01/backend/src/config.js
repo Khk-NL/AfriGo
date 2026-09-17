@@ -15,6 +15,9 @@ function validateProductionConfig(env = process.env) {
   }
   if (env.DB_NAME && !/^[A-Za-z0-9_]+$/.test(env.DB_NAME)) errors.push('DB_NAME 格式不合法');
   if (env.ALLOW_DEV_AUTH === 'true') errors.push('production 禁止开启 ALLOW_DEV_AUTH');
+  if (String(env.AMAP_NAVIGATION_ENABLED).toLowerCase() === 'true' && isPlaceholder(env.AMAP_WEB_SERVICE_KEY)) {
+    errors.push('AMAP_WEB_SERVICE_KEY 未配置');
+  }
 
   const credentialMode = env.OSS_CREDENTIAL_MODE || 'ecs_ram_role';
   if (credentialMode === 'ecs_ram_role') {

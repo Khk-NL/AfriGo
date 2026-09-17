@@ -13,6 +13,7 @@ const { sanitizeExpensePayload, sanitizeReviewPayload } = require('../src/trip-r
 const { sanitizeLeadPayload, sanitizeProviderPayload } = require('../src/services');
 const { sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('../src/content-trust');
 const { translateText, validateTranslationInput } = require('../src/translate');
+const { planNavigationRoute, validateNavigationInput } = require('../src/navigation');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -70,6 +71,7 @@ test('production config requires HTTPS and ECS role credentials', () => {
   assert.deepEqual(validateProductionConfig(base), []);
   assert.match(validateProductionConfig({ ...base, PUBLIC_BASE_URL: 'http://api.example.com' }).join('；'), /HTTPS/);
   assert.match(validateProductionConfig({ ...base, ALLOW_DEV_AUTH: 'true' }).join('；'), /ALLOW_DEV_AUTH/);
+  assert.match(validateProductionConfig({ ...base, AMAP_NAVIGATION_ENABLED: 'true' }).join('；'), /AMAP_WEB_SERVICE_KEY/);
 });
 
 test('rate limiter rejects requests after the configured limit', () => {
@@ -141,6 +143,54 @@ test('translation provider stays closed until explicitly enabled', async () => {
   );
   if (previous === undefined) delete process.env.ALIYUN_TRANSLATE_ENABLED;
   else process.env.ALIYUN_TRANSLATE_ENABLED = previous;
+});
+
+test('navigation validates coordinates and stays closed until enabled', async () => {
+  assert.deepEqual(
+    validateNavigationInput({
+      mode: 'walking',
+      origin: { longitude: '36.8219462', latitude: '-1.2920659' },
+      destination: { longitude: 36.817223, latitude: -1.286389 }
+    }),
+    {
+      mode: 'walking',
+      origin: { longitude: 36.821946, latitude: -1.292066 },
+      destination: { longitude: 36.817223, latitude: -1.286389 }
+    }
+  );
+  assert.throws(
+    () => validateNavigationInput({ origin: { longitude: 181, latitude: 0 }, destination: { longitude: 1, latitude: 1 } }),
+    /起点坐标/
+  );
+  const previous = process.env.AMAP_NAVIGATION_ENABLED;
+  process.env.AMAP_NAVIGATION_ENABLED = 'false';
+  await assert.rejects(
+    () => planNavigationRoute({ origin: { longitude: 1, latitude: 1 }, destination: { longitude: 2, latitude: 2 } }),
+    (error) => error.statusCode === 503 && /尚未配置/.test(error.message)
+  );
+  const previousKey = process.env.AMAP_WEB_SERVICE_KEY;
+  process.env.AMAP_NAVIGATION_ENABLED = 'true';
+  process.env.AMAP_WEB_SERVICE_KEY = 'test-key';
+  let requestedUrl = '';
+  const route = await planNavigationRoute(
+    { origin: { longitude: 36.82, latitude: -1.29 }, destination: { longitude: 36.81, latitude: -1.28 } },
+    async (url) => {
+      requestedUrl = url;
+      return {
+        ok: true,
+        async json() {
+          return { status: '1', route: { paths: [{ distance: '2100', duration: '600', steps: [] }] } };
+        }
+      };
+    }
+  );
+  assert.match(requestedUrl, /^https:\/\/sg-restapi\.opnavi\.com\/v3\/direction\/driving\?/);
+  assert.equal(route.provider, 'amap-overseas');
+  assert.equal(route.paths[0].distanceMeters, 2100);
+  if (previous === undefined) delete process.env.AMAP_NAVIGATION_ENABLED;
+  else process.env.AMAP_NAVIGATION_ENABLED = previous;
+  if (previousKey === undefined) delete process.env.AMAP_WEB_SERVICE_KEY;
+  else process.env.AMAP_WEB_SERVICE_KEY = previousKey;
 });
 
 test('service providers and leads require auditable fields', () => {

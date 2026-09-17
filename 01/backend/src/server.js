@@ -14,6 +14,7 @@ const { sanitizeExpensePayload, sanitizeReviewPayload } = require('./trip-review
 const { LEAD_STATUSES, sanitizeLeadPayload, sanitizeProviderPayload } = require('./services');
 const { CORRECTION_STATUSES, sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('./content-trust');
 const { translateText } = require('./translate');
+const { planNavigationRoute } = require('./navigation');
 
 const app = express();
 const pool = createPool();
@@ -22,6 +23,7 @@ const authenticate = createAuthMiddleware(pool);
 const loginLimiter = createRateLimiter({ windowMs: 10 * 60_000, max: 20, prefix: 'login' });
 const mutationLimiter = createRateLimiter({ windowMs: 60_000, max: 120, prefix: 'mutation' });
 const translateLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'translate' });
+const navigationLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'navigation' });
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -910,6 +912,15 @@ app.put('/api/trips/:id/review', authenticate, async (req, res, next) => {
 app.post('/api/translate', authenticate, translateLimiter, async (req, res, next) => {
   try {
     const data = await translateText(req.body || {});
+    res.json({ ok: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/navigation/routes', authenticate, navigationLimiter, async (req, res, next) => {
+  try {
+    const data = await planNavigationRoute(req.body || {});
     res.json({ ok: true, data });
   } catch (error) {
     next(error);

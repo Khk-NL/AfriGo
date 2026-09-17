@@ -142,5 +142,5 @@
     </view>
   </scroll-view>
 
-  <template is="tabbar" data="{{ activeTab: 'community', tabTexts: uiText.tabLabels }}" />
+  <template is="tabbar" data="{{ activeTab: 'community', tabTexts: uiText.tabLabels, tabIconImages: uiText.tabIconImages }}" />
 </view>

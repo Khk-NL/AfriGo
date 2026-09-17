@@ -43,4 +43,4 @@
 
 </view>
 
-<template is="tabbar" data="{{activeTab: 'message', tabTexts: uiText.tabLabels}}"/>
+<template is="tabbar" data="{{activeTab: 'message', tabTexts: uiText.tabLabels, tabIconImages: uiText.tabIconImages}}"/>

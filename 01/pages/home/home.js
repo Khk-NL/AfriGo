@@ -2,15 +2,22 @@ import { ElephantRenderer } from '../../utils/elephant-renderer.js';
 import { createPost, loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
 import { getSelectedDestination } from '../../utils/countries.js';
+import { ICON_IMAGES } from '../../config/icons.js';
 
 const { attractions: localAttractionsData } = require('../../data/attractions.js');
 const { recommend: localRecommendData } = require('../../data/recommend.js');
 
 const JOURNEY_TOOLS = [
-  { key: 'map', icon: '🗺️', iconImage: '', labels: { zh: '地图导航', en: 'Maps', fr: 'Carte' }, descriptions: { zh: '选点与定位', en: 'Pick and locate', fr: 'Choisir et localiser' } },
-  { key: 'translate', icon: '🌐', iconImage: '', labels: { zh: '随身翻译', en: 'Translate', fr: 'Traduire' }, descriptions: { zh: '中文与当地语言', en: 'Travel phrases', fr: 'Phrases de voyage' } },
-  { key: 'offline', icon: '📥', iconImage: '', labels: { zh: '离线安全包', en: 'Offline Pack', fr: 'Pack hors ligne' }, descriptions: { zh: '无网也能查', en: 'Works offline', fr: 'Disponible hors ligne' } },
-  { key: 'emergency', icon: '🆘', iconImage: '', labels: { zh: '紧急求助', en: 'Emergency', fr: 'Urgence' }, descriptions: { zh: '风险与应急号码', en: 'Alerts and contacts', fr: 'Alertes et contacts' } }
+  { key: 'map', icon: '🗺️', iconImage: ICON_IMAGES.journey.map, labels: { zh: '地图导航', en: 'Maps', fr: 'Carte' }, descriptions: { zh: '选点与定位', en: 'Pick and locate', fr: 'Choisir et localiser' } },
+  { key: 'translate', icon: '🌐', iconImage: ICON_IMAGES.journey.translate, labels: { zh: '随身翻译', en: 'Translate', fr: 'Traduire' }, descriptions: { zh: '中文与当地语言', en: 'Travel phrases', fr: 'Phrases de voyage' } },
+  { key: 'offline', icon: '📥', iconImage: ICON_IMAGES.journey.offline, labels: { zh: '离线安全包', en: 'Offline Pack', fr: 'Pack hors ligne' }, descriptions: { zh: '无网也能查', en: 'Works offline', fr: 'Disponible hors ligne' } },
+  { key: 'emergency', icon: '🆘', iconImage: ICON_IMAGES.journey.emergency, labels: { zh: '紧急求助', en: 'Emergency', fr: 'Urgence' }, descriptions: { zh: '风险与应急号码', en: 'Alerts and contacts', fr: 'Alertes et contacts' } }
+];
+
+const HOME_SERVICES = [
+  { key: 'review', icon: '🧾', iconImage: ICON_IMAGES.homeServices.review, title: '旅后复盘与路线复用', description: '费用、评价、游记和下次模板' },
+  { key: 'services', icon: '🤝', iconImage: ICON_IMAGES.homeServices.services, title: '经审核的本地服务', description: '酒店、交通、导游与保险咨询' },
+  { key: 'trust', icon: '🔎', iconImage: ICON_IMAGES.homeServices.trust, title: '信息来源、风险与纠错', description: '核验时间、有效期与审核进度' }
 ];
 
 function buildJourneyTools(language) {
@@ -86,7 +93,8 @@ Page({
     attractionsList: [],
     recommendList: [],
     tripPreview: { progress: 0, label: '开始制定行前计划' },
-    journeyTools: buildJourneyTools(getStoredLanguage())
+    journeyTools: buildJourneyTools(getStoredLanguage()),
+    homeServices: HOME_SERVICES
   },
 
   applyLanguage(language, countryZh = this.data.currentCountryZh) {
@@ -273,6 +281,13 @@ Page({
   onJourneyToolTap(e) {
     const section = e.currentTarget.dataset.section || 'all';
     wx.navigateTo({ url: `/pages/travel-tools/travel-tools?section=${encodeURIComponent(section)}` });
+  },
+
+  onHomeServiceTap(e) {
+    const key = e.currentTarget.dataset.key;
+    if (key === 'review') return this.onTripReviewTap();
+    if (key === 'services') return this.onServicesTap();
+    if (key === 'trust') return this.onContentTrustTap();
   },
 
   onTripReviewTap() {

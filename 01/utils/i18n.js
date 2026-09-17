@@ -1,3 +1,5 @@
+import { ICON_IMAGES } from '../config/icons.js';
+
 const LANGUAGE_STORAGE_KEY = 'appLanguage';
 const SUPPORTED_LANGUAGES = ['zh', 'en', 'fr'];
 
@@ -637,13 +639,17 @@ function buildFeatureItems(language) {
   return FEATURE_KEYS.map((item) => ({
     key: item.key,
     icon: item.icon,
-    iconImage: item.iconImage || '',
+    iconImage: item.iconImage || ICON_IMAGES.features[item.key] || '',
     label: item.label[locale] || item.label.zh
   }));
 }
 
 function buildTabTexts(language) {
   return getTextPack(TABS, language);
+}
+
+function buildTabIconImages() {
+  return { ...ICON_IMAGES.tabs };
 }
 
 function buildIndexText(language) {
@@ -658,6 +664,7 @@ function buildHomeText(language, currentCountryZh = '肯尼亚', currentCountryL
   return {
     ...base,
     tabLabels: buildTabTexts(locale),
+    tabIconImages: buildTabIconImages(),
     welcomeTitle: `${base.welcomePrefix}${country}`,
     welcomeSubtitle: currentCountryZh === '肯尼亚' && locale === 'zh'
       ? '肯尼亚，内罗毕'
@@ -739,6 +746,7 @@ function buildProfileText(language, currentCountryZh = '肯尼亚', currentCount
   return {
     ...base,
     tabLabels: buildTabTexts(locale),
+    tabIconImages: buildTabIconImages(),
     heroBadge: base.heroBadge,
     memberSinceLabel: base.memberSince,
     heroName: isLogin ? '' : base.guestName,
@@ -755,18 +763,18 @@ function buildProfileText(language, currentCountryZh = '肯尼亚', currentCount
       { label: base.safetyScore, value: '92', tone: 'gold' }
     ],
     quickActions: [
-      { key: 'visa', label: base.quickActions.visa.label, meta: base.quickActions.visa.meta, icon: '🛂', tone: 'sky' },
-      { key: 'security', label: base.quickActions.security.label, meta: base.quickActions.security.meta, icon: '🛡️', tone: 'emerald' },
-      { key: 'bookmarks', label: base.quickActions.bookmarks.label, meta: formatValue(base.quickActions.bookmarks.meta, { count: bookmarksCount }), icon: '✦', tone: 'sand' },
-      { key: 'message', label: base.quickActions.message.label, meta: base.quickActions.message.meta, icon: '✉️', tone: 'rose' }
+      { key: 'visa', label: base.quickActions.visa.label, meta: base.quickActions.visa.meta, icon: '🛂', iconImage: ICON_IMAGES.profile.visa, tone: 'sky' },
+      { key: 'security', label: base.quickActions.security.label, meta: base.quickActions.security.meta, icon: '🛡️', iconImage: ICON_IMAGES.profile.security, tone: 'emerald' },
+      { key: 'bookmarks', label: base.quickActions.bookmarks.label, meta: formatValue(base.quickActions.bookmarks.meta, { count: bookmarksCount }), icon: '✦', iconImage: ICON_IMAGES.profile.bookmarks, tone: 'sand' },
+      { key: 'message', label: base.quickActions.message.label, meta: base.quickActions.message.meta, icon: '✉️', iconImage: ICON_IMAGES.profile.message, tone: 'rose' }
     ],
     serviceEntries: [
-      { title: base.serviceEntries.localInfo.title, subtitle: formatValue(base.serviceEntries.localInfo.subtitle, { country }), icon: '📰', action: 'local-info' },
-      { title: base.serviceEntries.visa.title, subtitle: base.serviceEntries.visa.subtitle, icon: '🧾', action: 'visa' },
-      { title: base.serviceEntries.security.title, subtitle: base.serviceEntries.security.subtitle, icon: '🛡️', action: 'security' },
-      { title: base.serviceEntries.recommend.title, subtitle: base.serviceEntries.recommend.subtitle, icon: '🧭', action: 'recommend' },
-      { title: base.serviceEntries.phrases.title, subtitle: base.serviceEntries.phrases.subtitle, icon: '🗨️', action: 'phrases' },
-      { title: base.serviceEntries.settings.title, subtitle: base.serviceEntries.settings.subtitle, icon: '⚙️', action: 'settings' }
+      { title: base.serviceEntries.localInfo.title, subtitle: formatValue(base.serviceEntries.localInfo.subtitle, { country }), icon: '📰', iconImage: ICON_IMAGES.profile['local-info'], action: 'local-info' },
+      { title: base.serviceEntries.visa.title, subtitle: base.serviceEntries.visa.subtitle, icon: '🧾', iconImage: ICON_IMAGES.profile.visa, action: 'visa' },
+      { title: base.serviceEntries.security.title, subtitle: base.serviceEntries.security.subtitle, icon: '🛡️', iconImage: ICON_IMAGES.profile.security, action: 'security' },
+      { title: base.serviceEntries.recommend.title, subtitle: base.serviceEntries.recommend.subtitle, icon: '🧭', iconImage: ICON_IMAGES.profile.recommend, action: 'recommend' },
+      { title: base.serviceEntries.phrases.title, subtitle: base.serviceEntries.phrases.subtitle, icon: '🗨️', iconImage: ICON_IMAGES.profile.phrases, action: 'phrases' },
+      { title: base.serviceEntries.settings.title, subtitle: base.serviceEntries.settings.subtitle, icon: '⚙️', iconImage: ICON_IMAGES.profile.settings, action: 'settings' }
     ],
     currentCountryLabel: country,
     currentCity: city,
@@ -809,6 +817,7 @@ function buildCommunityText(language, currentCountryZh = '肯尼亚') {
   return {
     ...base,
     tabLabels: buildTabTexts(locale),
+    tabIconImages: buildTabIconImages(),
     countryLabel: country,
     title: formatValue(base.heroTitle, { country }),
     featuredPost: {
@@ -826,6 +835,7 @@ function buildMessageText(language) {
   return {
     ...base,
     tabLabels: buildTabTexts(locale),
+    tabIconImages: buildTabIconImages(),
     notices: base.notices.map((item) => ({ ...item }))
   };
 }
@@ -866,6 +876,7 @@ export {
   getCountryName,
   buildFeatureItems,
   buildTabTexts,
+  buildTabIconImages,
   buildIndexText,
   buildHomeText,
   buildProfileText,

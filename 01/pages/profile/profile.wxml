@@ -207,4 +207,4 @@
     </scroll-view>
 </view>
 
-<template is="tabbar" data="{{ activeTab: 'profile', tabTexts: uiText.tabLabels }}" />
+<template is="tabbar" data="{{ activeTab: 'profile', tabTexts: uiText.tabLabels, tabIconImages: uiText.tabIconImages }}" />

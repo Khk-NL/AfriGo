@@ -256,6 +256,11 @@ page {
   font-size: 48rpx;
 }
 
+.visa-icon-image {
+  width: 56rpx;
+  height: 56rpx;
+}
+
 .visa-mid {
   flex: 1;
   min-width: 0;

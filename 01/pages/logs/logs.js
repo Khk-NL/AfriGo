@@ -1,6 +1,7 @@
 import { loadGuide } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 import { getSelectedDestination } from '../../utils/countries.js';
+import { ICON_IMAGES } from '../../config/icons.js';
 
 Page({
   data: {
@@ -257,16 +258,13 @@ Page({
 
   normalizeVisaItems(visaItems) {
     return (visaItems || []).map((item) => {
-      if (item.validityPeriod && item.stayPeriod) {
-        return item
-      }
-
       const validityStay = String(item.validityStay || '')
       const validityMatch = validityStay.match(/有效期[^，。,；;]*/)
       const stayMatch = validityStay.match(/(单次停留[^，。,；;]*|停留[^，。,；;]*)/)
 
       return {
         ...item,
+        iconImage: item.iconImage || ICON_IMAGES.visa.default,
         validityPeriod: item.validityPeriod || (validityMatch ? validityMatch[0] : '以使馆签发为准'),
         stayPeriod: item.stayPeriod || (stayMatch ? stayMatch[0] : '以入境批注为准')
       }

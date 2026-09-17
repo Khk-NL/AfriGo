@@ -1,4 +1,5 @@
 import { createPost, getStoredCurrentUser, isLoggedIn } from '../../utils/cloud-service.js';
+import { buildTabIconImages } from '../../utils/i18n.js';
 
 const MAX_MEDIA_COUNT = 4;
 
@@ -28,6 +29,7 @@ function createMediaSlots(mediaList) {
 Page({
     data: {
         activeTab: 'publish',
+        tabIconImages: buildTabIconImages(),
         content: '',
         mediaList: [],
         mediaSlots: createMediaSlots([]),

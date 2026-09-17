@@ -1,5 +1,6 @@
-import { loadGuide } from '../../utils/cloud-service.js';
 import { getSelectedDestination } from '../../utils/countries.js';
+import { loadGuide } from '../../utils/cloud-service.js';
+import { ICON_IMAGES } from '../../config/icons.js';
 
 const DEFAULT_THEME_START = '#FFF3E0';
 const DEFAULT_THEME_END = '#FFE0B2';
@@ -117,18 +118,21 @@ Page({
       serviceItems: [
         {
           icon: '🛡️',
+          iconImage: ICON_IMAGES.localInfo.security,
           title: '查看安全提醒',
           subtitle: '同步使馆建议与出行风险等级',
           action: 'security'
         },
         {
           icon: '🧭',
+          iconImage: ICON_IMAGES.localInfo.recommend,
           title: '打开出行推荐',
           subtitle: '美食、住宿与交通路线一页掌握',
           action: 'recommend'
         },
         {
           icon: '💬',
+          iconImage: ICON_IMAGES.localInfo.message,
           title: '进入消息中心',
           subtitle: '把你的提问与提醒留在一个收件箱里',
           action: 'message'

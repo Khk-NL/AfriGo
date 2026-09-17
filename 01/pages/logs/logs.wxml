@@ -44,7 +44,8 @@
             <view class="visa-card">
               <view class="visa-left">
                 <view class="visa-icon-box">
-                  <text class="visa-icon">{{item.icon}}</text>
+                  <image wx:if="{{item.iconImage}}" class="visa-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+                  <text wx:else class="visa-icon">{{item.icon || '🛂'}}</text>
                 </view>
               </view>
 

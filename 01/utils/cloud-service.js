@@ -338,6 +338,14 @@ async function translateText({ text, sourceLanguage = 'auto', targetLanguage }) 
   return result.data;
 }
 
+async function planNavigationRoute({ origin, destination, mode = 'driving' }) {
+  const result = await request('/api/navigation/routes', {
+    method: 'POST',
+    data: { origin, destination, mode }
+  });
+  return result.data;
+}
+
 async function togglePostLike(postId) {
   return request(`/api/posts/${postId}/like`, { method: 'POST' });
 }
@@ -411,6 +419,7 @@ export {
   submitContentCorrection,
   loadMyContentCorrections,
   translateText,
+  planNavigationRoute,
   togglePostLike,
   loadPostEngagement,
   loadPostComments,

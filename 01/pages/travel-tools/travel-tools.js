@@ -1,5 +1,6 @@
 import { getSelectedDestination } from '../../utils/countries.js';
-import { getStoredCurrentUser, loadGuide, loadRiskAlerts, translateText } from '../../utils/cloud-service.js';
+import { getStoredCurrentUser, loadGuide, loadRiskAlerts, planNavigationRoute, translateText } from '../../utils/cloud-service.js';
+import { ICON_IMAGES } from '../../config/icons.js';
 
 const LANGUAGES = [
   { code: 'zh', label: '中文' },
@@ -11,10 +12,10 @@ const LANGUAGES = [
 ];
 
 const TOOL_SECTIONS = [
-  { key: 'map', label: '地图导航', icon: '🗺️', iconImage: '' },
-  { key: 'translate', label: '随身翻译', icon: '🌐', iconImage: '' },
-  { key: 'offline', label: '离线安全包', icon: '📥', iconImage: '' },
-  { key: 'emergency', label: '紧急求助', icon: '🆘', iconImage: '' }
+  { key: 'map', label: '地图导航', icon: '🗺️', iconImage: ICON_IMAGES.journey.map },
+  { key: 'translate', label: '随身翻译', icon: '🌐', iconImage: ICON_IMAGES.journey.translate },
+  { key: 'offline', label: '离线安全包', icon: '📥', iconImage: ICON_IMAGES.journey.offline },
+  { key: 'emergency', label: '紧急求助', icon: '🆘', iconImage: ICON_IMAGES.journey.emergency }
 ];
 
 Page({
@@ -22,6 +23,8 @@ Page({
     countryCode: 'KE',
     countryZh: '肯尼亚',
     destination: null,
+    routePlanning: false,
+    routeSummary: null,
     security: null,
     riskAlerts: [],
     offlineUpdatedAt: '',
@@ -104,6 +107,40 @@ Page({
       success: (location) => wx.openLocation({ latitude: location.latitude, longitude: location.longitude, name: '我的位置', scale: 16 }),
       fail: () => wx.showToast({ title: '无法获取当前位置', icon: 'none' })
     });
+  },
+
+  async onPlanRoute() {
+    const place = this.data.destination;
+    if (!place || !Number.isFinite(Number(place.latitude)) || !Number.isFinite(Number(place.longitude))) {
+      wx.showToast({ title: '请先选择目的地', icon: 'none' });
+      return;
+    }
+    if (!getStoredCurrentUser()) {
+      wx.showToast({ title: '远程路线服务需登录后使用', icon: 'none' });
+      return;
+    }
+    this.setData({ routePlanning: true, routeSummary: null });
+    try {
+      const current = await new Promise((resolve, reject) => wx.getLocation({ type: 'gcj02', success: resolve, fail: reject }));
+      const result = await planNavigationRoute({
+        mode: 'driving',
+        origin: { longitude: current.longitude, latitude: current.latitude },
+        destination: { longitude: place.longitude, latitude: place.latitude }
+      });
+      const path = result && Array.isArray(result.paths) ? result.paths[0] : null;
+      if (!path) throw new Error('未找到可用路线');
+      this.setData({
+        routeSummary: {
+          distance: `${Math.max(0, path.distanceMeters / 1000).toFixed(1)} 公里`,
+          duration: `${Math.max(1, Math.round(path.durationSeconds / 60))} 分钟`,
+          provider: '高德海外路线'
+        }
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || '路线预估失败', icon: 'none' });
+    } finally {
+      this.setData({ routePlanning: false });
+    }
   },
 
   async onSaveOfflinePack() {

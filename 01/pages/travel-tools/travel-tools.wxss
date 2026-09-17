@@ -22,6 +22,7 @@
 .emergency-button::after { border: none; }
 .tool-button { min-height: 76rpx; padding: 0 16rpx; border-radius: 20rpx; color: #39775b; background: #edf7f1; font-size: 23rpx; display: flex; align-items: center; justify-content: center; }
 .tool-button.primary { color: #fff; background: #61786b; }
+.route-summary { margin-top: 16rpx; padding: 16rpx; border-radius: 18rpx; display: flex; justify-content: space-between; gap: 12rpx; background: #eef2ef; color: #52645a; font-size: 22rpx; }
 .offline-row { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; }
 .offline-row > view { flex: 1; }
 .offline-status,

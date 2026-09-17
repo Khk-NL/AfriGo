@@ -38,7 +38,7 @@ page { background: #f4f5f3; color: #24302a; font-family: -apple-system, BlinkMac
 .journey-tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; }
 .journey-tool-card { min-width: 0; padding: 20rpx; border-radius: 22rpx; display: flex; align-items: center; gap: 14rpx; background: #fff; border: 1rpx solid #e1e5e2; }
 .tool-icon-emoji, .service-row-icon { flex-shrink: 0; font-size: 36rpx; }
-.tool-icon-image, .feature-icon-image { width: 44rpx; height: 44rpx; flex-shrink: 0; }
+.tool-icon-image, .feature-icon-image, .service-row-icon-image { width: 44rpx; height: 44rpx; flex-shrink: 0; }
 .tool-copy { min-width: 0; }
 .tool-title, .tool-desc { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tool-title { color: #334139; font-size: 25rpx; font-weight: 700; }

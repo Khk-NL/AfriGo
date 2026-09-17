@@ -23,7 +23,9 @@
           <button class="tool-button primary" bindtap="onChooseLocation">选择目的地</button>
           <button class="tool-button" bindtap="onOpenLocation">打开目的地</button>
           <button class="tool-button" bindtap="onShowCurrentLocation">查看我的位置</button>
+          <button class="tool-button" loading="{{routePlanning}}" disabled="{{routePlanning}}" bindtap="onPlanRoute">远程路线预估</button>
         </view>
+        <view wx:if="{{routeSummary}}" class="route-summary"><text>{{routeSummary.distance}}</text><text>{{routeSummary.duration}}</text><text>{{routeSummary.provider}}</text></view>
       </view>
 
       <view wx:if="{{activeSection === 'all' || activeSection === 'offline'}}" class="section-card">

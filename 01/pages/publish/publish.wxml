@@ -79,4 +79,4 @@
     </view>
 </view>
 
-<template is="tabbar" data="{{ activeTab: 'publish' }}" />
+<template is="tabbar" data="{{ activeTab: 'publish', tabIconImages: tabIconImages }}" />
