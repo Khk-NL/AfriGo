@@ -17,7 +17,7 @@
       <view wx:if="{{activeSection !== 'all'}}" class="show-all-link" bindtap="onShowAllSections">查看全部旅中工具</view>
 
       <view wx:if="{{activeSection === 'all' || activeSection === 'map'}}" class="section-card">
-        <view class="section-head"><text class="section-title">位置与导航</text><text class="section-subtitle">当前使用微信地图能力；海外路线规划待高德权限开通后接入</text></view>
+        <view class="section-head"><text class="section-title">位置与导航</text><text class="section-subtitle">微信地图可直接使用；远程路线需在 ECS 开启高德海外权限</text></view>
         <view wx:if="{{destination}}" class="place-card"><text class="place-name">{{destination.name}}</text><text class="place-address">{{destination.address}}</text></view>
         <view class="action-grid">
           <button class="tool-button primary" bindtap="onChooseLocation">选择目的地</button>
