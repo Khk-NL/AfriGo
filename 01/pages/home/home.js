@@ -6,6 +6,23 @@ import { getSelectedDestination } from '../../utils/countries.js';
 const { attractions: localAttractionsData } = require('../../data/attractions.js');
 const { recommend: localRecommendData } = require('../../data/recommend.js');
 
+const JOURNEY_TOOLS = [
+  { key: 'map', icon: '🗺️', iconImage: '', labels: { zh: '地图导航', en: 'Maps', fr: 'Carte' }, descriptions: { zh: '选点与定位', en: 'Pick and locate', fr: 'Choisir et localiser' } },
+  { key: 'translate', icon: '🌐', iconImage: '', labels: { zh: '随身翻译', en: 'Translate', fr: 'Traduire' }, descriptions: { zh: '中文与当地语言', en: 'Travel phrases', fr: 'Phrases de voyage' } },
+  { key: 'offline', icon: '📥', iconImage: '', labels: { zh: '离线安全包', en: 'Offline Pack', fr: 'Pack hors ligne' }, descriptions: { zh: '无网也能查', en: 'Works offline', fr: 'Disponible hors ligne' } },
+  { key: 'emergency', icon: '🆘', iconImage: '', labels: { zh: '紧急求助', en: 'Emergency', fr: 'Urgence' }, descriptions: { zh: '风险与应急号码', en: 'Alerts and contacts', fr: 'Alertes et contacts' } }
+];
+
+function buildJourneyTools(language) {
+  return JOURNEY_TOOLS.map((item) => ({
+    key: item.key,
+    icon: item.icon,
+    iconImage: item.iconImage,
+    label: item.labels[language] || item.labels.zh,
+    description: item.descriptions[language] || item.descriptions.zh
+  }));
+}
+
 const getCountryCandidates = (countryZh) => {
   const candidates = [];
   const rawCountry = typeof countryZh === 'string' ? countryZh.trim() : '';
@@ -68,7 +85,8 @@ Page({
     uiText: buildHomeText(getStoredLanguage(), '肯尼亚'),
     attractionsList: [],
     recommendList: [],
-    tripPreview: { progress: 0, label: '开始制定行前计划' }
+    tripPreview: { progress: 0, label: '开始制定行前计划' },
+    journeyTools: buildJourneyTools(getStoredLanguage())
   },
 
   applyLanguage(language, countryZh = this.data.currentCountryZh) {
@@ -76,7 +94,8 @@ Page({
     this.setData({
       language: nextLanguage,
       currentCountryZh: countryZh,
-      uiText: buildHomeText(nextLanguage, countryZh)
+      uiText: buildHomeText(nextLanguage, countryZh),
+      journeyTools: buildJourneyTools(nextLanguage)
     });
   },
 
@@ -171,8 +190,8 @@ Page({
         // 设置高分辨率防锯齿
         const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
         const dpr = windowInfo.pixelRatio || 1;
-        const cssWidth = 160;
-        const cssHeight = 160;
+        const cssWidth = 112;
+        const cssHeight = 112;
         canvas.width = cssWidth * dpr;
         canvas.height = cssHeight * dpr;
         context.scale(dpr, dpr);
@@ -251,8 +270,9 @@ Page({
     wx.navigateTo({ url: '/pages/trip-plan/trip-plan' });
   },
 
-  onTravelToolsTap() {
-    wx.navigateTo({ url: '/pages/travel-tools/travel-tools' });
+  onJourneyToolTap(e) {
+    const section = e.currentTarget.dataset.section || 'all';
+    wx.navigateTo({ url: `/pages/travel-tools/travel-tools?section=${encodeURIComponent(section)}` });
   },
 
   onTripReviewTap() {
@@ -269,10 +289,10 @@ Page({
 
   onFeatureTap(e) {
     const { key, name, themeStart, themeEnd } = e.currentTarget.dataset;
-    if (key === 'attractions') return;
 
     const featureRouteMap = {
       visa: '/pages/logs/logs',
+      'local-info': '/pages/local-info/local-info',
       localInfo: '/pages/local-info/local-info',
       health: '/pages/home/health',
       customs: '/pages/customs/customs',

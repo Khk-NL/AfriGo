@@ -1,158 +1,78 @@
 <view class="page-root">
-  <view class="home-back-wrap" bindtap="onHomeBackTap">
-    <view class="home-back-arrow"></view>
+  <view class="home-topbar">
+    <view class="home-back-wrap" bindtap="onHomeBackTap"><text class="home-back-icon">←</text></view>
+    <view class="destination-pill"><text>📍</text><text>{{currentCountryZh}}</text></view>
   </view>
 
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false" enhanced="true">
     <view class="page-content">
-      
-      <!-- 大体量 AI 伴游互动舱 -->
       <view class="ai-hero-container">
-        <!-- 欢迎语与引导 -->
         <view class="hero-text-area">
+          <text class="hero-kicker">SAFE LANDING</text>
           <text class="hero-title">{{uiText.welcomeTitle}}</text>
-          <view class="hero-subtitle-row">
-            <text class="hero-subtitle-icon">📍</text>
-            <text class="hero-subtitle">{{uiText.welcomeSubtitle}}</text>
-          </view>
+          <text class="hero-subtitle">{{uiText.welcomeSubtitle}}</text>
         </view>
-
-        <!-- 核心 Canvas 节点及交互气泡 -->
         <view class="elephant-interaction-area {{isElephantRevealed ? 'revealed' : 'hidden'}}">
           <view class="elephant-wrapper" bindtap="handleTapElephant">
-            <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:160px;height:160px;margin:0 auto;" />
-            <!-- 由小象触发的左侧气泡 -->
-            <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}">
-              <text>{{uiText.tooltip}}</text>
-              <view class="tooltip-arrow"></view>
-            </view>
+            <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:112px;height:112px;margin:0 auto;" />
+            <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}"><text>{{uiText.tooltip}}</text></view>
           </view>
         </view>
       </view>
 
       <view class="safety-card" bindtap="onOpenSecurityGuide">
-        <view class="safety-header">
-            <text class="safety-title">{{uiText.safetyTitle}}</text>
-            <text class="safety-more" catchtap="onMoreTap">{{uiText.safetyMore}}</text>
-        </view>
-        <view class="safety-level-row">
-          <text class="safety-level">{{uiText.safetyLevel}}</text>
-          <text class="shield-icon">🛡</text>
-        </view>
-        <text class="safety-text">{{uiText.safetyText}}</text>
-        <text class="safety-date">{{uiText.safetyDate}}</text>
+        <view class="safety-main"><text class="safety-icon">🛡️</text><view><text class="safety-title">{{uiText.safetyTitle}}</text><text class="safety-level">{{uiText.safetyLevel}} · {{uiText.safetyDate}}</text></view></view>
+        <text class="safety-more" catchtap="onMoreTap">{{uiText.safetyMore}} ›</text>
       </view>
 
-      <view class="landing-plan-card" bindtap="onTripPlanTap">
-        <view class="landing-plan-copy">
-          <text class="landing-plan-eyebrow">SAFE LANDING ASSISTANT</text>
-          <text class="landing-plan-title">我的安全落地计划</text>
-          <text class="landing-plan-desc">{{tripPreview.label}}</text>
+      <view class="home-section">
+        <view class="home-section-head"><view><text class="home-section-title">旅中快捷工具</text><text class="home-section-subtitle">常用能力直接进入，不再藏在工具箱里</text></view></view>
+        <view class="journey-tool-grid">
+          <view wx:for="{{journeyTools}}" wx:key="key" class="journey-tool-card" data-section="{{item.key}}" bindtap="onJourneyToolTap">
+            <image wx:if="{{item.iconImage}}" class="tool-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+            <text wx:else class="tool-icon-emoji">{{item.icon}}</text>
+            <view class="tool-copy"><text class="tool-title">{{item.label}}</text><text class="tool-desc">{{item.description}}</text></view>
+          </view>
         </view>
+      </view>
+
+      <view class="landing-plan-card primary-plan-card" bindtap="onTripPlanTap">
+        <view class="landing-plan-copy"><text class="landing-plan-eyebrow">BEFORE YOU GO</text><text class="landing-plan-title">我的安全落地计划</text><text class="landing-plan-desc">{{tripPreview.label}}</text></view>
         <view class="landing-plan-progress"><text>{{tripPreview.progress}}%</text></view>
       </view>
 
-      <view class="landing-plan-card travel-tools-card" bindtap="onTravelToolsTap">
-        <view class="landing-plan-copy">
-          <text class="landing-plan-eyebrow">ON-TRIP TOOLKIT</text>
-          <text class="landing-plan-title">旅中工具箱</text>
-          <text class="landing-plan-desc">导航、翻译、离线包与紧急求助</text>
+      <view class="home-section">
+        <view class="home-section-head"><view><text class="home-section-title">行程服务</text><text class="home-section-subtitle">复盘、服务对接与信息核验</text></view></view>
+        <view class="service-list">
+          <view class="service-row" bindtap="onTripReviewTap"><text class="service-row-icon">🧾</text><view><text class="service-row-title">旅后复盘与路线复用</text><text class="service-row-desc">费用、评价、游记和下次模板</text></view><text class="row-arrow">›</text></view>
+          <view class="service-row" bindtap="onServicesTap"><text class="service-row-icon">🤝</text><view><text class="service-row-title">经审核的本地服务</text><text class="service-row-desc">酒店、交通、导游与保险咨询</text></view><text class="row-arrow">›</text></view>
+          <view class="service-row" bindtap="onContentTrustTap"><text class="service-row-icon">🔎</text><view><text class="service-row-title">信息来源、风险与纠错</text><text class="service-row-desc">核验时间、有效期与审核进度</text></view><text class="row-arrow">›</text></view>
         </view>
-        <view class="landing-plan-arrow">›</view>
-      </view>
-
-      <view class="landing-plan-card trip-review-card" bindtap="onTripReviewTap">
-        <view class="landing-plan-copy">
-          <text class="landing-plan-eyebrow">POST-TRIP REVIEW</text>
-          <text class="landing-plan-title">旅后复盘与路线复用</text>
-          <text class="landing-plan-desc">费用、评价、游记和下一次路线模板</text>
-        </view>
-        <view class="landing-plan-arrow">›</view>
-      </view>
-
-      <view class="landing-plan-card services-card" bindtap="onServicesTap">
-        <view class="landing-plan-copy">
-          <text class="landing-plan-eyebrow">LOCAL SERVICE DESK</text>
-          <text class="landing-plan-title">经审核的本地服务</text>
-          <text class="landing-plan-desc">酒店、交通、导游与保险咨询意向</text>
-        </view>
-        <view class="landing-plan-arrow">›</view>
-      </view>
-
-      <view class="landing-plan-card content-trust-card" bindtap="onContentTrustTap">
-        <view class="landing-plan-copy">
-          <text class="landing-plan-eyebrow">CONTENT TRUST</text>
-          <text class="landing-plan-title">信息来源、风险与纠错</text>
-          <text class="landing-plan-desc">查看核验时间、有效期和用户纠错进度</text>
-        </view>
-        <view class="landing-plan-arrow">›</view>
       </view>
 
       <view class="feature-block">
         <text class="feature-title">{{uiText.featureTitle}}</text>
         <view class="feature-grid">
-          <block wx:for="{{uiText.features}}" wx:key="key">
-            <view
-              class="feature-item"
-              bindtap="onFeatureTap"
-              data-key="{{item.key}}"
-              data-name="{{item.label}}"
-              data-theme-start="{{item.themeStart}}"
-              data-theme-end="{{item.themeEnd}}"
-            >
-              <view class="feature-icon-shell" style="background: {{item.bg}};">
-                <view wx:if="{{item.key === 'health'}}" class="health-cross-mark">
-                  <view class="health-cross-fill">
-                    <view class="health-cross-h"></view>
-                    <view class="health-cross-v"></view>
-                  </view>
-                  <view class="health-cross-glint"></view>
-                </view>
-                <text wx:else class="feature-icon">{{item.icon}}</text>
-              </view>
-              <text class="feature-label">{{item.label}}</text>
+          <view wx:for="{{uiText.features}}" wx:key="key" class="feature-item" bindtap="onFeatureTap" data-key="{{item.key}}" data-name="{{item.label}}">
+            <view class="feature-icon-shell">
+              <image wx:if="{{item.iconImage}}" class="feature-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+              <text wx:else class="feature-icon">{{item.icon}}</text>
             </view>
-          </block>
+            <text class="feature-label">{{item.label}}</text>
+          </view>
         </view>
       </view>
-
-      <view class="emergency-row">
-        <view class="emergency-card embassy" bindtap="onEmergencyTap" data-type="embassy">
-          <view class="emergency-icon">🏛</view>
-          <text class="en-text">{{uiText.embassySubLabel}}</text>
-          <text class="zh-text">{{uiText.embassyLabel}}</text>
-        </view>
-        <view class="emergency-card hotline" bindtap="onEmergencyTap" data-type="hotline">
-          <view class="emergency-icon">🚨</view>
-          <text class="en-text">{{uiText.hotlineSubLabel}}</text>
-          <text class="zh-text">{{uiText.hotlineLabel}}</text>
-        </view>
-      </view>
+      <view class="bottom-space"></view>
     </view>
   </scroll-view>
 
   <view class="custom-tabbar">
     <view class="tab-pill">
-      <view class="tab-item active" bindtap="onTabTap" data-tab="home">
-        <text class="tab-icon">🏠</text>
-        <text class="tab-text">{{uiText.tabLabels.home}}</text>
-      </view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="community">
-        <text class="tab-icon">💬</text>
-        <text class="tab-text">{{uiText.tabLabels.community}}</text>
-      </view>
-      <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish">
-        <view class="publish-btn"><text class="publish-plus">+</text></view>
-        <text class="publish-text">{{uiText.tabLabels.publish}}</text>
-      </view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="message">
-        <text class="tab-icon">🗨</text>
-        <text class="tab-text">{{uiText.tabLabels.message}}</text>
-      </view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="profile">
-        <text class="tab-icon">👤</text>
-        <text class="tab-text">{{uiText.tabLabels.profile}}</text>
-      </view>
+      <view class="tab-item active" bindtap="onTabTap" data-tab="home"><text class="tab-icon">🏠</text><text class="tab-text">{{uiText.tabLabels.home}}</text></view>
+      <view class="tab-item" bindtap="onTabTap" data-tab="community"><text class="tab-icon">💬</text><text class="tab-text">{{uiText.tabLabels.community}}</text></view>
+      <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish"><view class="publish-btn"><text class="publish-plus">＋</text></view><text class="publish-text">{{uiText.tabLabels.publish}}</text></view>
+      <view class="tab-item" bindtap="onTabTap" data-tab="message"><text class="tab-icon">🔔</text><text class="tab-text">{{uiText.tabLabels.message}}</text></view>
+      <view class="tab-item" bindtap="onTabTap" data-tab="profile"><text class="tab-icon">👤</text><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
     </view>
   </view>
 </view>

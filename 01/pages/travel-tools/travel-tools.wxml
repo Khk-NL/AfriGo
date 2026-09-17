@@ -4,11 +4,19 @@
     <view class="page-content">
       <view class="hero-card tool-hero">
         <text class="hero-eyebrow">ON-TRIP TOOLKIT</text>
-        <text class="hero-title">{{countryZh}}·旅中工具箱</text>
-        <text class="hero-summary">导航、翻译、离线资料和紧急联系放在一页，尽量减少旅途中切换应用的次数。</text>
+        <text class="hero-title">{{countryZh}}·旅中工具</text>
+        <text class="hero-summary">从首页直接进入常用能力，也可在这里切换其他工具。</text>
       </view>
 
-      <view class="section-card">
+      <view class="tool-section-strip">
+        <view wx:for="{{toolSections}}" wx:key="key" class="tool-section-pill {{activeSection === item.key ? 'active' : ''}}" data-section="{{item.key}}" bindtap="onSectionTap">
+          <image wx:if="{{item.iconImage}}" class="section-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+          <text wx:else>{{item.icon}}</text><text>{{item.label}}</text>
+        </view>
+      </view>
+      <view wx:if="{{activeSection !== 'all'}}" class="show-all-link" bindtap="onShowAllSections">查看全部旅中工具</view>
+
+      <view wx:if="{{activeSection === 'all' || activeSection === 'map'}}" class="section-card">
         <view class="section-head"><text class="section-title">位置与导航</text><text class="section-subtitle">当前使用微信地图能力；海外路线规划待高德权限开通后接入</text></view>
         <view wx:if="{{destination}}" class="place-card"><text class="place-name">{{destination.name}}</text><text class="place-address">{{destination.address}}</text></view>
         <view class="action-grid">
@@ -18,12 +26,12 @@
         </view>
       </view>
 
-      <view class="section-card">
+      <view wx:if="{{activeSection === 'all' || activeSection === 'offline'}}" class="section-card">
         <view class="section-head"><text class="section-title">离线安全包</text><text class="section-subtitle">缓存当前国家指南、常用语、应急号码和行前计划</text></view>
         <view class="offline-row"><view><text class="offline-status">{{offlineStatus}}</text><text wx:if="{{offlineUpdatedAt}}" class="offline-time">更新：{{offlineUpdatedAt}}</text></view><button class="mini-button" bindtap="onSaveOfflinePack">更新离线包</button></view>
       </view>
 
-      <view class="section-card">
+      <view wx:if="{{activeSection === 'all' || activeSection === 'translate'}}" class="section-card">
         <view class="section-head"><text class="section-title">实时文本翻译</text><text class="section-subtitle">由 Express 代理调用阿里云机器翻译，小程序不接触云凭据</text></view>
         <view class="language-row">
           <picker mode="selector" range="{{languages}}" range-key="label" value="{{sourceIndex}}" data-field="sourceIndex" bindchange="onLanguageChange"><view class="language-picker">{{languages[sourceIndex].label}}</view></picker>
@@ -36,7 +44,7 @@
         <view class="phrase-link" bindtap="onOpenPhrases">无网络？打开离线常用语 ›</view>
       </view>
 
-      <view class="section-card">
+      <view wx:if="{{activeSection === 'all' || activeSection === 'emergency'}}" class="section-card">
         <view class="section-head"><text class="section-title">当前风险提醒</text><text class="section-subtitle">服务端人工审核、按有效期展示；无提醒不等于无风险</text></view>
         <block wx:if="{{riskAlerts.length}}">
           <view wx:for="{{riskAlerts}}" wx:key="id" class="risk-alert severity-{{item.severity}}"><text class="risk-title">{{item.title}}</text><text class="risk-summary">{{item.summary}}</text><text class="risk-source">{{item.sourceName}} · {{item.verifiedAt || item.publishedAt}}</text></view>
@@ -45,7 +53,7 @@
         <view class="phrase-link" bindtap="onOpenContentTrust">查看来源、有效期或提交纠错 ›</view>
       </view>
 
-      <view class="section-card">
+      <view wx:if="{{activeSection === 'all' || activeSection === 'emergency'}}" class="section-card">
         <view class="section-head"><text class="section-title">紧急求助</text><text class="section-subtitle">号码来自当前国家资料，拨打前请核对所在地</text></view>
         <block wx:if="{{security}}">
           <button class="emergency-button" data-phone="{{security.embassyPhone}}" bindtap="onCall">🏛 使馆 {{security.embassyPhone}}</button>

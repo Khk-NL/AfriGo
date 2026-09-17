@@ -26,14 +26,14 @@ const COUNTRY_NAMES = {
 };
 
 const FEATURE_KEYS = [
-  { key: 'visa', label: { zh: '签证指南', en: 'Visa Guide', fr: 'Visa' } },
-  { key: 'health', label: { zh: '防疫健康', en: 'Health & Safety', fr: 'Santé et prévention' } },
-  { key: 'customs', label: { zh: '当地风俗', en: 'Local Customs', fr: 'Coutumes locales' } },
-  { key: 'local-info', label: { zh: '本地资讯', en: 'Local Info', fr: 'Infos locales' } },
-  { key: 'recommend', label: { zh: '出行推荐', en: 'Travel Picks', fr: 'Recommandations' } },
-  { key: 'labor', label: { zh: '劳务合规', en: 'Work Compliance', fr: 'Conformité travail' } },
-  { key: 'phrases', label: { zh: '实用词句', en: 'Useful Phrases', fr: 'Phrases utiles' } },
-  { key: 'attractions', label: { zh: '景点攻略', en: 'Attractions', fr: 'Lieux à visiter' } }
+  { key: 'visa', icon: '🛂', label: { zh: '签证指南', en: 'Visa Guide', fr: 'Visa' } },
+  { key: 'health', icon: '🏥', label: { zh: '防疫健康', en: 'Health & Safety', fr: 'Santé et prévention' } },
+  { key: 'customs', icon: '🤝', label: { zh: '当地风俗', en: 'Local Customs', fr: 'Coutumes locales' } },
+  { key: 'local-info', icon: '📰', label: { zh: '本地资讯', en: 'Local Info', fr: 'Infos locales' } },
+  { key: 'recommend', icon: '🧭', label: { zh: '出行推荐', en: 'Travel Picks', fr: 'Recommandations' } },
+  { key: 'labor', icon: '⚖️', label: { zh: '劳务合规', en: 'Work Compliance', fr: 'Conformité travail' } },
+  { key: 'phrases', icon: '💬', label: { zh: '实用词句', en: 'Useful Phrases', fr: 'Phrases utiles' } },
+  { key: 'attractions', icon: '🏞️', label: { zh: '景点攻略', en: 'Attractions', fr: 'Lieux à visiter' } }
 ];
 
 const TABS = {
@@ -636,6 +636,8 @@ function buildFeatureItems(language) {
   const locale = normalizeLanguage(language);
   return FEATURE_KEYS.map((item) => ({
     key: item.key,
+    icon: item.icon,
+    iconImage: item.iconImage || '',
     label: item.label[locale] || item.label.zh
   }));
 }

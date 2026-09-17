@@ -1,6 +1,11 @@
 @import "../../templates/content-shell.wxss";
 
 .tool-hero { background: linear-gradient(135deg, #eef8f2 0%, #f8f2ff 100%); }
+.tool-section-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; margin-top: 20rpx; }
+.tool-section-pill { min-width: 0; padding: 16rpx; border-radius: 18rpx; display: flex; align-items: center; justify-content: center; gap: 8rpx; color: #657069; background: #fff; border: 1rpx solid #e1e5e2; font-size: 21rpx; }
+.tool-section-pill.active { color: #33483d; background: #e7ede9; border-color: #c9d5cd; }
+.section-icon-image { width: 32rpx; height: 32rpx; }
+.show-all-link { margin-top: 14rpx; text-align: center; color: #61766a; font-size: 21rpx; }
 .place-card { padding: 20rpx; border-radius: 20rpx; background: #f7faf8; border: 1rpx solid #dcebe2; }
 .place-name,
 .place-address { display: block; }

@@ -10,6 +10,13 @@ const LANGUAGES = [
   { code: 'pt', label: 'Português' }
 ];
 
+const TOOL_SECTIONS = [
+  { key: 'map', label: '地图导航', icon: '🗺️', iconImage: '' },
+  { key: 'translate', label: '随身翻译', icon: '🌐', iconImage: '' },
+  { key: 'offline', label: '离线安全包', icon: '📥', iconImage: '' },
+  { key: 'emergency', label: '紧急求助', icon: '🆘', iconImage: '' }
+];
+
 Page({
   data: {
     countryCode: 'KE',
@@ -24,11 +31,15 @@ Page({
     targetIndex: 1,
     sourceText: '',
     translatedText: '',
-    translating: false
+    translating: false,
+    activeSection: 'all',
+    toolSections: TOOL_SECTIONS
   },
 
-  async onLoad() {
+  async onLoad(options = {}) {
     const destination = getSelectedDestination();
+    const requestedSection = String(options.section || 'all');
+    const activeSection = TOOL_SECTIONS.some((item) => item.key === requestedSection) ? requestedSection : 'all';
     const place = wx.getStorageSync(`travelToolPlace:${destination.code}`) || null;
     const offline = wx.getStorageSync(`offlineLandingPack:${destination.code}`) || null;
     this.setData({
@@ -36,7 +47,8 @@ Page({
       countryZh: destination.zhName,
       destination: place,
       offlineUpdatedAt: offline && offline.updatedAt ? offline.updatedAt : '',
-      offlineStatus: offline ? '离线包已就绪' : '尚未保存离线包'
+      offlineStatus: offline ? '离线包已就绪' : '尚未保存离线包',
+      activeSection
     });
     try {
       const guide = await loadGuide(destination.zhName);
@@ -54,6 +66,14 @@ Page({
     } catch (error) {
       this.setData({ riskAlerts: [] });
     }
+  },
+
+  onSectionTap(e) {
+    this.setData({ activeSection: e.currentTarget.dataset.section || 'all' });
+  },
+
+  onShowAllSections() {
+    this.setData({ activeSection: 'all' });
   },
 
   onChooseLocation() {
