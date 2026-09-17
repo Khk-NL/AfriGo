@@ -5,7 +5,7 @@ const { spawnSync } = require('child_process');
 
 const SRC_DIR = path.join('C:/Users/25374/Desktop/小程序/小程序数据/国家封面照片');
 const OUT_DIR = path.join(__dirname, '../assets/images/covers');
-const TEMP_DIR = path.join(os.tmpdir(), 'feichangxing-covers');
+const TEMP_DIR = path.join(os.tmpdir(), 'afrigo-covers');
 
 const mapping = [
   { out: 'drc.jpg', file: '刚果河.jpg' },

@@ -276,7 +276,7 @@ Page({
 
     try {
       const currentUser = await syncWeChatLogin({
-        desc: '用于在非常行中完成微信登录与身份同步'
+        desc: '用于在非行智行中完成微信登录与身份同步'
       });
 
       this.setData({

@@ -66,7 +66,7 @@ test('production config requires HTTPS and ECS role credentials', () => {
     OSS_REGION: 'oss-cn-hangzhou',
     OSS_BUCKET: 'private-bucket',
     OSS_CREDENTIAL_MODE: 'ecs_ram_role',
-    ALIBABA_CLOUD_ECS_METADATA: 'liunianun-oss-role'
+    ALIBABA_CLOUD_ECS_METADATA: 'afrigo-oss-role'
   };
   assert.deepEqual(validateProductionConfig(base), []);
   assert.match(validateProductionConfig({ ...base, PUBLIC_BASE_URL: 'http://api.example.com' }).join('；'), /HTTPS/);

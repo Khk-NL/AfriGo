@@ -10,7 +10,7 @@ const STATS = [
 
 const FEATURED_POST = {
   id: '',
-  author: '非常行社区',
+  author: '非行智行社区',
   role: '社区提示',
   time: '',
   title: '还没有社区动态',
