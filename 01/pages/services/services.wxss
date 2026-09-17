@@ -1,6 +1,6 @@
 @import "../../templates/content-shell.wxss";
 
-.service-hero { background: linear-gradient(135deg, #eef8f2 0%, #fff6e7 100%); }
+.service-hero { background: #e9edea; }
 .category-strip { display: flex; gap: 12rpx; margin: 22rpx 0; overflow-x: auto; }
 .category-pill { flex-shrink: 0; padding: 13rpx 22rpx; border-radius: 999rpx; color: #5c6670; background: #edf1f4; font-size: 22rpx; }
 .category-pill.active { color: #fff; background: #4b8f70; }

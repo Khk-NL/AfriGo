@@ -9,7 +9,7 @@
   <scroll-view class="customs-scroll" scroll-y="true" show-scrollbar="false">
     <view class="hero-section">
       <view class="back-btn" bindtap="onGoBack">
-        <view class="back-arrow"></view>
+        <text class="back-arrow">←</text>
       </view>
       <view class="lang-tag">{{languageLabel}}</view>
       <text class="hero-title">{{pageTitle}}</text>

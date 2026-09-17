@@ -7,7 +7,7 @@
 
   <view class="custom-nav" style="padding-top: {{statusBarHeight}}px; height: {{navWrapHeight}}px;">
     <view class="nav-back-wrap" bindtap="goBack">
-      <view class="nav-back-arrow"></view>
+      <text class="nav-back-arrow">←</text>
     </view>
     <view class="nav-center-spacer"></view>
   </view>

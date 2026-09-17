@@ -500,3 +500,92 @@ page {
 .bookmark-btn.bookmarked {
   color: #c28a24;
 }
+
+/* 9:16 mobile minimal theme */
+page,
+.page-root {
+  background: #f4f5f3;
+  color: #27332d;
+}
+
+.bg-layer {
+  display: none;
+}
+
+.nav-back-wrap {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 18rpx;
+  border-color: #dde3df;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.nav-back-arrow {
+  width: auto;
+  height: auto;
+  margin-left: 0;
+  border: 0;
+  transform: none;
+  color: #34463d;
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.content-wrap {
+  padding: 150rpx 24rpx calc(env(safe-area-inset-bottom) + 30rpx);
+}
+
+.hero-title,
+.visa-type,
+.no-data-title,
+.sheet-title {
+  color: #27332d;
+}
+
+.hero-date,
+.visa-processing,
+.no-data-desc,
+.policy-text {
+  color: #66756d;
+}
+
+.policy-card,
+.no-data-card,
+.visa-card,
+.accordion-panel,
+.materials-sheet {
+  border-radius: 24rpx;
+  background: #ffffff;
+  border-color: #e0e5e1;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.policy-title,
+.source-label,
+.source-link {
+  color: #4d685a;
+}
+
+.source-link,
+.visa-mode {
+  background: #e9efeb;
+  color: #4d685a;
+}
+
+.visa-icon-box,
+.material-row {
+  background: #f2f5f3;
+}
+
+.materials-btn,
+.material-check {
+  background: #536f60;
+  box-shadow: none;
+}
+
+.materials-sheet {
+  border-radius: 28rpx 28rpx 0 0;
+}

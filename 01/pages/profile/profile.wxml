@@ -46,7 +46,8 @@
                 <view class="quick-grid">
                     <block wx:for="{{quickActions}}" wx:key="key">
                         <view class="quick-item quick-{{item.tone}}" bindtap="onQuickActionTap" data-key="{{item.key}}">
-                            <view class="quick-icon">{{item.icon}}</view>
+                            <image wx:if="{{item.iconImage}}" class="quick-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+                            <text wx:else class="quick-icon">{{item.icon}}</text>
                             <text class="quick-label">{{item.label}}</text>
                             <text class="quick-meta">{{item.meta}}</text>
                         </view>
@@ -82,7 +83,8 @@
 
                 <block wx:for="{{serviceEntries}}" wx:key="title">
                     <view class="service-item" bindtap="onServiceTap" data-action="{{item.action}}" data-title="{{item.title}}">
-                        <view class="service-icon">{{item.icon}}</view>
+                        <image wx:if="{{item.iconImage}}" class="service-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+                        <text wx:else class="service-icon">{{item.icon}}</text>
                         <view class="service-copy">
                             <text class="service-title">{{item.title}}</text>
                             <text class="service-subtitle">{{item.subtitle}}</text>

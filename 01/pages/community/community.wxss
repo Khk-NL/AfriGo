@@ -531,3 +531,17 @@
   margin-top: 22rpx;
   border-radius: 24rpx;
 }
+
+/* 9:16 mobile minimal theme */
+.community-page { background: #f4f5f3; color: #27332d; }
+.fluid-stage { display: none; }
+.page-shell { padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 176rpx); }
+.hero-title { color: #27332d; font-size: 46rpx; }
+.hero-subtitle { color: #526058; font-size: 27rpx; }
+.hero-desc { color: #758078; }
+.eyebrow, .journey-pill { background: #ecefeb; border: 1rpx solid #dfe4e0; box-shadow: none; }
+.acrylic-card { background: #fff; border: 1rpx solid #e1e5e2; box-shadow: none; backdrop-filter: none; border-radius: 24rpx; }
+.tone-mint, .tone-champagne, .tone-peach, .tone-sky, .tone-blush { background: #eef1ef; }
+.feature-card, .feed-card { border-radius: 24rpx; }
+.feature-action-primary, .feature-action-secondary { background: #eef1ef; box-shadow: none; }
+.feature-action-liked { background: #eee7e8; }

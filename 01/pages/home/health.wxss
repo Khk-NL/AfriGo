@@ -463,3 +463,101 @@ page {
     opacity: 0;
   }
 }
+
+/* 9:16 mobile minimal theme */
+page,
+.health-page {
+  background: #f4f5f3;
+}
+
+.health-page {
+  animation: none;
+  padding-top: calc(env(safe-area-inset-top) + 80rpx);
+}
+
+.aurora-layer,
+.ticker-fade,
+.life-shimmer {
+  display: none;
+}
+
+.nav-back-wrap {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 18rpx;
+  border-color: #dde3df;
+  box-shadow: none;
+}
+
+.nav-back-arrow {
+  width: auto;
+  height: auto;
+  margin-left: 0;
+  border: 0;
+  transform: none;
+  color: #34463d;
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.nav-title,
+.ticker-text {
+  color: #34463d;
+}
+
+.ticker-wrap {
+  height: 64rpx;
+  background: #e5ebe7;
+}
+
+.content-scroll {
+  height: calc(100vh - env(safe-area-inset-top) - 144rpx);
+}
+
+.floating-card,
+.health-empty {
+  border-radius: 24rpx;
+  background: #ffffff;
+  border: 1rpx solid #e2e6e3;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  animation: none;
+  transform: none;
+}
+
+.must-tag {
+  background: #eee8d8;
+  color: #665b3f;
+}
+
+.must-highlight {
+  background: none;
+  -webkit-text-fill-color: #655b42;
+  color: #655b42;
+}
+
+.hospital-item,
+.accordion-head {
+  background: #f4f7f5;
+}
+
+.call-btn {
+  background: #e5ece8;
+  border-color: #cedbd4;
+  color: #3e5b4c;
+  box-shadow: none;
+  animation: none;
+}
+
+.life-channel {
+  background: rgba(244, 245, 243, 0.96);
+}
+
+.life-btn {
+  width: calc(100% - 16rpx);
+  height: 88rpx;
+  border-radius: 22rpx;
+  background: #4f6f5e;
+  box-shadow: none;
+}

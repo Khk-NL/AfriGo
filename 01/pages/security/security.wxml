@@ -2,44 +2,9 @@
   <scroll-view class="security-scroll" scroll-y="true" show-scrollbar="false">
     <view class="hero-section">
       <view class="page-back-btn" bindtap="onGoBack">
-        <view class="page-back-icon"></view>
+        <text class="page-back-icon">←</text>
       </view>
 
-      <view class="hero-canvas" aria-hidden="true">
-        <view class="wave-hero">
-          <view class="wave-track">
-            <svg class="wave-svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="waveMainA" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#FF1493"></stop>
-                  <stop offset="100%" stop-color="#FF8FA3"></stop>
-                </linearGradient>
-                <linearGradient id="waveSubA" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#FF1493" stop-opacity="0.3"></stop>
-                  <stop offset="100%" stop-color="#FF8FA3" stop-opacity="0.3"></stop>
-                </linearGradient>
-              </defs>
-              <path d="M0,58 C100,28 200,28 300,58 C400,88 500,88 600,58 C700,28 800,28 900,58 C1000,88 1100,88 1200,58" fill="none" stroke="url(#waveMainA)" stroke-width="2" stroke-linecap="round"></path>
-              <path d="M0,74 C100,44 200,44 300,74 C400,104 500,104 600,74 C700,44 800,44 900,74 C1000,104 1100,104 1200,74" fill="none" stroke="url(#waveSubA)" stroke-width="1" stroke-linecap="round"></path>
-            </svg>
-
-            <svg class="wave-svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="waveMainB" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#FF1493"></stop>
-                  <stop offset="100%" stop-color="#FF8FA3"></stop>
-                </linearGradient>
-                <linearGradient id="waveSubB" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#FF1493" stop-opacity="0.3"></stop>
-                  <stop offset="100%" stop-color="#FF8FA3" stop-opacity="0.3"></stop>
-                </linearGradient>
-              </defs>
-              <path d="M0,58 C100,28 200,28 300,58 C400,88 500,88 600,58 C700,28 800,28 900,58 C1000,88 1100,88 1200,58" fill="none" stroke="url(#waveMainB)" stroke-width="2" stroke-linecap="round"></path>
-              <path d="M0,74 C100,44 200,44 300,74 C400,104 500,104 600,74 C700,44 800,44 900,74 C1000,104 1100,104 1200,74" fill="none" stroke="url(#waveSubB)" stroke-width="1" stroke-linecap="round"></path>
-            </svg>
-          </view>
-        </view>
-      </view>
       <view class="risk-badge">
         安全指南：{{countryNameZh}}
       </view>
@@ -50,7 +15,7 @@
         <text class="card-title">整体犯罪指数</text>
         <view class="gauge-wrap">
           <view class="gauge-track"></view>
-          <view class="gauge-progress" style="background: conic-gradient(#FF4D6D 0deg, #FF758F {{gaugeSweep}}deg, #FFE1E7 {{gaugeSweep}}deg 360deg);"></view>
+          <view class="gauge-progress" style="background: conic-gradient(#778a7f 0deg, #9aaba1 {{gaugeSweep}}deg, #e4e9e5 {{gaugeSweep}}deg 360deg);"></view>
           <view class="gauge-cap" style="transform: translate(-50%, -50%) rotate({{gaugeSweep}}deg) translateY(-74rpx);"></view>
           <view class="gauge-inner">
             <text class="index-number">{{overallCrimeIndex}}/100</text>
@@ -65,11 +30,7 @@
       <view class="module-card card-crimes">
         <view class="card-head">
           <text class="card-title">常见犯罪类型</text>
-          <view class="clay-icon clay-megaphone" aria-hidden="true">
-            <view class="mega-mouth"></view>
-            <view class="mega-body"></view>
-            <view class="mega-handle"></view>
-          </view>
+          <text class="card-emoji" aria-hidden="true">📣</text>
         </view>
         <view class="tag-list">
           <block wx:for="{{crimeTypes}}" wx:key="*this">
@@ -84,11 +45,7 @@
       <view class="module-card card-areas">
         <view class="card-head">
           <text class="card-title">高风险区域</text>
-          <view class="clay-icon clay-pin" aria-hidden="true">
-            <view class="pin-head"></view>
-            <view class="pin-hole"></view>
-            <view class="pin-tail"></view>
-          </view>
+          <text class="card-emoji" aria-hidden="true">📍</text>
         </view>
         <view class="tag-list">
           <block wx:for="{{highRiskAreas}}" wx:key="*this">
@@ -111,10 +68,7 @@
       <view class="module-card card-embassy">
         <view class="card-head">
           <text class="card-title">使馆最新提醒</text>
-          <view class="clay-icon clay-shield" aria-hidden="true">
-            <view class="shield-core"></view>
-            <view class="shield-glow"></view>
-          </view>
+          <text class="card-emoji" aria-hidden="true">🛡️</text>
         </view>
         <view class="quote-box">
           <text class="quote-mark">“</text>

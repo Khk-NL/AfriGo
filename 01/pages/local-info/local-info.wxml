@@ -2,7 +2,7 @@
   <scroll-view class="news-scroll" scroll-y="true" show-scrollbar="false">
     <view class="news-content">
       <view class="back-fab" bindtap="onBackTap">
-        <view class="back-arrow"></view>
+        <text class="back-arrow">←</text>
       </view>
 
       <view class="hero-card">
@@ -44,7 +44,8 @@
 
         <block wx:for="{{serviceItems}}" wx:key="title">
           <view class="service-item" bindtap="onActionTap" data-action="{{item.action}}" data-title="{{item.title}}">
-            <view class="service-icon">{{item.icon}}</view>
+            <image wx:if="{{item.iconImage}}" class="service-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
+            <text wx:else class="service-icon">{{item.icon}}</text>
             <view class="service-copy">
               <text class="service-title">{{item.title}}</text>
               <text class="service-subtitle">{{item.subtitle}}</text>

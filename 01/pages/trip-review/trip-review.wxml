@@ -1,5 +1,5 @@
 <view class="page-root">
-  <view class="page-back-btn" bindtap="onGoBack"><view class="page-back-icon"></view><text class="page-back-text">返回主页</text></view>
+  <view class="page-back-btn" bindtap="onGoBack"><text class="page-back-icon">←</text><text class="page-back-text">返回主页</text></view>
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
     <view class="page-content">
       <view class="hero-card review-hero">

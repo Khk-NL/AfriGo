@@ -1,8 +1,8 @@
 /* D:/Code/proj/小程序/01/templates/tabbar.wxss */
 .custom-tabbar {
     position: fixed;
-    bottom: calc(constant(safe-area-inset-bottom) + 14px);
-    bottom: calc(env(safe-area-inset-bottom) + 14px);
+    bottom: calc(constant(safe-area-inset-bottom) + 8px);
+    bottom: calc(env(safe-area-inset-bottom) + 8px);
     left: 0;
     width: 100%;
     background: transparent;
@@ -17,17 +17,14 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 74px;
-    width: calc(100% - 52rpx);
-    max-width: 720rpx;
+    height: 66px;
+    width: calc(100% - 32rpx);
     padding: 0 12rpx;
     box-sizing: border-box;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.94);
-    border: 1rpx solid rgba(217, 225, 236, 0.95);
-    box-shadow: 0 12rpx 28rpx rgba(27, 63, 110, 0.12);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24rpx;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1rpx solid #dfe4e0;
+    box-shadow: 0 8rpx 20rpx rgba(45, 58, 50, 0.08);
     pointer-events: auto;
 }
 
@@ -37,13 +34,13 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    color: #888;
+    color: #7a857e;
     font-size: 12px;
     transition: color 0.3s ease;
 }
 
 .tab-item.active {
-    color: #007bff; /* Active tab color */
+    color: #4f6659;
 }
 
 .tab-icon {
@@ -68,7 +65,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: none;
-    color: #007bff;
+    color: #4f6659;
 }
 
 .publish-btn {
@@ -78,8 +75,8 @@
     width: 56rpx;
     height: 56rpx;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4ba5ff 0%, #2e7feb 100%);
-    box-shadow: 0 8rpx 18rpx rgba(52, 126, 218, 0.35);
+    background: #61786b;
+    box-shadow: none;
 }
 
 .publish-plus {

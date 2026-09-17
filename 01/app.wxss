@@ -1,7 +1,7 @@
 /**app.wxss**/
 page {
-  background-color: #F5F5F0;
-  color: #1A1A2E;
+  background-color: #f4f5f3;
+  color: #27332d;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 

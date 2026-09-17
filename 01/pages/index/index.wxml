@@ -85,7 +85,7 @@
     </view>
 
     <view class="sheet-search">
-      <text class="sheet-search-icon">⌕</text>
+      <text class="sheet-search-icon">🔍</text>
       <input
         class="sheet-search-input"
         value="{{countryKeyword}}"

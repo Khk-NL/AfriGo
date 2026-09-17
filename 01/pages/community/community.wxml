@@ -91,22 +91,22 @@
 
         <view class="feature-actions">
           <view class="feature-action feature-action-primary {{featuredPost.isLiked ? 'feature-action-liked' : ''}}" bindtap="onLikeTap">
-            <text class="feature-action-icon">{{featuredPost.isLiked ? '♥' : '♡'}}</text>
+            <text class="feature-action-icon">{{featuredPost.isLiked ? '❤️' : '🤍'}}</text>
             <text class="feature-action-text">{{featuredPost.likesText}}</text>
           </view>
 
           <view class="feature-action feature-action-secondary" bindtap="onActionTap" data-action="comment">
-            <text class="feature-action-icon secondary-icon">✦</text>
+            <text class="feature-action-icon secondary-icon">💬</text>
             <text class="feature-action-text secondary-text">{{featuredPost.commentsText}}</text>
           </view>
 
           <view class="feature-action feature-action-secondary {{featuredPost.isSaved ? 'feature-action-liked' : ''}}" bindtap="onActionTap" data-action="save">
-            <text class="feature-action-icon secondary-icon">⌂</text>
+            <text class="feature-action-icon secondary-icon">🔖</text>
             <text class="feature-action-text secondary-text">{{featuredPost.savesText}}</text>
           </view>
 
           <button class="feature-action feature-action-secondary share-action" open-type="share">
-            <text class="feature-action-icon secondary-icon">↗</text>
+            <text class="feature-action-icon secondary-icon">↗️</text>
             <text class="feature-action-text secondary-text">{{uiText.actionTexts.share}}</text>
           </button>
         </view>

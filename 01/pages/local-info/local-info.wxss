@@ -239,3 +239,88 @@ page {
   color: #6b7280;
   line-height: 1.7;
 }
+
+/* 9:16 mobile minimal theme */
+page,
+.news-page {
+  background: #f4f5f3;
+}
+
+.news-content {
+  padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx 48rpx;
+}
+
+.back-fab {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 18rpx;
+  border: 1rpx solid #dde3df;
+  box-shadow: none;
+}
+
+.back-arrow {
+  width: auto;
+  height: auto;
+  margin-left: 0;
+  border: 0;
+  transform: none;
+  color: #34463d;
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.hero-card,
+.section-card {
+  border-radius: 24rpx;
+  background: #ffffff;
+  border-color: #e0e5e1;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.hero-card {
+  background: #e7ece8;
+}
+
+.hero-eyebrow,
+.hero-subtitle,
+.section-subtitle,
+.service-arrow {
+  color: #65756c;
+}
+
+.hero-title {
+  font-size: 44rpx;
+  color: #27332d;
+}
+
+.hero-chip,
+.pulse-tag {
+  color: #526159;
+  background: #edf1ee;
+}
+
+.pulse-card {
+  border-radius: 20rpx;
+  background: #f7f8f7;
+  border-color: #e3e7e4;
+}
+
+.service-icon,
+.service-icon-image {
+  width: 68rpx;
+  height: 68rpx;
+}
+
+.service-icon {
+  border-radius: 18rpx;
+  background: #edf1ee;
+}
+
+.service-icon-image {
+  object-fit: contain;
+}
+
+.tip-dot {
+  background: #70867a;
+}

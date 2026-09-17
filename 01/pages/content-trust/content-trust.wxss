@@ -1,6 +1,6 @@
 @import "../../templates/content-shell.wxss";
 
-.trust-hero { background: linear-gradient(135deg, #edf7fb 0%, #f7f2ff 100%); }
+.trust-hero { background: #e9edef; }
 .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
 .trust-grid view { padding: 18rpx 10rpx; text-align: center; border-radius: 18rpx; color: #718096; background: #f7fafc; font-size: 20rpx; }
 .trust-value { display: block; margin-top: 8rpx; color: #2d3748; font-size: 22rpx; font-weight: 700; }

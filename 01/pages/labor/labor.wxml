@@ -1,6 +1,6 @@
 <view class="page-root">
   <view class="page-back-btn" bindtap="onGoHomeTap">
-    <view class="page-back-icon"></view>
+    <text class="page-back-icon">←</text>
     <text class="page-back-text">返回主界面</text>
   </view>
 

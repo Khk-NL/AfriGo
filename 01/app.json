@@ -24,7 +24,7 @@
   ],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarBackgroundColor": "#f5f2eb",
+    "navigationBarBackgroundColor": "#f4f5f3",
     "navigationBarTitleText": "非常行",
     "navigationStyle": "custom"
   },
@@ -41,7 +41,7 @@
   "tabBar": {
     "custom": true,
     "color": "#999999",
-    "selectedColor": "#58c796",
+    "selectedColor": "#587565",
     "list": [
       { "pagePath": "pages/home/home", "text": "首页" },
       { "pagePath": "pages/community/community", "text": "社区" },

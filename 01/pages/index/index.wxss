@@ -584,3 +584,18 @@ page {
   transform: translateY(1px);
   box-shadow: 0 6px 16px rgba(142, 56, 33, 0.36);
 }
+
+/* 9:16 mobile minimal theme */
+page, .page-root { background: #f4f5f3; }
+.page-root { padding-left: 18px; padding-right: 18px; }
+.top-main { width: 100%; max-width: none; padding-top: calc(env(safe-area-inset-top) + 5vh); }
+.header-section { margin-bottom: 20px; }
+.square-card { border-radius: 22px; background: #dfe3df; }
+.auth-card { border-radius: 18px; background: #fff; border-color: #e1e5e2; box-shadow: none; }
+.status-live, .status-off { color: #59675f; background: #eef1ef; }
+.auth-admin-badge { background: #617168; }
+.auth-action-login { background: #61786b; }
+.auth-action-logout { color: #6e5d53; background: #f2efec; }
+.primary-button { background: #dfe6e1; color: #334139; box-shadow: none; }
+.country-sheet { background: #f7f8f6; }
+.sheet-confirm-btn { background: #61786b; box-shadow: none; }

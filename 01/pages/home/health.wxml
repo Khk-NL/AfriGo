@@ -6,7 +6,7 @@
 
   <view class="custom-nav">
     <view class="nav-back-wrap" bindtap="onGoBack">
-      <view class="nav-back-arrow"></view>
+      <text class="nav-back-arrow">←</text>
     </view>
     <text class="nav-title">{{uiText.navTitle}}</text>
     <view class="nav-space"></view>

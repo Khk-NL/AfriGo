@@ -2,7 +2,7 @@
 @import "../../templates/content-shell.wxss";
 
 .active-pill {
-  background: linear-gradient(135deg, #5f24b6 0%, #7b4fc3 100%) !important;
+  background: #65776d !important;
   color: #ffffff !important;
   border-color: transparent !important;
 }
