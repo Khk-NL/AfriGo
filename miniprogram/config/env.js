@@ -1,4 +1,4 @@
-const REMOTE_API_BASE = '';
+const REMOTE_API_BASE = 'https://afrigo-api.allezafrique.cn';
 
 function getEnvVersion() {
   try {

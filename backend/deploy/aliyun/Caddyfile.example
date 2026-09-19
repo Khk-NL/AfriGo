@@ -1,0 +1,40 @@
+# AfriGo API 的 Caddy 站点模板（Caddy v2）。
+#
+# 用法：把下面的站点块追加到服务器 /etc/caddy/Caddyfile 末尾，然后
+#   sudo caddy validate --config /etc/caddy/Caddyfile
+#   sudo systemctl reload caddy
+#
+# 本模板按"同一台 ECS 上已经有其它站点"的场景编写：
+#   - 每个站点用独立 hostname，追加新站点不会影响已有站点；
+#   - 不用全局 options 块，避免覆盖机器上已有的全局配置；
+#   - 反向代理只指向本机 3001，该端口不对公网开放（ECS 安全组同样不要放行）。
+#
+# 证书：Caddy 会自动申请并续期 Let's Encrypt 证书，前提是该域名的 A 记录已指向本机、
+# 且 80/443 可从公网访问。不需要像 Nginx 那样手动填证书路径。
+
+afrigo-api.allezafrique.cn {
+  encode zstd gzip
+
+  tls {
+    protocols tls1.2 tls1.3
+  }
+
+  # 后端由 systemd 单元 afrigo-api.service 拉起，只监听 127.0.0.1:3001。
+  reverse_proxy 127.0.0.1:3001
+
+  # 请求体上限由后端 multer 控制（server.js 中为 8MB）。Caddy v2 默认不限制请求体；
+  # 如需在边缘提前拦截（Caddy ≥ 2.6），取消下面注释：
+  # request_body {
+  #   max_size 8MB
+  # }
+
+  log
+}
+
+# 部署后自检（Caddy 站点生效的判据是响应头里出现 AfriGo 自己设置的安全头）：
+#   curl -s   https://afrigo-api.allezafrique.cn/api/health
+#     期望 {"ok":true,"service":"afrigo-api","version":"...","navigationProvider":"...","db":"ok"}
+#   curl -sI  https://afrigo-api.allezafrique.cn/api/health | grep -i x-frame-options
+#     期望 X-Frame-Options: DENY
+#   如果返回 "Cannot GET /api/health"，说明该域名转发到的不是这份后端，
+#   先确认 `ss -ltnp | grep 3001` 有进程、`curl -s localhost:3001/api/health` 正常。

@@ -4,8 +4,9 @@
 
 ## 约定
 
-- ECS 上运行 Express/MySQL，Node 服务只监听服务器本机端口 `3001`。
-- Nginx 对外提供 HTTPS，并反向代理至 `127.0.0.1:3001`。
+- ECS 上运行 Express/MySQL，Node 服务只监听服务器本机端口 `3001`，该端口不对公网开放。
+- 反向代理对外提供 HTTPS，并转发至 `127.0.0.1:3001`；本目录同时提供 Nginx 与 Caddy 两套模板，按机器上实际在用的那套选一个。
+- 生产域名约定为 `afrigo-api.allezafrique.cn`（与小程序 `REMOTE_API_BASE`、`PUBLIC_BASE_URL`、微信合法域名三处保持一致）。
 - 社区图片由服务端上传到私有 OSS Bucket，小程序不接触 OSS AccessKey。
 - 数据库使用独立应用账号，不使用 root 账号运行 API。
 - 正式环境变量放在 `/etc/afrigo/api.env`，权限建议设为 `600`。
@@ -17,11 +18,11 @@
 3. 正式环境设置 `OSS_CREDENTIAL_MODE=ecs_ram_role`、`ALIBABA_CLOUD_ECS_METADATA=<角色名>` 和 `ALIBABA_CLOUD_IMDSV1_DISABLE=true`；不要配置长期 AccessKey。SDK 会从实例元数据获取并自动刷新 STS 凭据。
    如需开启旅中翻译，先开通阿里云机器翻译，再把 `ram-translate-policy.json` 中的最小权限追加给同一 ECS RAM Role，最后设置 `ALIYUN_TRANSLATE_ENABLED=true`。
    如需开启海外路线预估，用 `NAVIGATION_PROVIDER` 选择地图服务：`amap-overseas`（需企业开发者认证并工单开通海外 LBS 权限，配合 `AMAP_NAVIGATION_ENABLED=true` 与 `AMAP_WEB_SERVICE_KEY`）、`mapbox`（配合 `MAPBOX_ACCESS_TOKEN`，自助开通）、`google-directions`（配合 `GOOGLE_MAPS_API_KEY`）或 `disabled`。Key 只保存在 ECS 环境文件中；切换 Provider 不需要改动小程序。
-4. 把 `nginx.conf.example` 中的域名和证书路径替换为真实值。
+4. 配置反向代理：机器上用 Nginx 就改 `nginx.conf.example`（域名与证书路径），用 Caddy 就把 `Caddyfile.example` 的站点块追加到 `/etc/caddy/Caddyfile`。Caddy 会自动申请证书；`reverse_proxy` 指向 `127.0.0.1:3001`。若这台机器上已有其它站点，务必只**追加**新站点块，不要改动已有站点——`api.<域名>` 这类看起来"没用过"的 hostname 可能正被其它应用占用。
 5. 把 `afrigo-api.service.example` 安装为 systemd service。
 6. 运行 `npm ci`、`npm run init-db`，再按需运行 `npm run import-excel`；导入完成后执行 `npm prune --omit=dev`，生产进程不加载仅用于可信工作簿导入的 `xlsx`。升级版本后也要重新执行 `npm run init-db`，用于创建新增表；初始化脚本使用 `CREATE TABLE IF NOT EXISTS`，不会删除已有数据。
-7. 将 HTTPS API 域名加入微信公众平台的 request 和 uploadFile 合法域名。
-8. 将小程序 `config/env.js` 中的 `REMOTE_API_BASE` 改成正式 HTTPS API 地址。
+7. 将 `https://afrigo-api.allezafrique.cn` 加入微信公众平台的 request 和 uploadFile 合法域名。
+8. 将小程序 `config/env.js` 中的 `REMOTE_API_BASE` 改成 `https://afrigo-api.allezafrique.cn`（develop 环境不受影响，仍走本机 `127.0.0.1:3001`）。
 9. 启动后先访问 `https://你的域名/api/health`（也可用无前缀的 `/health`），确认返回 `{"ok":true,"service":"afrigo-api",...}` 且 `db` 为 `ok`；如果返回 `Cannot GET /api/health`，说明 3001 端口上运行的进程不是这份代码（多半是旧进程未重启或监听端口被别的服务占用），先看 `systemctl status` 与 `ss -ltnp | grep 3001`，再配置体验版。
 
 ## 数据库账号与备份
