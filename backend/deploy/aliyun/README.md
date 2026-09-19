@@ -22,7 +22,7 @@
 6. 运行 `npm ci`、`npm run init-db`，再按需运行 `npm run import-excel`；导入完成后执行 `npm prune --omit=dev`，生产进程不加载仅用于可信工作簿导入的 `xlsx`。升级版本后也要重新执行 `npm run init-db`，用于创建新增表；初始化脚本使用 `CREATE TABLE IF NOT EXISTS`，不会删除已有数据。
 7. 将 HTTPS API 域名加入微信公众平台的 request 和 uploadFile 合法域名。
 8. 将小程序 `config/env.js` 中的 `REMOTE_API_BASE` 改成正式 HTTPS API 地址。
-9. 启动后先访问 `https://你的域名/api/health`，确认返回 `{"ok":true}`，再配置体验版。
+9. 启动后先访问 `https://你的域名/api/health`（也可用无前缀的 `/health`），确认返回 `{"ok":true,"service":"afrigo-api",...}` 且 `db` 为 `ok`；如果返回 `Cannot GET /api/health`，说明 3001 端口上运行的进程不是这份代码（多半是旧进程未重启或监听端口被别的服务占用），先看 `systemctl status` 与 `ss -ltnp | grep 3001`，再配置体验版。
 
 ## 数据库账号与备份
 

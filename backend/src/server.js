@@ -15,6 +15,7 @@ const { LEAD_STATUSES, sanitizeLeadPayload, sanitizeProviderPayload } = require(
 const { CORRECTION_STATUSES, sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('./content-trust');
 const { translateText } = require('./translate');
 const { planNavigationRoute } = require('./navigation');
+const { SERVICE_NAME, buildHealthPayload } = require('./health');
 
 const app = express();
 const pool = createPool();
@@ -333,15 +334,32 @@ app.put('/api/attractions/:id', authenticate, requireAdmin, async (req, res, nex
   }
 });
 
-app.get('/api/health', async (_req, res, next) => {
+/**
+ * 健康检查：探活数据库，并回传服务标识。
+ * 即使数据库不可用也返回服务标识，便于判断线上进程跑的是哪份代码。
+ */
+async function healthHandler(_req, res) {
+  const payload = buildHealthPayload();
   try {
     await pool.query('SELECT 1');
-    res.json({ ok: true });
+    res.json({ ...payload, db: 'ok' });
   } catch (error) {
-    error.statusCode = 503;
-    next(error);
+    console.error('health check failed:', error.message);
+    res.status(503).json({ ...payload, ok: false, db: 'error' });
   }
+}
+
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    service: SERVICE_NAME,
+    version: buildHealthPayload().version,
+    health: '/api/health',
+    healthAlias: '/health'
+  });
 });
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
 
 app.get('/api/attractions', async (req, res, next) => {
   try {

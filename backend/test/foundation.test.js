@@ -14,6 +14,7 @@ const { sanitizeLeadPayload, sanitizeProviderPayload } = require('../src/service
 const { sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('../src/content-trust');
 const { translateText, validateTranslationInput } = require('../src/translate');
 const { planNavigationRoute, validateNavigationInput } = require('../src/navigation');
+const { buildHealthPayload, SERVICE_NAME } = require('../src/health');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -292,6 +293,24 @@ test('each navigation provider normalizes its own response shape', async () => {
     }),
     (error) => error.statusCode === 502
   );
+});
+
+test('health payload identifies the running build without exposing secrets', () => {
+  const payload = buildHealthPayload(
+    { NODE_ENV: 'production', NAVIGATION_PROVIDER: 'mapbox', WECHAT_APP_SECRET: 'must-not-appear' },
+    { uptimeSeconds: 42, now: Date.parse('2026-09-20T00:00:00.000Z') }
+  );
+  assert.deepEqual(payload, {
+    ok: true,
+    service: SERVICE_NAME,
+    version: require('../package.json').version,
+    env: 'production',
+    navigationProvider: 'mapbox',
+    uptimeSeconds: 42,
+    serverTime: '2026-09-20T00:00:00.000Z'
+  });
+  assert.equal(JSON.stringify(payload).includes('must-not-appear'), false);
+  assert.equal(buildHealthPayload({}, { uptimeSeconds: 1 }).navigationProvider, 'amap-overseas');
 });
 
 test('service providers and leads require auditable fields', () => {
