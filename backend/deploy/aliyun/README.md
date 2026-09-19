@@ -13,7 +13,7 @@
 ## 上线前配置
 
 1. 复制 `.env.example` 的字段到 `/etc/afrigo/api.env` 并填写真实值。
-2. 为 ECS 绑定实例 RAM Role，只授予目标 Bucket 的 `community/*` 前缀所需权限。
+2. 为 ECS 绑定实例 RAM Role，只授予目标 Bucket 的 `community/*` 前缀所需权限：把 `ram-oss-policy.json` 里的 `<your-bucket>` 换成真实 Bucket 名后作为该角色的自定义权限策略；对象只读写 `community/` 前缀，不使用长期 AccessKey。
 3. 正式环境设置 `OSS_CREDENTIAL_MODE=ecs_ram_role`、`ALIBABA_CLOUD_ECS_METADATA=<角色名>` 和 `ALIBABA_CLOUD_IMDSV1_DISABLE=true`；不要配置长期 AccessKey。SDK 会从实例元数据获取并自动刷新 STS 凭据。
    如需开启旅中翻译，先开通阿里云机器翻译，再把 `ram-translate-policy.json` 中的最小权限追加给同一 ECS RAM Role，最后设置 `ALIYUN_TRANSLATE_ENABLED=true`。
    如需开启海外路线预估，用 `NAVIGATION_PROVIDER` 选择地图服务：`amap-overseas`（需企业开发者认证并工单开通海外 LBS 权限，配合 `AMAP_NAVIGATION_ENABLED=true` 与 `AMAP_WEB_SERVICE_KEY`）、`mapbox`（配合 `MAPBOX_ACCESS_TOKEN`，自助开通）、`google-directions`（配合 `GOOGLE_MAPS_API_KEY`）或 `disabled`。Key 只保存在 ECS 环境文件中；切换 Provider 不需要改动小程序。
