@@ -18,8 +18,9 @@
 
 - 小程序内已使用 `wx.chooseLocation`、`wx.getLocation` 和 `wx.openLocation` 完成位置选择与地图打开，无需把密钥下发到客户端。
 - 已实现 Express 代理接口：`POST /api/navigation/routes`，请求字段为 `origin`、`destination` 和 `mode`，接口需登录且有独立限流。
-- 供应商选择：高德地图海外 Web Service（阿里生态）。官方文档说明海外路线需先申请 Web Service Key 并工单开通海外权限：https://lbs.amap.com/api/web-service/guide/routes
-- 密钥仅放在阿里云 ECS 环境变量 `AMAP_WEB_SERVICE_KEY`，由 Express 代理请求；权限未开通时保持 `AMAP_NAVIGATION_ENABLED=false`，接口明确返回 503，微信原生选点和地图打开仍可使用。
+- 供应商选择改为 Provider 抽象（`backend/src/navigation/`）：用 `NAVIGATION_PROVIDER` 切换，新增服务只需实现 `plan()` 并注册进 `providers/index.js`；响应回传 `provider` 与 `providerLabel`，小程序不硬编码地图品牌。
+- 已内置 `amap-overseas`（高德海外 Web Service，需企业开发者认证并工单开通海外 LBS 权限，文档 https://lbs.amap.com/api/web-service/guide/routes）、`mapbox`（Mapbox Directions，自助注册、全球覆盖）、`google-directions`（Google Directions，需 Google Cloud 项目与结算账号），以及显式关闭用的 `disabled`。
+- 各 Provider 的 Key 只放在服务端环境变量，由 Express 代理请求；未配置时接口明确返回 503，微信原生选点和地图打开仍可使用。
 
 ### 翻译
 

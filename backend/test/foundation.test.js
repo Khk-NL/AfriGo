@@ -72,6 +72,8 @@ test('production config requires HTTPS and ECS role credentials', () => {
   assert.match(validateProductionConfig({ ...base, PUBLIC_BASE_URL: 'http://api.example.com' }).join('；'), /HTTPS/);
   assert.match(validateProductionConfig({ ...base, ALLOW_DEV_AUTH: 'true' }).join('；'), /ALLOW_DEV_AUTH/);
   assert.match(validateProductionConfig({ ...base, AMAP_NAVIGATION_ENABLED: 'true' }).join('；'), /AMAP_WEB_SERVICE_KEY/);
+  assert.match(validateProductionConfig({ ...base, NAVIGATION_PROVIDER: 'amap' }).join('；'), /NAVIGATION_PROVIDER/);
+  assert.deepEqual(validateProductionConfig({ ...base, NAVIGATION_PROVIDER: 'mapbox' }), []);
 });
 
 test('rate limiter rejects requests after the configured limit', () => {
@@ -162,7 +164,9 @@ test('navigation validates coordinates and stays closed until enabled', async ()
     () => validateNavigationInput({ origin: { longitude: 181, latitude: 0 }, destination: { longitude: 1, latitude: 1 } }),
     /起点坐标/
   );
+  const previousProvider = process.env.NAVIGATION_PROVIDER;
   const previous = process.env.AMAP_NAVIGATION_ENABLED;
+  process.env.NAVIGATION_PROVIDER = 'amap-overseas';
   process.env.AMAP_NAVIGATION_ENABLED = 'false';
   await assert.rejects(
     () => planNavigationRoute({ origin: { longitude: 1, latitude: 1 }, destination: { longitude: 2, latitude: 2 } }),
@@ -174,23 +178,120 @@ test('navigation validates coordinates and stays closed until enabled', async ()
   let requestedUrl = '';
   const route = await planNavigationRoute(
     { origin: { longitude: 36.82, latitude: -1.29 }, destination: { longitude: 36.81, latitude: -1.28 } },
-    async (url) => {
-      requestedUrl = url;
-      return {
-        ok: true,
-        async json() {
-          return { status: '1', route: { paths: [{ distance: '2100', duration: '600', steps: [] }] } };
-        }
-      };
+    {
+      fetchImpl: async (url) => {
+        requestedUrl = url;
+        return {
+          ok: true,
+          async json() {
+            return { status: '1', route: { paths: [{ distance: '2100', duration: '600', steps: [] }] } };
+          }
+        };
+      }
     }
   );
   assert.match(requestedUrl, /^https:\/\/sg-restapi\.opnavi\.com\/v3\/direction\/driving\?/);
   assert.equal(route.provider, 'amap-overseas');
+  assert.equal(route.providerLabel, '高德海外路线');
   assert.equal(route.paths[0].distanceMeters, 2100);
+  if (previousProvider === undefined) delete process.env.NAVIGATION_PROVIDER;
+  else process.env.NAVIGATION_PROVIDER = previousProvider;
   if (previous === undefined) delete process.env.AMAP_NAVIGATION_ENABLED;
   else process.env.AMAP_NAVIGATION_ENABLED = previous;
   if (previousKey === undefined) delete process.env.AMAP_WEB_SERVICE_KEY;
   else process.env.AMAP_WEB_SERVICE_KEY = previousKey;
+});
+
+test('navigation provider is swappable, disabled-aware and fails loud on unknown ids', async () => {
+  const payload = { origin: { longitude: 1, latitude: 1 }, destination: { longitude: 2, latitude: 2 } };
+
+  await assert.rejects(
+    () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'unknown-map' } }),
+    (error) => error.statusCode === 503 && /不支持的路线 Provider/.test(error.message)
+  );
+  await assert.rejects(
+    () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'disabled' } }),
+    (error) => error.statusCode === 503 && /禁用/.test(error.message)
+  );
+  await assert.rejects(
+    () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'mapbox' } }),
+    (error) => error.statusCode === 503 && /MAPBOX_ACCESS_TOKEN/.test(error.message)
+  );
+  await assert.rejects(
+    () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'google-directions' } }),
+    (error) => error.statusCode === 503 && /GOOGLE_MAPS_API_KEY/.test(error.message)
+  );
+});
+
+test('each navigation provider normalizes its own response shape', async () => {
+  const input = {
+    mode: 'walking',
+    origin: { longitude: 36.82, latitude: -1.29 },
+    destination: { longitude: 36.81, latitude: -1.28 }
+  };
+
+  const mapboxRoute = await planNavigationRoute(input, {
+    env: { NAVIGATION_PROVIDER: 'mapbox', MAPBOX_ACCESS_TOKEN: 'test-token' },
+    fetchImpl: async (url) => {
+      assert.match(url, /^https:\/\/api\.mapbox\.com\/directions\/v5\/mapbox\/walking\/36\.82,-1\.29;36\.81,-1\.28\?/);
+      return {
+        ok: true,
+        async json() {
+          return {
+            code: 'Ok',
+            routes: [{
+              distance: 2100.4,
+              duration: 600.7,
+              legs: [{ steps: [{ maneuver: { instruction: '向东行驶' }, name: 'Kenyatta Ave', distance: 120, duration: 30 }] }]
+            }]
+          };
+        }
+      };
+    }
+  });
+  assert.equal(mapboxRoute.provider, 'mapbox');
+  assert.equal(mapboxRoute.providerLabel, 'Mapbox 路线');
+  assert.equal(mapboxRoute.paths[0].distanceMeters, 2100.4);
+  assert.deepEqual(mapboxRoute.paths[0].steps[0], {
+    instruction: '向东行驶',
+    road: 'Kenyatta Ave',
+    distanceMeters: 120,
+    durationSeconds: 30
+  });
+
+  const googleRoute = await planNavigationRoute(input, {
+    env: { NAVIGATION_PROVIDER: 'google-directions', GOOGLE_MAPS_API_KEY: 'test-key' },
+    fetchImpl: async (url) => {
+      assert.match(url, /origin=-1\.29(%2C|,)36\.82/);
+      return {
+        ok: true,
+        async json() {
+          return {
+            status: 'OK',
+            routes: [{
+              legs: [{
+                distance: { value: 2100 },
+                duration: { value: 601 },
+                steps: [{ html_instructions: '向东<b>行驶</b>', distance: { value: 120 }, duration: { value: 30 } }]
+              }]
+            }]
+          };
+        }
+      };
+    }
+  });
+  assert.equal(googleRoute.provider, 'google-directions');
+  assert.equal(googleRoute.paths[0].distanceMeters, 2100);
+  assert.equal(googleRoute.paths[0].durationSeconds, 601);
+  assert.equal(googleRoute.paths[0].steps[0].instruction, '向东 行驶');
+
+  await assert.rejects(
+    () => planNavigationRoute(input, {
+      env: { NAVIGATION_PROVIDER: 'mapbox', MAPBOX_ACCESS_TOKEN: 'test-token' },
+      fetchImpl: async () => ({ ok: false })
+    }),
+    (error) => error.statusCode === 502
+  );
 });
 
 test('service providers and leads require auditable fields', () => {

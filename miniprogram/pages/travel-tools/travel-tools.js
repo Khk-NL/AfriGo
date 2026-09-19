@@ -133,7 +133,7 @@ Page({
         routeSummary: {
           distance: `${Math.max(0, path.distanceMeters / 1000).toFixed(1)} 公里`,
           duration: `${Math.max(1, Math.round(path.durationSeconds / 60))} 分钟`,
-          provider: '高德海外路线'
+          provider: result.providerLabel || '路线服务'
         }
       });
     } catch (error) {

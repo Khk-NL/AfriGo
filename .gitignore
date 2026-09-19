@@ -7,4 +7,3 @@ uploads/
 .DS_Store
 Thumbs.db
 ~$*
-backend/test/foundation.test.js

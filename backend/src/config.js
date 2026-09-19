@@ -1,3 +1,5 @@
+const { listProviderIds } = require('./navigation/providers');
+
 function isPlaceholder(value) {
   return !value || /^(replace-with|change-me|example)/i.test(String(value).trim());
 }
@@ -17,6 +19,12 @@ function validateProductionConfig(env = process.env) {
   if (env.ALLOW_DEV_AUTH === 'true') errors.push('production 禁止开启 ALLOW_DEV_AUTH');
   if (String(env.AMAP_NAVIGATION_ENABLED).toLowerCase() === 'true' && isPlaceholder(env.AMAP_WEB_SERVICE_KEY)) {
     errors.push('AMAP_WEB_SERVICE_KEY 未配置');
+  }
+
+  const navigationProvider = String(env.NAVIGATION_PROVIDER || 'amap-overseas').trim().toLowerCase();
+  const knownNavigationProviders = [...listProviderIds(), 'disabled'];
+  if (!knownNavigationProviders.includes(navigationProvider)) {
+    errors.push(`NAVIGATION_PROVIDER 仅支持 ${knownNavigationProviders.join(' / ')}`);
   }
 
   const credentialMode = env.OSS_CREDENTIAL_MODE || 'ecs_ram_role';
