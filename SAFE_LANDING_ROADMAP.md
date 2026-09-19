@@ -4,8 +4,8 @@
 
 ## 已实现：阶段 1 · 行前中心
 
-- 小程序页面：`01/pages/trip-plan/`
-- 客户端调用：`01/utils/cloud-service.js` 中的 `loadTrips` / `saveTrip` / `deleteTrip`
+- 小程序页面：`miniprogram/pages/trip-plan/`
+- 客户端调用：`miniprogram/utils/cloud-service.js` 中的 `loadTrips` / `saveTrip` / `deleteTrip`
 - 远程接口：`GET|POST /api/trips`、`PUT|DELETE /api/trips/:id`
 - MySQL：`trip_plans` 表，数据按服务端用户 ID 隔离
 - 离线回退：未登录或网络异常时保存到 `landingAssistantTripPlans`
@@ -25,7 +25,7 @@
 
 - 已实现 Express 接口：`POST /api/translate`，请求字段为 `text`、`sourceLanguage`、`targetLanguage`；接口需登录且有独立限流。
 - 供应商选择：阿里云机器翻译 `TranslateGeneral`。官方接口限制为单次最多 5000 字符：https://help.aliyun.com/zh/machine-translation/developer-reference/api-reference-machine-translation-universal-version-call-guide
-- 已接入官方 Node.js SDK，使用 ECS RAM Role/短期凭据；最小权限模板位于 `01/backend/deploy/aliyun/ram-translate-policy.json`。未开通服务时保持 `ALIYUN_TRANSLATE_ENABLED=false`，接口会明确返回 503。
+- 已接入官方 Node.js SDK，使用 ECS RAM Role/短期凭据；最小权限模板位于 `backend/deploy/aliyun/ram-translate-policy.json`。未开通服务时保持 `ALIYUN_TRANSLATE_ENABLED=false`，接口会明确返回 503。
 
 ### 风险和应急
 

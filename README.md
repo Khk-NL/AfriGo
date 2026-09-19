@@ -1,13 +1,13 @@
-# 非行智行：非洲旅游微信小程序
+# 非行智航：非洲旅游微信小程序
 
 面向中国赴非旅行、务工和商务人员的“安全落地助手”，提供行前计划、签证、安全、健康、风俗、劳务、常用语和应急信息。
 
 ## 项目结构
 
-- `01/`：微信小程序源码。
-- `01/backend/`：Express + MySQL API 服务。
+- `miniprogram/`：微信小程序源码（用微信开发者工具打开此目录）。
+- `backend/`：Express + MySQL API 服务。
 - `整合版.xlsx`：11 个国家的初始内容数据源。
-- `01/backend/deploy/aliyun/`：阿里云 ECS、Nginx、systemd 部署示例。
+- `backend/deploy/aliyun/`：阿里云 ECS、Nginx、systemd 部署示例。
 
 ## 已完成
 
@@ -28,14 +28,14 @@
 - 9:16 移动首页：地图、翻译、离线包和紧急求助独立直达，按行前、旅中、旅后和服务层级组织，移除桌面式宽屏布局。
 - 全局移动端视觉统一为简约、低饱和配色；内容卡片、返回控件和底部导航针对单手操作收紧层级与间距。
 
-图标素材统一在 `01/config/icons.js` 配置：填写图片路径时优先显示自定义图片，留空时显示对应 emoji，不使用网络占位图；远程内容也可通过 `iconImage` 覆盖。
+图标素材统一在 `miniprogram/config/icons.js` 配置：填写图片路径时优先显示自定义图片，留空时显示对应 emoji，不使用网络占位图；远程内容也可通过 `iconImage` 覆盖。
 
 后续阶段和外部 API 接入位置见 [`SAFE_LANDING_ROADMAP.md`](SAFE_LANDING_ROADMAP.md)。
 
 ## 本地运行
 
-1. 复制 `01/backend/.env.example` 为 `.env`，填写本地 MySQL 和微信测试配置，不要提交该文件。
-2. 在 `01/backend` 执行 `npm ci`、`npm run init-db`、`npm run import-excel`、`npm start`。生产部署导入完成后应执行 `npm prune --omit=dev`。
-3. 用微信开发者工具打开 `01`，开发环境默认请求 `http://127.0.0.1:3000`。
+1. 复制 `backend/.env.example` 为 `.env`，填写本地 MySQL 和微信测试配置，不要提交该文件。
+2. 在 `backend` 执行 `npm ci`、`npm run init-db`、`npm run import-excel`、`npm start`。生产部署导入完成后应执行 `npm prune --omit=dev`。
+3. 用微信开发者工具打开 `miniprogram`，开发环境默认请求 `http://127.0.0.1:3001`。
 
-部署到阿里云前，请阅读 [`01/backend/deploy/aliyun/README.md`](01/backend/deploy/aliyun/README.md) 和 [`SECURITY_REMOTE_SERVICE_BACKLOG.md`](SECURITY_REMOTE_SERVICE_BACKLOG.md)。生产凭据必须通过服务器环境变量或 RAM 角色提供，不能写入仓库或小程序。
+部署到阿里云前，请阅读 [`backend/deploy/aliyun/README.md`](backend/deploy/aliyun/README.md) 和 [`SECURITY_REMOTE_SERVICE_BACKLOG.md`](SECURITY_REMOTE_SERVICE_BACKLOG.md)。生产凭据必须通过服务器环境变量或 RAM 角色提供，不能写入仓库或小程序。

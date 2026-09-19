@@ -1,0 +1,24 @@
+[Unit]
+Description=AfriGo WeChat Mini Program API
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=afrigo
+Group=afrigo
+WorkingDirectory=/opt/afrigo/backend
+EnvironmentFile=/etc/afrigo/api.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

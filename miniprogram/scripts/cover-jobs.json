@@ -1,0 +1,142 @@
+[
+  {
+    "src": "../../小程序数据/国家封面照片/刚果河.jpg",
+    "dst": "../assets/images/covers/drc.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/加纳黑星门1.jpg",
+    "dst": "../assets/images/covers/ghana.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/加纳黑星门2.jpg",
+    "dst": "../assets/images/covers/ghana-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/埃及吉萨金字塔1.jpg",
+    "dst": "../assets/images/covers/egypt.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/埃及拉美西斯二世2.jpg",
+    "dst": "../assets/images/covers/egypt-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/安哥拉罗安达城市2.jpg",
+    "dst": "../assets/images/covers/angola.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/安哥拉穆希马小镇1.jpg",
+    "dst": "../assets/images/covers/angola-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/尼日利亚莱基桥1.jpg",
+    "dst": "../assets/images/covers/nigeria.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/尼日利亚莱基桥2.jpg",
+    "dst": "../assets/images/covers/nigeria-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/南非桌山1.jpg",
+    "dst": "../assets/images/covers/south-africa.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/南非好望角2.jpg",
+    "dst": "../assets/images/covers/south-africa-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/马达加斯加猴面包树1.jpg",
+    "dst": "../assets/images/covers/madagascar.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/马达加斯加海滩2.jpg",
+    "dst": "../assets/images/covers/madagascar-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/坦桑尼亚乞力马扎罗山1.jpg",
+    "dst": "../assets/images/covers/tanzania.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/坦桑尼亚角马大迁徙2.jpg",
+    "dst": "../assets/images/covers/tanzania-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/肯尼亚马赛马拉保护区1.jpg",
+    "dst": "../assets/images/covers/kenya.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/肯尼亚动物迁徙2.jpg",
+    "dst": "../assets/images/covers/kenya-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/科特迪瓦露天市集.jpg",
+    "dst": "../assets/images/covers/cote-divoire.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/赞比亚维多利亚瀑布.jpg",
+    "dst": "../assets/images/covers/zambia.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/乌干达默奇森瀑布1.jpg",
+    "dst": "../assets/images/covers/uganda.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/几内亚宁巴山自然保护区1.jpg",
+    "dst": "../assets/images/covers/guinea.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/几内亚巴山自然保护区2.jpg",
+    "dst": "../assets/images/covers/guinea-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/几内亚.jpg",
+    "dst": "../assets/images/covers/guinea-3.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/刚果布布拉柴维尔与刚果河1.jpg",
+    "dst": "../assets/images/covers/roc.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/利比里亚.jpg",
+    "dst": "../assets/images/covers/liberia.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/埃塞俄比亚青尼罗河瀑布1.jpg",
+    "dst": "../assets/images/covers/ethiopia.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/埃塞俄比亚拉利贝拉岩石教堂2.jpg",
+    "dst": "../assets/images/covers/ethiopia-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/塞内加尔.jpg",
+    "dst": "../assets/images/covers/senegal.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/津巴布韦维多利亚大瀑布1.jpg",
+    "dst": "../assets/images/covers/zimbabwe.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/大津巴布韦遗址2.jpg",
+    "dst": "../assets/images/covers/zimbabwe-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/摩洛哥舍夫沙万蓝城1.jpg",
+    "dst": "../assets/images/covers/morocco.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/摩洛哥清真寺2.jpg",
+    "dst": "../assets/images/covers/morocco-2.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/莫桑比克维兰库斯海滩1.jpg",
+    "dst": "../assets/images/covers/mozambique.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/阿尔及利亚阿杰尔高原撒哈拉地貌1.jpg",
+    "dst": "../assets/images/covers/algeria.jpg"
+  },
+  {
+    "src": "../../小程序数据/国家封面照片/阿尔及利亚古罗马提姆加德遗址2.jpg",
+    "dst": "../assets/images/covers/algeria-2.jpg"
+  }
+]

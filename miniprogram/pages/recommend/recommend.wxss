@@ -1,0 +1,79 @@
+/* miniprogram/pages/recommend/recommend.wxss */
+@import "../../templates/content-shell.wxss";
+
+.active-pill {
+  background: #65776d !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+.active-pill .tag-text {
+  color: #ffffff !important;
+}
+
+.recommend-card {
+  margin-top: 18rpx;
+}
+
+.recommend-rating {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.recommend-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  color: #5f24b6;
+  background: rgba(95, 36, 182, 0.12);
+}
+
+.recommend-address {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
+.recommend-note-label,
+.recommend-note-text {
+  display: block;
+}
+
+.recommend-note-label {
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 22rpx;
+}
+
+.recommend-note-text {
+  margin-top: 6rpx;
+  color: #4b5563;
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+.bookmark-action {
+  margin-top: 20rpx;
+  color: #7a6848;
+  font-size: 26rpx;
+}
+
+.bookmark-action.bookmarked {
+  color: #c28a24;
+}
+
+.recommend-search {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin: 20rpx 0;
+  padding: 18rpx 22rpx;
+  border-radius: 18rpx;
+  background: #f4f1f9;
+  color: #6b7280;
+}
+
+.recommend-search input { flex: 1; font-size: 24rpx; color: #1f2937; }
+.recommend-search-icon { font-size: 28rpx; }
