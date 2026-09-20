@@ -292,6 +292,9 @@ page {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+  /* line-height:1 让胶囊高度由 padding 决定，文字上下严格居中 */
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .status-live {
@@ -312,6 +315,8 @@ page {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
   color: #ffffff;
   background: linear-gradient(135deg, #3a342c 0%, #61584e 100%);
 }

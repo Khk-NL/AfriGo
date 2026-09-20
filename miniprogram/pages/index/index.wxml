@@ -56,9 +56,7 @@
       </view>
 
       <view class="auth-status-row">
-        <text class="auth-status {{isLogin ? 'status-live' : 'status-off'}}">
-          {{isLogin ? uiText.loginStatus : uiText.guestStatus}}
-        </text>
+        <text class="auth-status {{isLogin ? 'status-live' : 'status-off'}}">{{isLogin ? uiText.loginStatus : uiText.guestStatus}}</text>
         <text wx:if="{{isAdmin}}" class="auth-admin-badge">{{uiText.adminBadge}}</text>
       </view>
 
