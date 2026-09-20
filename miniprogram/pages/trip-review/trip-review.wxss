@@ -17,7 +17,7 @@
 .expense-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; padding: 18rpx 0; border-bottom: 1rpx solid #f2ece2; }
 .expense-name, .expense-date { display: block; }
 .expense-name { color: #3c332a; font-size: 24rpx; }
-.expense-date { margin-top: 6rpx; color: #8a94a0; font-size: 20rpx; }
+.expense-date { margin-top: 6rpx; color: #8b8075; font-size: 20rpx; }
 .expense-actions { text-align: right; color: #4a4038; font-size: 23rpx; }
 .delete-link { display: block; margin-top: 8rpx; color: #b45364; font-size: 20rpx; }
 .rating-row { display: flex; justify-content: center; gap: 16rpx; margin-bottom: 16rpx; }

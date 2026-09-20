@@ -1,46 +1,49 @@
 <import src="../../templates/tabbar.wxml" />
 
-<view class="container">
-    <!-- Removed home-back-wrap as it's a tab bar page -->
+<view class="page-root">
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+    <view class="page-content message-content">
+      <view class="hero-card message-hero">
+        <text class="hero-eyebrow">NOTIFICATIONS</text>
+        <text class="hero-title">{{uiText.title}}</text>
+        <text class="hero-summary">{{uiText.subtitle}}</text>
+        <view wx:if="{{unreadCount > 0}}" class="unread-pill"><text>{{unreadCount}} 条未读</text></view>
+      </view>
 
-    <scroll-view class="page-scroll" scroll-y="true">
-        <view class="page-content">
-            <!-- Adjusted padding for top-fixed tab bar -->
-            <view class="message-header-padding"></view>
+      <view wx:if="{{!remindersEnabled}}" class="notice-hint">
+        <text>应用内未读提醒已关闭，消息内容仍会保留。</text>
+      </view>
 
-            <view class="header-block">
-                <text class="title">{{uiText.title}}</text>
-                <view class="sub-row">
-                    <text class="subtitle">{{uiText.subtitle}}</text>
-                </view>
-            </view>
-
-            <view class="notice-list">
-                <view wx:if="{{!remindersEnabled}}" class="empty-box"><text>应用内未读提醒已关闭，消息内容仍会保留。</text></view>
-                <view wx:if="{{isLoading}}" class="empty-box"><text>正在加载消息...</text></view>
-                <block wx:for="{{notices}}" wx:key="id">
-                    <view class="notice-card {{item.unread ? 'unread-style' : ''}}" bindtap="readNotice" data-id="{{item.id}}">
-                        <view class="card-tag" style="background: {{item.tagBg}};">{{item.type}}</view>
-
-                        <view class="notice-main">
-                            <view class="title-row">
-                                <text class="notice-title">{{item.title}}</text>
-                                <text class="notice-time">{{item.time}}</text>
-                            </view>
-                            <text class="notice-desc">{{item.content}}</text>
-                        </view>
-
-                        <view wx:if="{{item.unread && remindersEnabled}}" class="red-dot"></view>
-                    </view>
-                </block>
-            </view>
-
-            <view wx:if="{{notices.length === 0}}" class="empty-box">
-                <text>{{uiText.empty}}</text>
-            </view>
+      <view class="notice-list">
+        <view
+          wx:for="{{notices}}"
+          wx:key="id"
+          class="notice-card {{item.unread ? 'is-unread' : ''}}"
+          bindtap="readNotice"
+          data-id="{{item.id}}"
+        >
+          <view class="notice-top">
+            <text class="card-tag tag-{{item.tone}}">{{item.type}}</text>
+            <text class="notice-time">{{item.time}}</text>
+          </view>
+          <text class="notice-title">{{item.title}}</text>
+          <text class="notice-desc">{{item.content}}</text>
+          <view wx:if="{{item.unread && remindersEnabled}}" class="unread-dot"></view>
         </view>
-    </scroll-view>
+      </view>
 
+      <view wx:if="{{isLoading}}" class="section-card empty-state">
+        <text class="empty-title">正在加载消息…</text>
+      </view>
+
+      <view wx:elif="{{notices.length === 0}}" class="section-card empty-state">
+        <text class="empty-title">{{uiText.empty}}</text>
+        <text class="empty-desc">有新的安全预警或办事动态时，会出现在这里。</text>
+      </view>
+
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
 </view>
 
 <template is="tabbar" data="{{activeTab: 'message', tabTexts: uiText.tabLabels, tabIconImages: uiText.tabIconImages}}"/>

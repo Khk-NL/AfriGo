@@ -552,7 +552,7 @@
 .compose-textarea { color: #2a231c; font-size: 29rpx; }
 .upload-cell { border-radius: 20rpx; }
 .upload-cell-empty { background: #f1f3f1; border-color: #cfd7d1; }
-.upload-plus { color: #667b6f; }
+.upload-plus { color: #6b7a63; }
 .submit-btn { border-radius: 22rpx; background: #4d5b49; box-shadow: none; }
 .publish-btn { background: #4d5b49; box-shadow: none; }
 .publish-text { color: #647169; }

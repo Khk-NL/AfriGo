@@ -10,7 +10,7 @@
 .alert-card { margin-top: 16rpx; padding: 20rpx; border-left: 8rpx solid #d2a64a; border-radius: 18rpx; background: #fff9ed; }
 .severity-critical, .severity-high { border-left-color: #c54f61; background: #fff1f3; }
 .severity-medium { border-left-color: #d28c32; }
-.severity-low, .severity-info { border-left-color: #4f8ca3; background: #eef8fb; }
+.severity-low, .severity-info { border-left-color: #4f8ca3; background: #f2ece2; }
 .alert-head { display: flex; justify-content: space-between; gap: 14rpx; }
 .alert-title { color: #3c332a; font-size: 26rpx; font-weight: 800; }
 .alert-level { color: #9a5360; font-size: 20rpx; text-transform: uppercase; }

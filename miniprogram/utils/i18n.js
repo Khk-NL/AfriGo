@@ -379,106 +379,19 @@ const MESSAGE_TEXT = {
     title: '消息通知',
     subtitle: '实时获取当地预警与办事动态',
     unreadToast: '已标记为已读',
-    empty: '暂无新消息',
-    notices: [
-      {
-        id: 1,
-        type: '安全预警',
-        tagBg: '#ffeeee',
-        title: '内罗毕集会提醒',
-        content: '近期市中心区域可能有规模性活动，建议华人同胞减少不必要出行，注意人身安全。',
-        time: '10:25',
-        unread: true
-      },
-      {
-        id: 2,
-        type: '系统更新',
-        tagBg: '#eef9f2',
-        title: '斯瓦希里语库更新',
-        content: '我们新增了50条关于“当地集市贸易”的实用口语，快去实用词句板块看看吧！',
-        time: '昨天',
-        unread: true
-      },
-      {
-        id: 3,
-        type: '办事指南',
-        tagBg: '#eef2ff',
-        title: '签证续签政策变动',
-        content: '当地移民局发布最新通告，关于劳务签证续签流程有所简化，详情请查阅劳务合规模块。',
-        time: '3天前',
-        unread: false
-      }
-    ]
+    empty: '暂无新消息',
   },
   en: {
     title: 'Messages',
     subtitle: 'Get local alerts and service updates in real time',
     unreadToast: 'Marked as read',
-    empty: 'No new messages',
-    notices: [
-      {
-        id: 1,
-        type: 'Safety Alert',
-        tagBg: '#ffeeee',
-        title: 'Nairobi gathering reminder',
-        content: 'A large event may take place in the city center soon. We recommend minimizing non-essential travel and staying safe.',
-        time: '10:25',
-        unread: true
-      },
-      {
-        id: 2,
-        type: 'System Update',
-        tagBg: '#eef9f2',
-        title: 'Swahili phrase library updated',
-        content: 'We added 50 practical lines for local market trade. Check them in the useful phrases section!',
-        time: 'Yesterday',
-        unread: true
-      },
-      {
-        id: 3,
-        type: 'Service Guide',
-        tagBg: '#eef2ff',
-        title: 'Visa renewal policy changed',
-        content: 'The local immigration office has issued a new notice. Work visa renewal steps are simplified; see the labor compliance section for details.',
-        time: '3 days ago',
-        unread: false
-      }
-    ]
+    empty: 'No new messages',
   },
   fr: {
     title: 'Messages',
     subtitle: 'Recevez en temps réel les alertes locales et les mises à jour de services',
     unreadToast: 'Marqué comme lu',
-    empty: 'Aucun nouveau message',
-    notices: [
-      {
-        id: 1,
-        type: 'Alerte sécurité',
-        tagBg: '#ffeeee',
-        title: 'Rappel de rassemblement à Nairobi',
-        content: 'Un événement de grande ampleur pourrait avoir lieu bientôt au centre-ville. Réduisez les déplacements non essentiels et restez prudent.',
-        time: '10:25',
-        unread: true
-      },
-      {
-        id: 2,
-        type: 'Mise à jour système',
-        tagBg: '#eef9f2',
-        title: 'Bibliothèque de phrases swahilies mise à jour',
-        content: 'Nous avons ajouté 50 phrases pratiques sur le commerce au marché local. Allez voir la section des phrases utiles !',
-        time: 'Hier',
-        unread: true
-      },
-      {
-        id: 3,
-        type: 'Guide administratif',
-        tagBg: '#eef2ff',
-        title: 'Changement de la politique de renouvellement du visa',
-        content: 'L’immigration locale a publié un nouvel avis. Les étapes de renouvellement du visa travail sont simplifiées ; voir la section conformité travail pour plus de détails.',
-        time: 'Il y a 3 jours',
-        unread: false
-      }
-    ]
+    empty: 'Aucun nouveau message',
   }
 };
 
@@ -798,8 +711,7 @@ function buildMessageText(language) {
   return {
     ...base,
     tabLabels: buildTabTexts(locale),
-    tabIconImages: buildTabIconImages(),
-    notices: base.notices.map((item) => ({ ...item }))
+    tabIconImages: buildTabIconImages(),
   };
 }
 

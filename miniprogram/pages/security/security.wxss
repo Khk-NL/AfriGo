@@ -605,9 +605,9 @@
 .module-card + .module-card { margin-top: 16rpx; }
 .card-emoji { font-size: 38rpx; }
 .gauge-track { background: #e8ece9; }
-.gauge-cap { background: #70857a; box-shadow: none; }
+.gauge-cap { background: #6b7a63; box-shadow: none; }
 .gauge-progress { box-shadow: inset 0 0 0 12rpx rgba(255,255,255,.8); }
-.index-number { color: #5f7468; }
+.index-number { color: #55654f; }
 .sparkline-box { background: #f2ece2; box-shadow: none; }
 .sparkline-label { color: #6b776f; }
 .chip { background: #f2f3f2; box-shadow: none; }
@@ -618,6 +618,6 @@
 .quote-box { background: #f2f1ed; }
 .quote-mark { color: #8d806a; }
 .info-item { background: #f2f4f2; box-shadow: none; }
-.info-dot, .check-dot { background: #7a8e83; }
+.info-dot, .check-dot { background: #7d8a72; }
 .pulse { animation: none; }
 .emergency-btn { border-radius: 22rpx; background: #85666b; box-shadow: none; }

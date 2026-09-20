@@ -7,17 +7,16 @@ Page({
         activeTab: 'message',
         uiText: buildMessageText(getStoredLanguage()),
         notices: [],
+        unreadCount: 0,
         isLoading: false,
         remindersEnabled: wx.getStorageSync('inAppRemindersEnabled') !== false
     },
 
     applyLanguage(language) {
         const nextLanguage = normalizeLanguage(language);
-        const localeText = buildMessageText(nextLanguage);
         this.setData({
             language: nextLanguage,
-            uiText: localeText,
-            notices: localeText.notices
+            uiText: buildMessageText(nextLanguage)
         });
     },
 
@@ -33,18 +32,21 @@ Page({
 
     async refreshNotices() {
         if (!isLoggedIn(getStoredCurrentUser())) {
-            this.setData({ notices: [] });
+            this.setData({ notices: [], unreadCount: 0 });
             return;
         }
         this.setData({ isLoading: true });
         try {
             const notices = await loadNotifications();
+            const mapped = notices.map((item) => ({
+                ...item,
+                // 标签配色跟全站统一，不再用薄荷/靛蓝
+                tone: item.type === 'publish' ? 'sage' : 'sand',
+                time: item.createTime ? String(item.createTime).slice(0, 16).replace('T', ' ') : ''
+            }));
             this.setData({
-                notices: notices.map((item) => ({
-                    ...item,
-                    tagBg: item.type === 'publish' ? '#eef9f2' : '#eef2ff',
-                    time: item.createTime ? String(item.createTime).slice(0, 16).replace('T', ' ') : ''
-                }))
+                notices: mapped,
+                unreadCount: mapped.filter((item) => item.unread).length
             });
         } catch (error) {
             console.error('message: load notifications failed', error);
@@ -62,7 +64,7 @@ Page({
         try {
             await markNotificationRead(id);
             const notices = this.data.notices.map((item) => String(item.id) === String(id) ? { ...item, unread: false } : item);
-            this.setData({ notices });
+            this.setData({ notices, unreadCount: notices.filter((item) => item.unread).length });
             wx.showToast({ title: this.data.uiText.unreadToast, icon: 'none' });
         } catch (error) {
             wx.showToast({ title: '操作失败，请稍后重试', icon: 'none' });

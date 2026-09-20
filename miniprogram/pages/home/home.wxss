@@ -57,7 +57,7 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .landing-plan-eyebrow { color: #78847c; font-size: 17rpx; letter-spacing: 2rpx; }
 .landing-plan-title { margin-top: 8rpx; color: #2c3932; font-size: 29rpx; font-weight: 750; }
 .landing-plan-desc { margin-top: 7rpx; color: #717d75; font-size: 21rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.landing-plan-progress { width: 78rpx; height: 78rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #53695d; background: #fffdf8; border: 5rpx solid #a9b9af; font-size: 20rpx; font-weight: 700; }
+.landing-plan-progress { width: 78rpx; height: 78rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4d5b49; background: #fffdf8; border: 5rpx solid #a9b9af; font-size: 20rpx; font-weight: 700; }
 .service-list { overflow: hidden; border-radius: 24rpx; background: #fffdf8; border: 1rpx solid #e6dac7; }
 .service-row { display: grid; grid-template-columns: 48rpx 1fr 28rpx; align-items: center; gap: 14rpx; padding: 20rpx; }
 .service-row + .service-row { border-top: 1rpx solid #edf0ee; }

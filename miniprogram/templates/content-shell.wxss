@@ -215,7 +215,7 @@ page {
 .clear-icon {
   font-size: 40rpx;
   line-height: 1;
-  color: #c0c6cf;
+  color: #c6bbab;
   padding: 0 6rpx 0 16rpx;
 }
 

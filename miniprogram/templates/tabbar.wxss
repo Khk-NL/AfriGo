@@ -104,7 +104,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: none;
-    color: #4f6659;
+    color: #55654f;
 }
 .publish-btn {
     display: flex;

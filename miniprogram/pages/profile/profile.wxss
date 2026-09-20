@@ -118,7 +118,7 @@ page{
     display: block;
     margin-top: 12rpx;
     font-size: 23rpx;
-    color: #5b6473;
+    color: #5c5247;
 }
 
 .hero-note{
@@ -167,7 +167,7 @@ page{
 }
 
 .stat-emerald{
-    background: linear-gradient(135deg, #e8fbf3 0%, #f7fffb 100%);
+    background: linear-gradient(135deg, #eef2e9 0%, #f7fffb 100%);
 }
 
 .stat-sand{
@@ -175,7 +175,7 @@ page{
 }
 
 .stat-sky{
-    background: linear-gradient(135deg, #ebf5ff 0%, #f8fbff 100%);
+    background: linear-gradient(135deg, #f2ece2 0%, #f8fbff 100%);
 }
 
 .stat-rose{
@@ -232,7 +232,7 @@ page{
     margin-top: 8rpx;
     font-size: 22rpx;
     line-height: 1.6;
-    color: #8b93a1;
+    color: #8b8075;
 }
 
 .section-pill{
@@ -292,7 +292,7 @@ page{
 
 .service-arrow{
     font-size: 36rpx;
-    color: #b7c0cb;
+    color: #bdb2a4;
 }
 
 .empty-bookmarks{
@@ -307,7 +307,7 @@ page{
     height: 84rpx;
     margin: 0 auto;
     border-radius: 28rpx;
-    background: linear-gradient(135deg, #e7fbf2 0%, #fff4df 100%);
+    background: linear-gradient(135deg, #eef2e9 0%, #fff4df 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -374,7 +374,7 @@ page{
 
 .bookmark-date{
     font-size: 22rpx;
-    color: #8b93a1;
+    color: #8b8075;
 }
 
 .bookmark-remove{
@@ -448,7 +448,7 @@ page{ background: #f7f1e7; }
 .profile-hero{ padding: 28rpx 24rpx; }
 .hero-badge, .hero-date, .hero-status-pill{ color: #5f6f66; background: #f2ece2; }
 .avatar-shell{ border-radius: 24rpx; background: #f2ece2; box-shadow: none; }
-.avatar-fallback{ border-radius: 20rpx; background: #71877b; }
+.avatar-fallback{ border-radius: 20rpx; background: #6b7a63; }
 .hero-name, .section-title{ color: #2a231c; }
 .stat-card, .quick-item{ background: #f2ece2; border: 1rpx solid #e2e6e3; }
 .stat-emerald, .stat-sand, .stat-sky, .stat-rose, .stat-gold,

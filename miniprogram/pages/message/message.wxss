@@ -1,87 +1,117 @@
 /* miniprogram/pages/message/message.wxss */
-@import "../../templates/tabbar.wxss"; /* Import the common tabbar styles */
+@import "../../templates/content-shell.wxss";
+@import "../../templates/tabbar.wxss";
 
-.container {
-    /* Ensure the container takes full height and has background */
-    min-height: 100vh;
-    background-color: #f8f8f8;
+.page-root {
+  background: #f7f1e7;
 }
 
-.message-header-padding {
-    /* This class will push down the content below the fixed tab bar */
-    height: 70px; /* Adjust based on tabbar height (50px) + safe area inset + potential shadow */
+/* tab 页：底部给固定 tabbar 留位置 */
+.message-content {
+  padding: calc(var(--safe-top) + 28rpx) 24rpx calc(env(safe-area-inset-bottom) + 200rpx);
 }
 
-.page-content {
-    padding-bottom: 20px; /* Add some bottom padding for overall content */
+.message-hero {
+  border-left: 6rpx solid #b4552f;
+}
+
+.unread-pill {
+  display: inline-block;
+  margin-top: 18rpx;
+  padding: 8rpx 22rpx;
+  border-radius: 999rpx;
+  background: #f6ece5;
+  color: #8c3f22;
+  font-size: 22rpx;
+}
+
+.notice-hint {
+  margin-top: 18rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  background: #f2ece2;
+  color: #7b6f62;
+  font-size: 23rpx;
+  line-height: 1.5;
 }
 
 .notice-list {
-    padding: 0 10rpx;
+  margin-top: 8rpx;
 }
 
 .notice-card {
-    background: #fffdf8;
-    border-radius: 28rpx;
-    padding: 30rpx;
-    margin-bottom: 30rpx;
-    position: relative;
-    box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.03);
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  margin-top: 18rpx;
+  padding: 26rpx 26rpx 24rpx;
+  border-radius: 24rpx;
+  background: #fffdf8;
+  border: 1rpx solid #e6dac7;
+  box-shadow: 0 10rpx 24rpx rgba(90, 60, 30, .07);
 }
 
-.unread-style {
-    background: #fdfdfd;
-    border-left: 8rpx solid #58c796;
+/* 未读：左侧一道陶土色书脊 + 极淡暖底，比原来的薄荷绿更贴全站 */
+.notice-card.is-unread {
+  background: #fffaf2;
+  border-left: 8rpx solid #b4552f;
+}
+
+.notice-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 14rpx;
 }
 
 .card-tag {
-    display: inline-block;
-    padding: 4rpx 16rpx;
-    border-radius: 8rpx;
-    font-size: 22rpx;
-    color: #666;
-    width: fit-content;
-    margin-bottom: 20rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 21rpx;
+  line-height: 1.4;
 }
 
-.title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12rpx;
+.tag-sage {
+  background: #e4ebe0;
+  color: #3f5a44;
 }
 
-.notice-title {
-    font-size: 32rpx;
-    font-weight: bold;
-    color: #333;
+.tag-sand {
+  background: #f2e7d5;
+  color: #8c5a2b;
+}
+
+.tag-clay {
+  background: #f6e3d9;
+  color: #8c3f22;
 }
 
 .notice-time {
-    font-size: 24rpx;
-    color: #bbb;
+  font-size: 22rpx;
+  color: #948779;
+}
+
+.notice-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 800;
+  letter-spacing: -0.3rpx;
+  color: #2a231c;
 }
 
 .notice-desc {
-    font-size: 28rpx;
-    color: #777;
-    line-height: 1.6;
+  display: block;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #5c5247;
 }
 
-.red-dot {
-    position: absolute;
-    top: 30rpx;
-    right: 30rpx;
-    width: 14rpx;
-    height: 14rpx;
-    background: #ff5252;
-    border-radius: 50%;
-}
-
-.empty-box {
-    text-align: center;
-    padding-top: 200rpx;
-    color: #999;
+.unread-dot {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #b4552f;
 }

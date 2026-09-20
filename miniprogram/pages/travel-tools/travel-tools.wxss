@@ -3,8 +3,8 @@
 .tool-hero { background: #f2ece2; }
 .tool-section-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; margin-top: 20rpx; }
 .tool-section-pill { min-width: 0; padding: 16rpx; border-radius: 18rpx; display: flex; align-items: center; justify-content: center; gap: 8rpx; color: #657069; background: #fffdf8; border: 1rpx solid #e6dac7; font-size: 21rpx; }
-.tool-section-pill.active { color: #33483d; background: #e7ede9; border-color: #c9d5cd; }
-.show-all-link { margin-top: 14rpx; text-align: center; color: #61766a; font-size: 21rpx; }
+.tool-section-pill.active { color: #3a463a; background: #e7ede9; border-color: #c9d5cd; }
+.show-all-link { margin-top: 14rpx; text-align: center; color: #55654f; font-size: 21rpx; }
 .place-card { padding: 20rpx; border-radius: 20rpx; background: #f7faf8; border: 1rpx solid #dcebe2; }
 .place-name,
 .place-address { display: block; }
@@ -27,7 +27,7 @@
 .offline-status,
 .offline-time { display: block; }
 .offline-status { color: #3c332a; font-size: 27rpx; font-weight: 700; }
-.offline-time { margin-top: 8rpx; color: #7a8491; font-size: 20rpx; word-break: break-all; }
+.offline-time { margin-top: 8rpx; color: #7b6f62; font-size: 20rpx; word-break: break-all; }
 .mini-button { margin: 0; padding: 0 20rpx; border-radius: 999rpx; color: #fff; background: #5f7f70; font-size: 22rpx; }
 .language-row { display: flex; align-items: center; justify-content: center; gap: 18rpx; }
 .language-picker { min-width: 200rpx; padding: 16rpx; text-align: center; border-radius: 18rpx; color: #5c5247; background: #f4f1f9; font-size: 24rpx; }
@@ -36,7 +36,7 @@
 .translate-button { margin-top: 16rpx; color: #fff; background: #4d5b49; border-radius: 20rpx; font-size: 25rpx; }
 .translation-result { margin-top: 16rpx; padding: 22rpx; border-radius: 20rpx; color: #3c332a; background: #f2ece2; font-size: 27rpx; line-height: 1.6; }
 .copy-tip { display: block; margin-top: 12rpx; color: #748078; font-size: 20rpx; }
-.phrase-link { margin-top: 18rpx; text-align: center; color: #5b7064; font-size: 23rpx; }
+.phrase-link { margin-top: 18rpx; text-align: center; color: #55654f; font-size: 23rpx; }
 .risk-alert { margin-top: 14rpx; padding: 18rpx; border-left: 7rpx solid #d49a3c; border-radius: 18rpx; background: #fff8ea; }
 .risk-alert.severity-critical, .risk-alert.severity-high { border-left-color: #c95365; background: #fff0f3; }
 .risk-title, .risk-summary, .risk-source { display: block; }
