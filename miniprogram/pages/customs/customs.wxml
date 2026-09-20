@@ -1,9 +1,7 @@
 <view class="customs-page">
   <view class="bg-watermark" aria-hidden="true">
-    <svg class="watermark-svg" viewBox="0 0 240 240">
-      <path d="M38 18 L78 14 L110 34 L146 30 L184 46 L206 84 L186 114 L198 142 L172 178 L132 206 L96 198 L76 170 L48 162 L34 130 L20 94 L30 62 Z" fill="none" stroke="#2D2D2D" stroke-width="2"></path>
-      <path d="M56 64 L94 54 L132 68 L158 96 L146 130 L116 152 L84 144 L62 116 Z" fill="none" stroke="#2D2D2D" stroke-width="1.5"></path>
-    </svg>
+    <!-- WXML 不支持 svg 标签，图形放在 wxss 里做背景图 -->
+    <view class="watermark-svg"></view>
   </view>
 
   <scroll-view class="customs-scroll" scroll-y="true" show-scrollbar="false">

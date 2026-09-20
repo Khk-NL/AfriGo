@@ -34,6 +34,10 @@
 .watermark-svg {
   width: 100%;
   height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIj48cGF0aCBkPSJNMzggMTggTDc4IDE0IEwxMTAgMzQgTDE0NiAzMCBMMTg0IDQ2IEwyMDYgODQgTDE4NiAxMTQgTDE5OCAxNDIgTDE3MiAxNzggTDEzMiAyMDYgTDk2IDE5OCBMNzYgMTcwIEw0OCAxNjIgTDM0IDEzMCBMMjAgOTQgTDMwIDYyIFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJEMkQyRCIgc3Ryb2tlLXdpZHRoPSIyIj48L3BhdGg+PHBhdGggZD0iTTU2IDY0IEw5NCA1NCBMMTMyIDY4IEwxNTggOTYgTDE0NiAxMzAgTDExNiAxNTIgTDg0IDE0NCBMNjIgMTE2IFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJEMkQyRCIgc3Ryb2tlLXdpZHRoPSIxLjUiPjwvcGF0aD48L3N2Zz4=");
 }
 
 .customs-scroll {

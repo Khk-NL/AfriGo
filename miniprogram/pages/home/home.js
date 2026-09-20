@@ -1,5 +1,5 @@
 import { createPost, loadCollectionWithFallback, loadRiskAlerts } from '../../utils/cloud-service.js';
-import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
+import { buildHomeText, getStoredLanguage, normalizeLanguage } from '../../utils/i18n.js';
 import { getSelectedDestination } from '../../utils/countries.js';
 import { ICON_IMAGES } from '../../config/icons.js';
 

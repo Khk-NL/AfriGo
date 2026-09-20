@@ -1,0 +1,57 @@
+# 更新日志
+
+记录 AfriGo（非行智航）值得对外说明的变更。日期为提交日期，条目按主题归并，不逐条对应 commit。
+
+## 2026-09-21
+
+### 新增：小象桌宠
+
+- 小象从「首页角落点两次才出来」改成**常驻悬浮的桌宠**，出现在 14 个页面（首页、社区、消息、我的，以及景点、推荐、旅中工具、当地资讯、安全、行前计划、常用语、风俗、劳务、服务）。
+- 交互：点一下**就地弹出对话卡片**（不跳页）；拖动后松手吸附屏幕边缘并记住位置；长按弹出菜单（全屏聊天 / 回到默认位置 / 暂时收起）；闲置时冒一句气泡提示。
+- 全屏页 `pages/chat/chat` 与桌宠共用同一份文案与聊天记录（`utils/elephant-chat.js`），并显示当前参考的国家资料。
+
+### 新增：AI 接入本国资料
+
+- `POST /api/chat` 支持 `countryCode`：服务端把该国的签证、治安、紧急电话、健康、风俗、劳务、官方入口，以及**正在生效的风险提醒**压成要点，注入系统提示词（`backend/src/chat/travel-context.js`）。
+- 资料来自本库已有的 `country_guides` 与 `risk_alerts`，不引入外部知识库、不产生额外费用。
+- 资料缺失时照常回答，但会明确告诉模型「没有该国数据」，不会编造电话、地址、政策或价格。
+- 系统提示词重写为「非洲象 · 旅行小助手」（`backend/src/chat/persona.js`）：先给结论、默认 200 字内、不使用 Markdown 排版、遇签证/安全/医疗/法律先提示以官方为准、紧急情况先给当下动作。可用 `AI_SYSTEM_PROMPT` 整体覆盖。
+
+### 修复
+
+- 桌宠面板的「收起」按钮和蒙层绑定了不存在的方法 `onClosePanel`（实际叫 `closePanel`），点击无响应；「全屏」因此成为唯一能让面板消失的按钮，看起来像在干收起的活。已改为「先跳转、成功后再收起」，跳转失败会给出提示。
+- 聊天页的小象画布被裁切：画布 64px 而内容按 160px 绘制，现按尺寸正确缩放。
+- 拖动桌宠时页面会跟着滑动：定位改用 `transform: translate3d()`，拖动开始时主动 `stopPullDownRefresh()`，并去掉首页 `scroll-view` 的 `enhanced` 模式（增强滚动走原生实现，`catchtouchmove` 拦不住）。
+- 面板打开时小象会压住面板顶部按钮，现停在卡片上方。
+- `pages/customs/customs` 用了 WXML 不支持的 `<svg>` / `<path>` 标签，水印一直没渲染；改为 WXSS 背景图（base64 data URI）。
+- `components/navigation-bar` 的「返回首页」按钮绑定了不存在的 `home()` 方法，已补上实现。
+- 首页遗留的未使用 import 已清理。
+
+### 部署
+
+- 国家资料工作簿支持 `GUIDE_WORKBOOK_PATH`，可放在代码目录之外，避免被带 `--delete` 的代码同步删除。
+- `deploy.sh`：`rsync` 增加 `protect *.xlsx`；找不到工作簿时只警告并跳过 `import-excel`，不再让整个部署中断在 4/9。
+
+### 工程
+
+- 新增小程序结构自检 `miniprogram/scripts/check-integrity.cjs`，`cd miniprogram && npm test` 运行：校验 json 可解析、`usingComponents` 指向的组件存在、WXML 自定义标签已声明、事件处理函数存在、已删除标识符无残留；另外提示未使用的 import 与无人引用的依赖。
+- 后端 `node --test` 共 22 个测试通过（含旅行上下文注入、工作簿路径解析）。
+
+## 2026-09-20
+
+### 新增
+
+- 一键部署脚本 `backend/deploy/aliyun/deploy.sh`（Ubuntu + systemd + Caddy + 容器化 MySQL，幂等可重复执行），配套 Caddy 站点模板、systemd 单元、RAM 授权策略与部署说明。
+- 生产 API 域名 `afrigo-api.allezafrique.cn` 接入 Caddy，腾讯云地图 Provider。
+- `/api/health` 返回服务标识、版本、运行环境与当前地图 Provider，便于确认线上跑的是哪份代码，且不泄露任何凭据。
+- 个人中心支持自助更换头像与昵称（微信原生 `chooseAvatar` + `<input type="nickname">`）。
+
+### 修复
+
+- OSS 改为可选依赖：缺凭据时只在启动时告警、按请求返回 503，不再阻塞整个服务启动（轻量应用服务器没有实例 RAM 角色，必须用 RAM 用户 AccessKey）。
+- 开发环境请求地址改为回退到线上 API，修复 `ERR_CONNECTION_REFUSED 127.0.0.1:3001`。
+- 修复微信登录（`getUserProfile` 不再下发真实头像昵称且对 `desc` 有长度要求，登录不再依赖它）、欢迎页返回、登录按钮与页脚重叠、各页面状态栏遮挡、首页主视觉改用欢迎页封面图。
+
+### 变更
+
+- 仓库结构调整为 `miniprogram/`（小程序）+ `backend/`（服务端），并从 `01/` 整体迁移到仓库根目录。

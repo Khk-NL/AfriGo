@@ -100,6 +100,13 @@ Component({
         })
       }
       this.triggerEvent('back', { delta: data.delta }, {})
+    },
+    home() {
+      // wxml 里的「返回首页」按钮绑的是这个方法；以前没有实现，点了没反应。
+      wx.reLaunch({
+        url: '/pages/index/index'
+      })
+      this.triggerEvent('home', {}, {})
     }
   },
 })
