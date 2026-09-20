@@ -10,7 +10,7 @@
 .hero-section {
   position: relative;
   overflow: hidden;
-  padding: calc(env(safe-area-inset-top) + 18rpx) 24rpx 34rpx;
+  padding: calc(var(--safe-top) + 18rpx) 24rpx 34rpx;
   min-height: 300rpx;
   background: transparent;
 }
@@ -18,7 +18,7 @@
 .page-back-btn {
   position: absolute;
   left: 24rpx;
-  top: calc(env(safe-area-inset-top) + 50rpx);
+  top: calc(var(--safe-top) + 50rpx);
   z-index: 30;
   width: 62rpx;
   height: 62rpx;
@@ -596,10 +596,10 @@
 
 /* 9:16 mobile minimal theme */
 .security-page { background: #f4f5f3; color: #27332d; }
-.hero-section { min-height: 150rpx; padding: calc(env(safe-area-inset-top) + 18rpx) 24rpx 18rpx; }
-.page-back-btn { top: calc(env(safe-area-inset-top) + 18rpx); border: 1rpx solid #dfe4e0; box-shadow: none; }
+.hero-section { min-height: 150rpx; padding: calc(var(--safe-top) + 18rpx) 24rpx 18rpx; }
+.page-back-btn { top: calc(var(--safe-top) + 18rpx); border: 1rpx solid #dfe4e0; box-shadow: none; }
 .page-back-icon { width: auto; height: auto; margin: 0; border: none; transform: none; color: #536158; font-size: 28rpx; }
-.risk-badge { left: 104rpx; top: calc(env(safe-area-inset-top) + 24rpx); bottom: auto; color: #536158; background: #fff; border: 1rpx solid #dfe4e0; box-shadow: none; backdrop-filter: none; }
+.risk-badge { left: 104rpx; top: calc(var(--safe-top) + 24rpx); bottom: auto; color: #536158; background: #fff; border: 1rpx solid #dfe4e0; box-shadow: none; backdrop-filter: none; }
 .modules-grid { display: block; margin-top: 0; padding: 8rpx 24rpx calc(env(safe-area-inset-bottom) + 220rpx); }
 .module-card { padding: 24rpx; border-radius: 24rpx; background: #fff; border: 1rpx solid #e1e5e2; box-shadow: none; }
 .module-card + .module-card { margin-top: 16rpx; }

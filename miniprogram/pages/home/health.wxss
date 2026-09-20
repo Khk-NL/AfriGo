@@ -22,7 +22,7 @@ page {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  padding-top: calc(env(safe-area-inset-top) + 80px);
+  padding-top: calc(var(--safe-top) + 80px);
   background: linear-gradient(140deg, #F0F7F4 0%, #F6FBF8 46%, #FFFDF2 100%);
   background-size: 180% 180%;
   animation: dawnFlow 12s ease-in-out infinite;
@@ -70,7 +70,7 @@ page {
 .nav-back-wrap {
   position: fixed;
   left: 24rpx;
-  top: calc(env(safe-area-inset-top) + 18rpx);
+  top: calc(var(--safe-top) + 18rpx);
   z-index: 9999;
   width: 64rpx;
   height: 64rpx;
@@ -148,7 +148,7 @@ page {
 .content-scroll {
   position: relative;
   z-index: 1;
-  height: calc(100vh - env(safe-area-inset-top) - 80px - 164rpx);
+  height: calc(100vh - var(--safe-top) - 80px - 164rpx);
 }
 
 .content-wrap {
@@ -472,7 +472,7 @@ page,
 
 .health-page {
   animation: none;
-  padding-top: calc(env(safe-area-inset-top) + 80rpx);
+  padding-top: calc(var(--safe-top) + 80rpx);
 }
 
 .aurora-layer,
@@ -511,7 +511,7 @@ page,
 }
 
 .content-scroll {
-  height: calc(100vh - env(safe-area-inset-top) - 144rpx);
+  height: calc(100vh - var(--safe-top) - 144rpx);
 }
 
 .floating-card,

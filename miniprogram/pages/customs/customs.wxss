@@ -44,7 +44,7 @@
 
 .hero-section {
   background: linear-gradient(180deg, #F0E5D8 0%, #FAF7F2 100%);
-  padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx 28rpx;
+  padding: calc(var(--safe-top) + 24rpx) 24rpx 28rpx;
 }
 
 .back-btn {

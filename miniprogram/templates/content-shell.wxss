@@ -19,13 +19,13 @@ page {
 .page-content {
   box-sizing: border-box;
   width: 100%;
-  padding: calc(env(safe-area-inset-top) + 98rpx) 24rpx calc(env(safe-area-inset-bottom) + 48rpx);
+  padding: calc(var(--safe-top) + 98rpx) 24rpx calc(env(safe-area-inset-bottom) + 48rpx);
 }
 
 .page-back-btn {
   position: absolute;
   left: 24rpx;
-  top: calc(env(safe-area-inset-top) + 24rpx);
+  top: calc(var(--safe-top) + 24rpx);
   z-index: 20;
   min-width: 150rpx;
   height: 64rpx;

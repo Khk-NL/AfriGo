@@ -3,8 +3,8 @@
 page { background: #f4f5f3; color: #24302a; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
 .page-root { min-height: 100vh; background: #f4f5f3; overflow: hidden; }
 .page-scroll { height: 100vh; }
-.page-content { box-sizing: border-box; width: 100%; padding: calc(env(safe-area-inset-top) + 112rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
-.home-topbar { position: fixed; z-index: 100; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top) + 92rpx); padding: calc(env(safe-area-inset-top) + 14rpx) 24rpx 12rpx; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; background: rgba(244, 245, 243, 0.94); backdrop-filter: blur(12px); }
+.page-content { box-sizing: border-box; width: 100%; padding: calc(var(--safe-top) + 112rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
+.home-topbar { position: fixed; z-index: 100; top: 0; left: 0; right: 0; height: calc(var(--safe-top) + 92rpx); padding: calc(var(--safe-top) + 14rpx) 24rpx 12rpx; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; background: rgba(244, 245, 243, 0.94); backdrop-filter: blur(12px); }
 .home-back-wrap { width: 64rpx; height: 64rpx; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; background: #fff; border: 1rpx solid #dde2de; }
 .home-back-icon { color: #46534c; font-size: 32rpx; }
 .destination-pill { display: flex; align-items: center; gap: 8rpx; padding: 12rpx 18rpx; border-radius: 999rpx; background: #fff; border: 1rpx solid #dde2de; color: #526058; font-size: 22rpx; }

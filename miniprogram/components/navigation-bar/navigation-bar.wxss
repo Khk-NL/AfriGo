@@ -17,12 +17,12 @@
   position: relative;
   top: 0;
   left: 0;
-  height: calc(var(--height) + env(safe-area-inset-top));
+  height: calc(var(--height) + var(--safe-top));
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding-top: env(safe-area-inset-top);
+  padding-top: var(--safe-top);
   width: 100%;
   box-sizing: border-box;
 }

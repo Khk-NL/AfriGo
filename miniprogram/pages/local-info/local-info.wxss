@@ -247,7 +247,7 @@ page,
 }
 
 .news-content {
-  padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx 48rpx;
+  padding: calc(var(--safe-top) + 24rpx) 24rpx 48rpx;
 }
 
 .back-fab {

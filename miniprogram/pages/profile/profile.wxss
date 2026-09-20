@@ -585,7 +585,7 @@ page {
 
 /* 9:16 mobile minimal theme */
 page { background: #f4f5f3; }
-.profile-content { padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
+.profile-content { padding: calc(var(--safe-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
 .profile-hero, .section-card { border-radius: 24rpx; background: #fff; border: 1rpx solid #e1e5e2; box-shadow: none; }
 .profile-hero { padding: 28rpx 24rpx; }
 .hero-badge, .hero-date, .hero-status-pill { color: #5f6f66; background: #eef1ef; }

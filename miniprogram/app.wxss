@@ -3,6 +3,13 @@ page {
   background-color: #f4f5f3;
   color: #27332d;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 顶部安全区统一变量。
+     env(safe-area-inset-top) 只在 iOS 刘海屏有值，Android 与开发者工具模拟器恒为 0，
+     直接用它会让自定义导航栏被状态栏（时间、电量）压住。
+     这里用 max() 兜一个 24px 下限：iOS 取真实刘海高度，其他机型至少留出状态栏高度。
+     各页面统一写 calc(var(--safe-top) + X)。 */
+  --safe-top: max(env(safe-area-inset-top), 24px);
 }
 
 .container {

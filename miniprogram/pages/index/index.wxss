@@ -23,7 +23,7 @@ page {
 .lang-toggle {
   position: absolute;
   /* 跟随状态栏/刘海高度，避免被时间、电量等系统信息压住 */
-  top: calc(env(safe-area-inset-top) + 10px);
+  top: calc(var(--safe-top) + 10px);
   left: 20px;
   width: 44px;
   height: 44px;
@@ -85,7 +85,7 @@ page {
   justify-content: flex-start;
   align-items: center;
   min-height: 0;
-  padding-top: calc(env(safe-area-inset-top) + 7vh);
+  padding-top: calc(var(--safe-top) + 7vh);
   box-sizing: border-box;
 }
 
@@ -590,7 +590,7 @@ page {
 /* 9:16 mobile minimal theme */
 page, .page-root { background: #f4f5f3; }
 .page-root { padding-left: 18px; padding-right: 18px; }
-.top-main { width: 100%; max-width: none; padding-top: calc(env(safe-area-inset-top) + 5vh); }
+.top-main { width: 100%; max-width: none; padding-top: calc(var(--safe-top) + 5vh); }
 .header-section { margin-bottom: 20px; }
 .square-card { border-radius: 22px; background: #dfe3df; }
 .auth-card { border-radius: 18px; background: #fff; border-color: #e1e5e2; box-shadow: none; }

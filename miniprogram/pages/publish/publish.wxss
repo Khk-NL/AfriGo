@@ -250,7 +250,7 @@
 }
 
 .publish-shell {
-    padding: calc(env(safe-area-inset-top) + 26rpx) 28rpx calc(env(safe-area-inset-bottom) + 220rpx);
+    padding: calc(var(--safe-top) + 26rpx) 28rpx calc(env(safe-area-inset-bottom) + 220rpx);
     box-sizing: border-box;
 }
 
@@ -541,7 +541,7 @@
 /* 9:16 mobile minimal theme */
 .publish-page { background: #f4f5f3; }
 .sunset-flow, .ambient, .light-ray { display: none; }
-.publish-shell { padding: calc(env(safe-area-inset-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
+.publish-shell { padding: calc(var(--safe-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
 .top-nav-caption { color: #758078; }
 .top-nav-title { color: #27332d; font-size: 46rpx; }
 .top-nav-subtitle { color: #6f7a73; }
