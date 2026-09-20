@@ -2,13 +2,15 @@
 
 .pet-body {
   position: fixed;
+  left: 0;
+  top: 0;
   z-index: 9400;
-  transition: transform .18s ease;
-  will-change: left, top;
+  /* 位置用 transform 而不是 left/top：拖动时只走合成层，不触发布局，页面也不会跟着抖 */
+  will-change: transform;
+  transition: transform .2s ease;
 }
 
 .pet-body.dragging {
-  transform: scale(1.08);
   transition: none;
 }
 

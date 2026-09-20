@@ -23,6 +23,7 @@ export const ELEPHANT_CHAT_TEXT = {
     goLogin: '去登录',
     failed: '小象没听清，请再说一次',
     expand: '全屏',
+    expandFailed: '打不开全屏页，请重试',
     close: '收起',
     quick: ['去肯尼亚要注意什么？', '内罗毕哪些区域更安全？', '帮我列一份行前清单', '斯瓦希里语怎么道谢？']
   },
@@ -39,6 +40,7 @@ export const ELEPHANT_CHAT_TEXT = {
     goLogin: 'Sign in',
     failed: 'The elephant did not catch that, please retry',
     expand: 'Full screen',
+    expandFailed: 'Cannot open the full-screen page, please retry',
     close: 'Hide',
     quick: ['What should I know before Kenya?', 'Which areas of Nairobi are safer?', 'Draft a pre-trip checklist', 'How do I say thank you in Swahili?']
   },
@@ -55,6 +57,7 @@ export const ELEPHANT_CHAT_TEXT = {
     goLogin: 'Se connecter',
     failed: 'L’éléphant n’a pas compris, réessayez',
     expand: 'Plein écran',
+    expandFailed: 'Impossible d’ouvrir le plein écran, réessayez',
     close: 'Réduire',
     quick: ['Que savoir avant le Kenya ?', 'Quels quartiers de Nairobi sont plus sûrs ?', 'Prépare une liste avant départ', 'Comment dire merci en swahili ?']
   }

@@ -271,6 +271,7 @@ Component({
         top: this.data.y
       };
       this.dragMoved = false;
+      this.dragNotified = false;
       this.hideBubble();
     },
 
@@ -286,6 +287,11 @@ Component({
         return;
       }
       this.dragMoved = true;
+      // 下拉刷新是原生的，catchtouchmove 拦不住；拖动时主动取消，避免页面跟着上下动
+      if (!this.dragNotified) {
+        this.dragNotified = true;
+        wx.stopPullDownRefresh({ fail: () => {} });
+      }
       const metrics = this.metrics;
       const size = this.data.size;
       const maxX = Math.max(0, metrics.windowWidth - size);
@@ -381,6 +387,9 @@ Component({
     },
 
     openPanel() {
+      if (this.data.panelOpen) {
+        return;
+      }
       const metrics = this.metrics;
       this.savedY = this.data.y;
       this.hideBubble();
@@ -394,11 +403,13 @@ Component({
         metrics.statusBarHeight,
         metrics.windowHeight - this.data.panelHeight - metrics.safeAreaBottom
       );
+      // 停在卡片上方而不是压住卡片：小象在面板之上，压住顶部按钮会让它们点不动。
       this.setData({
         panelOpen: true,
         messages,
         isLogin: isLoggedIn(getStoredCurrentUser()),
-        y: Math.max(metrics.statusBarHeight, panelTop - this.data.size + Math.round(rpxToPx(16, metrics.windowWidth)))
+        x: Math.min(this.data.x, Math.max(0, metrics.windowWidth - this.data.size)),
+        y: Math.max(metrics.statusBarHeight, panelTop - this.data.size - Math.round(rpxToPx(6, metrics.windowWidth)))
       });
       this.setPetState(messages.length ? 'idle' : 'happy');
       if (this.stateTimer) {
@@ -460,8 +471,15 @@ Component({
     },
 
     onExpand() {
-      this.closePanel();
-      wx.navigateTo({ url: '/pages/chat/chat' });
+      // 先确认能跳过去，再收起面板；跳转失败就把面板留着，免得用户点了没反应又没反馈。
+      wx.navigateTo({
+        url: '/pages/chat/chat',
+        success: () => this.closePanel(),
+        fail: (error) => {
+          console.error('elephant: 打开全屏聊天失败', error);
+          wx.showToast({ title: this.data.text.expandFailed, icon: 'none' });
+        }
+      });
     },
 
     scrollToBottom() {

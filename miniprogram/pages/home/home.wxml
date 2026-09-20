@@ -4,7 +4,7 @@
     <view class="destination-pill"><text>📍</text><text>{{currentCountryZh}}</text></view>
   </view>
 
-  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false" enhanced="true"
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false"
     refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-content">
       <view class="sync-line">

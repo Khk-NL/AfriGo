@@ -1,11 +1,10 @@
 <!-- 桌宠：面板在下、小象在上，于是小象看起来"坐在"聊天卡片上 -->
-<view wx:if="{{panelOpen}}" class="pet-layer" catchtouchmove="noop">
-  <view class="pet-mask" bindtap="onClosePanel"></view>
+<view wx:if="{{panelOpen}}" class="pet-layer">
+  <view class="pet-mask" bindtap="closePanel" catchtouchmove="noop"></view>
   <view
     class="pet-panel"
     style="height:{{panelHeight}}px;padding-bottom:{{bottomInset}}px;"
     catchtap="onPanelTap"
-    catchtouchmove="noop"
   >
     <view class="panel-head">
       <view class="panel-head-text">
@@ -15,7 +14,7 @@
       <view class="panel-actions">
         <view class="panel-action" bindtap="onExpand"><text>{{text.expand}}</text></view>
         <view class="panel-action" bindtap="onClear"><text>{{text.clear}}</text></view>
-        <view class="panel-action" bindtap="onClosePanel"><text>{{text.close}}</text></view>
+        <view class="panel-action" bindtap="closePanel"><text>{{text.close}}</text></view>
       </view>
     </view>
 
@@ -80,7 +79,7 @@
 
   <view
     class="pet-body {{dragging ? 'dragging' : ''}}"
-    style="left:{{x}}px;top:{{y}}px;width:{{size}}px;height:{{size}}px;"
+    style="transform:translate3d({{x}}px, {{y}}px, 0) scale({{dragging ? 1.08 : 1}});width:{{size}}px;height:{{size}}px;"
     catchtouchstart="onTouchStart"
     catchtouchmove="onTouchMove"
     catchtouchend="onTouchEnd"
