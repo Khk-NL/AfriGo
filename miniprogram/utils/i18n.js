@@ -183,7 +183,7 @@ const PROFILE_TEXT = {
     supportLocalInfoTitle: '本地资讯',
     supportLocalInfoDesc: '城市速览',
     loggedInNote: '你的微信身份、收藏夹和旅途服务都已经汇总到这张随身面板里。',
-    guestStatus: '当前未登录，请前往欢迎页完成微信登录。',
+    guestStatus: '当前未登录，点击下方按钮即可微信登录。',
     adminEntrance: '管理员入口',
     adminEntranceDesc: '仅管理员可进入增删改后台。',
     quickActions: {
@@ -234,7 +234,7 @@ const PROFILE_TEXT = {
     supportLocalInfoTitle: 'Local Info',
     supportLocalInfoDesc: 'City snapshot',
     loggedInNote: 'Your WeChat identity, bookmarks, and travel services are all gathered into this portable panel.',
-    guestStatus: 'You are not signed in yet. Please log in from the welcome page.',
+    guestStatus: 'Not signed in yet. Tap the button below to sign in with WeChat.',
     adminEntrance: 'Admin portal',
     adminEntranceDesc: 'Only admins can enter the create / update / delete console.',
     quickActions: {
@@ -285,7 +285,7 @@ const PROFILE_TEXT = {
     supportLocalInfoTitle: 'Infos locales',
     supportLocalInfoDesc: 'Aperçu urbain',
     loggedInNote: 'Votre identité WeChat, vos favoris et vos services de voyage sont regroupés dans ce panneau portable.',
-    guestStatus: 'Vous n’êtes pas encore connecté. Veuillez vous connecter depuis la page d’accueil.',
+    guestStatus: 'Pas encore connecté. Touchez le bouton ci-dessous pour vous connecter.',
     adminEntrance: 'Accès administrateur',
     adminEntranceDesc: 'Seuls les administrateurs peuvent ouvrir la console de création / modification / suppression.',
     quickActions: {

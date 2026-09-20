@@ -9,11 +9,13 @@ page { background: #f4f5f3; color: #24302a; font-family: -apple-system, BlinkMac
 .home-back-icon { color: #46534c; font-size: 32rpx; }
 .destination-pill { display: flex; align-items: center; gap: 8rpx; padding: 12rpx 18rpx; border-radius: 999rpx; background: #fff; border: 1rpx solid #dde2de; color: #526058; font-size: 22rpx; }
 
-.ai-hero-container { position: relative; width: 100%; height: 332rpx; overflow: hidden; border-radius: 28rpx; background: #e8ece8; border: 1rpx solid #dce2dd; }
-.hero-text-area { position: relative; z-index: 3; width: 58%; padding: 42rpx 0 0 30rpx; box-sizing: border-box; }
-.hero-kicker { display: block; color: #748278; font-size: 18rpx; letter-spacing: 3rpx; }
-.hero-title { display: block; margin-top: 16rpx; color: #223129; font-size: 42rpx; line-height: 1.22; font-weight: 750; }
-.hero-subtitle { display: block; margin-top: 12rpx; color: #69756d; font-size: 22rpx; }
+.ai-hero-container { position: relative; width: 100%; height: 380rpx; overflow: hidden; border-radius: 28rpx; background: #e8ece8; border: 1rpx solid #dce2dd; }
+.hero-cover-image { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; }
+.hero-cover-mask { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 2; background: linear-gradient(100deg, rgba(252, 250, 248, 0.95) 0%, rgba(252, 250, 248, 0.84) 52%, rgba(252, 250, 248, 0.34) 100%); }
+.hero-text-area { position: relative; z-index: 3; width: 62%; padding: 46rpx 0 0 30rpx; box-sizing: border-box; }
+.hero-kicker { display: block; color: #5f6d63; font-size: 22rpx; letter-spacing: 3rpx; }
+.hero-title { display: block; margin-top: 16rpx; color: #1c2a22; font-size: 52rpx; line-height: 1.2; font-weight: 750; }
+.hero-subtitle { display: block; margin-top: 14rpx; color: #5b665f; font-size: 26rpx; line-height: 1.35; }
 .elephant-interaction-area { position: absolute; right: -10rpx; bottom: -8rpx; width: 280rpx; height: 280rpx; transition: transform .35s ease; }
 .elephant-interaction-area.hidden { transform: translateX(64rpx); }
 .elephant-interaction-area.revealed { transform: translateX(0); }

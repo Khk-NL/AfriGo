@@ -6,9 +6,10 @@ page {
 }
 
 .page-root {
-  height: 100vh;
+  /* 用 min-height 而不是固定 100vh + overflow:hidden：内容放不下时允许滚动，
+     否则小屏手机上的登录按钮会压住底部品牌文字。 */
+  min-height: 100vh;
   width: 100%;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -21,7 +22,8 @@ page {
 
 .lang-toggle {
   position: absolute;
-  top: 58px;
+  /* 跟随状态栏/刘海高度，避免被时间、电量等系统信息压住 */
+  top: calc(env(safe-area-inset-top) + 10px);
   left: 20px;
   width: 44px;
   height: 44px;

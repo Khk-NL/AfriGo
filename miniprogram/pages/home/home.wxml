@@ -7,6 +7,8 @@
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false" enhanced="true">
     <view class="page-content">
       <view class="ai-hero-container">
+        <image wx:if="{{heroCoverImage}}" class="hero-cover-image" src="{{heroCoverImage}}" mode="aspectFill" />
+        <view class="hero-cover-mask"></view>
         <view class="hero-text-area">
           <text class="hero-kicker">SAFE LANDING</text>
           <text class="hero-title">{{uiText.welcomeTitle}}</text>

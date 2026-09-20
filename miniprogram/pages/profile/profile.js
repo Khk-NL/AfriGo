@@ -1,5 +1,11 @@
 import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
-import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark } from '../../utils/cloud-service.js';
+import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark, syncWeChatLogin } from '../../utils/cloud-service.js';
+
+const LOGIN_TEXT = {
+    zh: { loading: '登录中', success: '登录成功', failed: '登录失败，请稍后重试' },
+    en: { loading: 'Signing in', success: 'Signed in', failed: 'Sign-in failed, please retry' },
+    fr: { loading: 'Connexion', success: 'Connecté', failed: 'Échec de la connexion' }
+};
 
 const REMINDER_STORAGE_KEY = 'inAppRemindersEnabled';
 const LANGUAGE_OPTIONS = [
@@ -78,6 +84,24 @@ Page({
 
     onShow() {
         this.refreshProfile();
+    },
+
+    async onLoginTap() {
+        if (this.data.isLogin) {
+            return;
+        }
+        const text = LOGIN_TEXT[this.data.language] || LOGIN_TEXT.zh;
+        wx.showLoading({ title: text.loading, mask: true });
+        try {
+            await syncWeChatLogin();
+            await this.refreshProfile();
+            wx.hideLoading();
+            wx.showToast({ title: text.success, icon: 'success' });
+        } catch (error) {
+            wx.hideLoading();
+            console.error('profile: login failed', error);
+            wx.showToast({ title: error.message || text.failed, icon: 'none' });
+        }
     },
 
     async refreshProfile() {

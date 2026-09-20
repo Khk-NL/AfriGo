@@ -89,6 +89,7 @@ Page({
     isChatOpen: false,
     isElephantRevealed: false,
     currentCountryZh: '肯尼亚',
+    heroCoverImage: '/assets/images/covers/kenya.jpg',
     uiText: buildHomeText(getStoredLanguage(), '肯尼亚'),
     attractionsList: [],
     recommendList: [],
@@ -99,9 +100,12 @@ Page({
 
   applyLanguage(language, countryZh = this.data.currentCountryZh) {
     const nextLanguage = normalizeLanguage(language);
+    const destination = getSelectedDestination();
     this.setData({
       language: nextLanguage,
       currentCountryZh: countryZh,
+      // 与欢迎页使用同一张国家封面，进入首页后视觉连续
+      heroCoverImage: destination.image || this.data.heroCoverImage || '/assets/images/covers/kenya.jpg',
       uiText: buildHomeText(nextLanguage, countryZh),
       journeyTools: buildJourneyTools(nextLanguage)
     });
@@ -340,14 +344,9 @@ Page({
   },
 
   onHomeBackTap() {
-    wx.navigateBack({
-      delta: 1,
-      fail: () => {
-        wx.redirectTo({
-          url: '/pages/index/index'
-        });
-      }
-    });
+    // 首页是 tabBar 页，页面栈里没有上一页，navigateBack/redirectTo 都不可靠；
+    // reLaunch 可以回到非 tab 的欢迎页并清空栈。
+    wx.reLaunch({ url: '/pages/index/index' });
   },
 
   onTabTap(e) {

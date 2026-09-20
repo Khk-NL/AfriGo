@@ -1,4 +1,4 @@
-﻿import { request } from './api.js';
+import { request } from './api.js';
 
 import { AUTH_TOKEN_STORAGE_KEY, upload } from './api.js';
 import { normalizeCountryCode } from './countries.js';
@@ -170,40 +170,46 @@ async function createPost({ content, mediaList = [], extra = {} } = {}) {
   });
 }
 
-async function syncWeChatLogin({ desc = '用于完善你的账号资料' } = {}) {
-  return new Promise((resolve, reject) => {
+const DEFAULT_PROFILE_DESC = '用于登录与账号识别';
+
+// wx.getUserProfile 的 desc 校验很严格（过长会报 "desc length does not meet the
+// requirements"，实测按字节计数），且自 2022 年起对新版本只返回匿名数据。
+// 昵称/头像属于可选信息，取不到也必须能登录，因此这里失败只返回空对象。
+function readWeChatProfile(desc) {
+  return new Promise((resolve) => {
     if (!wx.getUserProfile) {
-      reject(new Error('当前版本不支持微信登录授权'));
+      resolve({});
       return;
     }
-
     wx.getUserProfile({
-      desc,
-      success: async (profileRes) => {
-        try {
-          const profile = profileRes.userInfo || {};
-          const loginRes = await new Promise((loginResolve, loginReject) => {
-            wx.login({ success: loginResolve, fail: loginReject });
-          });
-          const result = await request('/api/auth/login', {
-            method: 'POST',
-            data: {
-              nickName: profile.nickName || '',
-              avatarUrl: profile.avatarUrl || '',
-              code: loginRes.code
-            }
-          });
-          const user = result.user || result;
-          cacheAuthToken(result.token || '');
-          cacheCurrentUser(user);
-          resolve(user);
-        } catch (error) {
-          reject(error);
-        }
-      },
-      fail: (error) => reject(error)
+      desc: String(desc || DEFAULT_PROFILE_DESC).slice(0, 9),
+      success: (res) => resolve(res.userInfo || {}),
+      fail: () => resolve({})
     });
   });
+}
+
+// 登录只需要 wx.login 换取的 code；服务端据此建立会话，不依赖用户资料。
+async function syncWeChatLogin({ desc = DEFAULT_PROFILE_DESC } = {}) {
+  const profile = await readWeChatProfile(desc);
+  const loginRes = await new Promise((resolve, reject) => {
+    wx.login({ success: resolve, fail: reject });
+  });
+  if (!loginRes || !loginRes.code) {
+    throw new Error('微信登录失败，请稍后重试');
+  }
+  const result = await request('/api/auth/login', {
+    method: 'POST',
+    data: {
+      nickName: profile.nickName || '',
+      avatarUrl: profile.avatarUrl || '',
+      code: loginRes.code
+    }
+  });
+  const user = result.user || result;
+  cacheAuthToken(result.token || '');
+  cacheCurrentUser(user);
+  return user;
 }
 
 async function refreshCurrentUser() {
