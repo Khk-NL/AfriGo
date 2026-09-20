@@ -1,0 +1,8 @@
+<view wx:if="{{coverImage}}" class="country-cover {{compact ? 'is-compact' : ''}}">
+  <image class="country-cover-img" src="{{coverImage}}" mode="aspectFill" lazy-load="true" />
+  <view class="country-cover-veil"></view>
+  <view class="country-cover-meta">
+    <text class="country-cover-eyebrow">DESTINATION</text>
+    <text class="country-cover-name">{{coverName}}</text>
+  </view>
+</view>

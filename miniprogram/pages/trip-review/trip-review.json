@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "旅后复盘"
+  "navigationBarTitleText": "旅后复盘",
+  "usingComponents": {
+    "country-cover": "/components/country-cover/index"
+  }
 }

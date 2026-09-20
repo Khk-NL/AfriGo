@@ -100,3 +100,48 @@ page {
 .africa-eyebrow {
   color: var(--clay);
 }
+
+/* 空状态插画：草原落日 + 金合欢，放在 .empty-state 上方 */
+.africa-illus {
+  display: block;
+  width: 240rpx;
+  height: 160rpx;
+  margin: 0 auto 16rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTYwIj48Y2lyY2xlIGN4PSIxNzgiIGN5PSI1NCIgcj0iMjYiIGZpbGw9IiNkOGExM2EiIG9wYWNpdHk9IjAuNDUiLz48ZyBzdHJva2U9IiM4YzVhMzQiIHN0cm9rZS1vcGFjaXR5PSIwLjQ1IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTQ2IDEyMlY4NCIvPjxwYXRoIGQ9Ik0yMCA4NnEyNi0zMCA1MiAwIi8+PHBhdGggZD0iTTI1IDg2cTIxLTE3IDQyIDAiLz48L2c+PGcgc3Ryb2tlPSIjOGM1YTM0IiBzdHJva2Utb3BhY2l0eT0iMC4zMCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTEwNCAxMjZWMTAwIi8+PHBhdGggZD0iTTg2IDEwMXExOC0yMCAzNiAwIi8+PHBhdGggZD0iTTkwIDEwMXExNC0xMSAyOCAwIi8+PC9nPjxnIHN0cm9rZT0iIzhjNWEzNCIgc3Ryb2tlLW9wYWNpdHk9IjAuMzAiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik0xOTYgMTI4VjEwNiIvPjxwYXRoIGQ9Ik0xODEgMTA3cTE1LTE3IDMwIDAiLz48cGF0aCBkPSJNMTg1IDEwN3ExMS05IDIyIDAiLz48L2c+PHBhdGggZD0iTTEyIDEzMnE1NC04IDEwOCAwdDEwOCAwIiBzdHJva2U9IiM4YzVhMzQiIHN0cm9rZS1vcGFjaXR5PSIwLjI4IiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+PC9zdmc+");
+}
+
+/* ------------------------------------------------------------------
+ * 排版
+ * ------------------------------------------------------------------ */
+
+/* 大标题：收紧字距，系统默认字距偏松，看起来就"普通" */
+.af-display {
+  letter-spacing: -0.6rpx;
+  font-weight: 800;
+}
+
+/* 小节标题：左侧一道陶土色短杠，替代纯文字标题 */
+.af-section-title {
+  display: block;
+  padding-left: 16rpx;
+  border-left: 6rpx solid var(--clay);
+  letter-spacing: -0.3rpx;
+}
+
+/* 眉标：宽字距 + 陶土色 */
+.af-kicker {
+  display: block;
+  font-size: 20rpx;
+  letter-spacing: 5rpx;
+  font-weight: 700;
+  color: var(--clay);
+}
+
+/* 数字用等宽字形，费用与统计对齐更整齐 */
+.af-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}

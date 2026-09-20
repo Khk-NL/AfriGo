@@ -1,6 +1,5 @@
 import { getSelectedDestination } from '../../utils/countries.js';
 import { getStoredCurrentUser, loadGuide, loadRiskAlerts, planNavigationRoute, translateText } from '../../utils/cloud-service.js';
-import { ICON_IMAGES } from '../../config/icons.js';
 
 const LANGUAGES = [
   { code: 'zh', label: '中文' },
@@ -12,10 +11,10 @@ const LANGUAGES = [
 ];
 
 const TOOL_SECTIONS = [
-  { key: 'map', label: '地图导航', icon: '🗺️', iconImage: ICON_IMAGES.journey.map },
-  { key: 'translate', label: '随身翻译', icon: '🌐', iconImage: ICON_IMAGES.journey.translate },
-  { key: 'offline', label: '离线安全包', icon: '📥', iconImage: ICON_IMAGES.journey.offline },
-  { key: 'emergency', label: '紧急求助', icon: '🆘', iconImage: ICON_IMAGES.journey.emergency }
+  { key: 'map', label: '地图导航' },
+  { key: 'translate', label: '随身翻译' },
+  { key: 'offline', label: '离线安全包' },
+  { key: 'emergency', label: '紧急求助' }
 ];
 
 Page({

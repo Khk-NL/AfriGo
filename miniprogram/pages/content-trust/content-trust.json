@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "信息来源与纠错"
+  "navigationBarTitleText": "信息来源与纠错",
+  "usingComponents": {
+    "country-cover": "/components/country-cover/index"
+  }
 }

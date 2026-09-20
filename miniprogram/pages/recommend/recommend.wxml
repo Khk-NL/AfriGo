@@ -7,6 +7,7 @@
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false"
     refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-content">
+      <country-cover />
       <view class="hero-card">
         <text class="hero-eyebrow">TRAVEL PICKS</text>
         <text class="hero-title">{{currentCountry}}·出行推荐</text>

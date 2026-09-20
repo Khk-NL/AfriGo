@@ -6,6 +6,7 @@
 
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
     <view class="page-content">
+      <country-cover />
       <view class="hero-card">
         <text class="hero-eyebrow">LOCAL PHRASES</text>
         <text class="hero-title">{{currentCountry}}·实用语句</text>

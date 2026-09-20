@@ -2,31 +2,27 @@
     <view class="custom-tabbar" style="z-index: 9999;">
         <view class="tab-pill">
             <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="onTabTap" data-tab="home">
-                <image wx:if="{{tabIconImages.home}}" class="tab-icon-image" src="{{tabIconImages.home}}" mode="aspectFit" />
-                <text wx:else class="tab-icon">🏠</text>
+                <view class="af-icon af-tab-home"></view>
                 <text class="tab-text">{{tabTexts.home || '首页'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'community' ? 'active' : ''}}" bindtap="onTabTap" data-tab="community">
-                <image wx:if="{{tabIconImages.community}}" class="tab-icon-image" src="{{tabIconImages.community}}" mode="aspectFit" />
-                <text wx:else class="tab-icon">💬</text>
+                <view class="af-icon af-tab-community"></view>
                 <text class="tab-text">{{tabTexts.community || '社区'}}</text>
             </view>
 
             <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish">
-                <view class="publish-btn"><image wx:if="{{tabIconImages.publish}}" class="publish-icon-image" src="{{tabIconImages.publish}}" mode="aspectFit" /><text wx:else class="publish-plus">+</text></view>
+                <view class="publish-btn"><view class="af-icon af-icon-sm af-tab-publish-inverse"></view></view>
                 <text class="publish-text">{{tabTexts.publish || '发布'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'message' ? 'active' : ''}}" bindtap="onTabTap" data-tab="message">
-                <image wx:if="{{tabIconImages.message}}" class="tab-icon-image" src="{{tabIconImages.message}}" mode="aspectFit" />
-                <text wx:else class="tab-icon">🗨</text>
+                <view class="af-icon af-tab-message"></view>
                 <text class="tab-text">{{tabTexts.message || '消息'}}</text>
             </view>
 
             <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile">
-                <image wx:if="{{tabIconImages.profile}}" class="tab-icon-image" src="{{tabIconImages.profile}}" mode="aspectFit" />
-                <text wx:else class="tab-icon">👤</text>
+                <view class="af-icon af-tab-profile"></view>
                 <text class="tab-text">{{tabTexts.profile || '个人中心'}}</text>
             </view>
         </view>

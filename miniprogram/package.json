@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "node scripts/check-integrity.cjs"
+    "test": "node scripts/check-integrity.cjs",
+    "build:icons": "node scripts/build-icons.cjs"
   },
   "keywords": [],
   "author": "",

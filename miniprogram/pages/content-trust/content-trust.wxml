@@ -2,6 +2,7 @@
   <view class="page-back-btn" bindtap="onGoBack"><text class="page-back-icon">←</text><text class="page-back-text">返回主页</text></view>
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
     <view class="page-content">
+      <country-cover />
       <view class="hero-card trust-hero">
         <text class="hero-eyebrow">CONTENT TRUST</text>
         <text class="hero-title">{{countryZh}}·信息来源与纠错</text>

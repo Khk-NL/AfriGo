@@ -5,6 +5,7 @@
         <text class="back-arrow">←</text>
       </view>
 
+      <country-cover />
       <view class="hero-card">
         <text class="hero-eyebrow">LOCAL BRIEF</text>
         <text class="hero-title">{{countryName}}本地资讯</text>

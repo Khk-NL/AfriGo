@@ -1,4 +1,6 @@
 /* miniprogram/templates/tabbar.wxss */
+@import "icons.wxss";
+
 .custom-tabbar {
     position: fixed;
     bottom: calc(constant(safe-area-inset-bottom) + 8px);
@@ -12,7 +14,6 @@
     justify-content: center;
     pointer-events: auto;
 }
-
 .tab-pill {
     display: flex;
     justify-content: space-around;
@@ -29,7 +30,6 @@
     position: relative;
     overflow: hidden;
 }
-
 .tab-pill::before {
     content: '';
     position: absolute;
@@ -43,7 +43,6 @@
         linear-gradient(90deg, #2f4a3c, #2f4a3c);
     opacity: .75;
 }
-
 .tab-item {
     display: flex;
     flex-direction: column;
@@ -55,18 +54,14 @@
     position: relative;
     transition: color 0.25s ease;
 }
-
 /* 当前页：加深加粗 + 图标上浮放大 + 下方指示条，确保一眼看出在哪一页 */
 .tab-item.active {
     color: #8c3f22;
     font-weight: 700;
 }
-
-.tab-item.active .tab-icon,
-.tab-item.active .tab-icon-image {
+.tab-item.active .af-icon {
     transform: translateY(-3rpx) scale(1.14);
 }
-
 .tab-item.active::after {
     content: '';
     position: absolute;
@@ -78,34 +73,24 @@
     border-radius: 999rpx;
     background: linear-gradient(90deg, #b4552f, #d8a13a);
 }
-
 /* 中间的发布按钮本身有底色，不再叠加指示条 */
 .tab-item.center-item.active::after {
     display: none;
 }
-
 .tab-icon {
     font-size: 20px;
     margin-bottom: 4rpx;
     transition: transform 0.25s ease;
 }
-
-.tab-icon-image {
-    width: 32rpx;
-    height: 32rpx;
+.tab-item .af-icon {
+    width: 46rpx;
+    height: 46rpx;
     margin-bottom: 4rpx;
     transition: transform 0.25s ease;
 }
-
-.publish-icon-image {
-    width: 38rpx;
-    height: 38rpx;
-}
-
 .tab-text {
     font-size: 10px;
 }
-
 /* Center "Publish" button styling */
 .center-item {
     position: relative;
@@ -121,7 +106,6 @@
     box-shadow: none;
     color: #4f6659;
 }
-
 .publish-btn {
     display: flex;
     align-items: center;
@@ -132,13 +116,6 @@
     background: linear-gradient(150deg, #b4552f, #8c3f22);
     box-shadow: 0 8rpx 16rpx rgba(140, 63, 34, .28);
 }
-
-.publish-plus {
-    font-size: 38rpx;
-    line-height: 1;
-    color: #fff;
-}
-
 .publish-text {
     font-size: 20rpx;
     margin-top: 4rpx;

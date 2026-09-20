@@ -42,8 +42,7 @@
         <view class="home-section-head"><view><text class="home-section-title">旅中快捷工具</text><text class="home-section-subtitle">常用能力直接进入，不再藏在工具箱里</text></view></view>
         <view class="journey-tool-grid">
           <view wx:for="{{journeyTools}}" wx:key="key" class="journey-tool-card" data-section="{{item.key}}" bindtap="onJourneyToolTap">
-            <image wx:if="{{item.iconImage}}" class="tool-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
-            <text wx:else class="tool-icon-emoji">{{item.icon}}</text>
+            <view class="af-icon af-icon-{{item.key}}"></view>
             <view class="tool-copy"><text class="tool-title">{{item.label}}</text><text class="tool-desc">{{item.description}}</text></view>
           </view>
         </view>
@@ -57,7 +56,7 @@
       <view class="home-section">
         <view class="home-section-head"><view><text class="home-section-title">行程服务</text><text class="home-section-subtitle">复盘、服务对接与信息核验</text></view></view>
         <view class="service-list">
-          <view wx:for="{{homeServices}}" wx:key="key" class="service-row" bindtap="onHomeServiceTap" data-key="{{item.key}}"><image wx:if="{{item.iconImage}}" class="service-row-icon-image" src="{{item.iconImage}}" mode="aspectFit" /><text wx:else class="service-row-icon">{{item.icon}}</text><view><text class="service-row-title">{{item.title}}</text><text class="service-row-desc">{{item.description}}</text></view><text class="row-arrow">›</text></view>
+          <view wx:for="{{homeServices}}" wx:key="key" class="service-row" bindtap="onHomeServiceTap" data-key="{{item.key}}"><view class="af-icon af-icon-{{item.key}}"></view><view><text class="service-row-title">{{item.title}}</text><text class="service-row-desc">{{item.description}}</text></view><text class="row-arrow">›</text></view>
         </view>
       </view>
 
@@ -79,11 +78,11 @@
 
   <view class="custom-tabbar">
     <view class="tab-pill">
-      <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="onTabTap" data-tab="home"><image wx:if="{{uiText.tabIconImages.home}}" class="tab-icon-image" src="{{uiText.tabIconImages.home}}" mode="aspectFit" /><text wx:else class="tab-icon">🏠</text><text class="tab-text">{{uiText.tabLabels.home}}</text></view>
-      <view class="tab-item {{activeTab === 'community' ? 'active' : ''}}" bindtap="onTabTap" data-tab="community"><image wx:if="{{uiText.tabIconImages.community}}" class="tab-icon-image" src="{{uiText.tabIconImages.community}}" mode="aspectFit" /><text wx:else class="tab-icon">💬</text><text class="tab-text">{{uiText.tabLabels.community}}</text></view>
-      <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish"><view class="publish-btn"><image wx:if="{{uiText.tabIconImages.publish}}" class="publish-icon-image" src="{{uiText.tabIconImages.publish}}" mode="aspectFit" /><text wx:else class="publish-plus">＋</text></view><text class="publish-text">{{uiText.tabLabels.publish}}</text></view>
-      <view class="tab-item {{activeTab === 'message' ? 'active' : ''}}" bindtap="onTabTap" data-tab="message"><image wx:if="{{uiText.tabIconImages.message}}" class="tab-icon-image" src="{{uiText.tabIconImages.message}}" mode="aspectFit" /><text wx:else class="tab-icon">🔔</text><text class="tab-text">{{uiText.tabLabels.message}}</text></view>
-      <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile"><image wx:if="{{uiText.tabIconImages.profile}}" class="tab-icon-image" src="{{uiText.tabIconImages.profile}}" mode="aspectFit" /><text wx:else class="tab-icon">👤</text><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
+      <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="onTabTap" data-tab="home"><view class="af-icon af-tab-home"></view><text class="tab-text">{{uiText.tabLabels.home}}</text></view>
+      <view class="tab-item {{activeTab === 'community' ? 'active' : ''}}" bindtap="onTabTap" data-tab="community"><view class="af-icon af-tab-community"></view><text class="tab-text">{{uiText.tabLabels.community}}</text></view>
+      <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish"><view class="publish-btn"><view class="af-icon af-icon-sm af-tab-publish-inverse"></view></view><text class="publish-text">{{uiText.tabLabels.publish}}</text></view>
+      <view class="tab-item {{activeTab === 'message' ? 'active' : ''}}" bindtap="onTabTap" data-tab="message"><view class="af-icon af-tab-message"></view><text class="tab-text">{{uiText.tabLabels.message}}</text></view>
+      <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile"><view class="af-icon af-tab-profile"></view><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
     </view>
   </view>
   <elephant-pet />

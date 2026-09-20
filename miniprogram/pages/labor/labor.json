@@ -1,6 +1,7 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "elephant-pet": "/components/elephant-pet/index"
+    "elephant-pet": "/components/elephant-pet/index",
+    "country-cover": "/components/country-cover/index"
   }
 }

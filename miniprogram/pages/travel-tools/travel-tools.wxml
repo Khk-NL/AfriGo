@@ -2,6 +2,7 @@
   <view class="page-back-btn" bindtap="onGoBack"><text class="page-back-icon">←</text><text class="page-back-text">返回主页</text></view>
   <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
     <view class="page-content">
+      <country-cover />
       <view class="hero-card tool-hero">
         <text class="hero-eyebrow">ON-TRIP TOOLKIT</text>
         <text class="hero-title">{{countryZh}}·旅中工具</text>
@@ -10,8 +11,7 @@
 
       <view class="tool-section-strip">
         <view wx:for="{{toolSections}}" wx:key="key" class="tool-section-pill {{activeSection === item.key ? 'active' : ''}}" data-section="{{item.key}}" bindtap="onSectionTap">
-          <image wx:if="{{item.iconImage}}" class="section-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
-          <text wx:else>{{item.icon}}</text><text>{{item.label}}</text>
+          <view class="af-icon af-icon-sm af-icon-{{item.key}}"></view><text>{{item.label}}</text>
         </view>
       </view>
       <view wx:if="{{activeSection !== 'all'}}" class="show-all-link" bindtap="onShowAllSections">查看全部旅中工具</view>

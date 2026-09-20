@@ -3,6 +3,7 @@
 <view class="profile-page">
     <scroll-view class="profile-scroll" scroll-y="true" show-scrollbar="false">
         <view class="profile-content">
+            <country-cover />
             <view class="profile-hero">
                 <view class="hero-topline">
                     <text class="hero-badge">{{uiText.heroBadge}}</text>

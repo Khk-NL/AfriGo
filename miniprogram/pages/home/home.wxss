@@ -8,7 +8,6 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .home-back-wrap { width: 64rpx; height: 64rpx; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; background: #fffdf8; border: 1rpx solid #e6dac7; }
 .home-back-icon { color: #5c5247; font-size: 32rpx; }
 .destination-pill { display: flex; align-items: center; gap: 8rpx; padding: 12rpx 18rpx; border-radius: 999rpx; background: #fffdf8; border: 1rpx solid #e6dac7; color: #5c5247; font-size: 22rpx; }
-
 .ai-hero-container { position: relative; width: 100%; height: 380rpx; overflow: hidden; border-radius: 28rpx; background: #efe4d2; border: 1rpx solid #e2d3ba; box-shadow: 0 14rpx 32rpx rgba(90, 60, 30, .12); }
 .hero-cover-image { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; }
 /* 暖色蒙版：左上暖砂、右下让出照片，同时压一层落日金 */
@@ -32,28 +31,26 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .hero-subtitle { display: block; margin-top: 14rpx; color: #5c5247; font-size: 26rpx; line-height: 1.35; }
 /* 主视觉下方的织物几何条 */
 .hero-band { width: 168rpx; margin-top: 20rpx; }
-
-.safety-card { box-sizing: border-box; width: 100%; margin-top: 16rpx; padding: 20rpx 22rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: space-between; gap: 16rpx; background: #efe7d6; border: 1rpx solid #e0d2b8; }.safety-main { display: flex; align-items: center; gap: 14rpx; min-width: 0; }
+.safety-card { box-sizing: border-box; width: 100%; margin-top: 16rpx; padding: 20rpx 22rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: space-between; gap: 16rpx; background: #efe7d6; border: 1rpx solid #e0d2b8; }
+.safety-main { display: flex; align-items: center; gap: 14rpx; min-width: 0; }
 .safety-icon { font-size: 36rpx; }
 .safety-title, .safety-level { display: block; }
 .safety-title { color: #3c332a; font-size: 27rpx; font-weight: 700; }
 .safety-level { margin-top: 5rpx; color: #7b6f62; font-size: 20rpx; }
 .safety-more { flex-shrink: 0; color: #8c3f22; font-size: 21rpx; }
-
 .home-section { margin-top: 32rpx; }
 .home-section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16rpx; }
 .home-section-title, .home-section-subtitle { display: block; }
-.home-section-title, .feature-title { color: #2a231c; font-size: 30rpx; font-weight: 750; }
+.home-section-title, .feature-title { color: #2a231c; font-size: 30rpx; font-weight: 800; letter-spacing: -0.3rpx; }
+.home-section-title { padding-left: 16rpx; border-left: 6rpx solid #b4552f; }
 .home-section-subtitle { margin-top: 6rpx; color: #849087; font-size: 20rpx; }
 .journey-tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12rpx; }
 .journey-tool-card { min-width: 0; padding: 20rpx; border-radius: 22rpx; display: flex; align-items: center; gap: 14rpx; background: #fffdf8; border: 1rpx solid #e6dac7; }
-.tool-icon-emoji, .service-row-icon { flex-shrink: 0; font-size: 36rpx; }
 .tool-icon-image, .feature-icon-image, .service-row-icon-image { width: 44rpx; height: 44rpx; flex-shrink: 0; }
 .tool-copy { min-width: 0; }
 .tool-title, .tool-desc { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tool-title { color: #3a463a; font-size: 25rpx; font-weight: 700; }
 .tool-desc { margin-top: 5rpx; color: #8a948e; font-size: 19rpx; }
-
 .landing-plan-card { margin-top: 30rpx; padding: 24rpx; border-radius: 24rpx; display: flex; align-items: center; gap: 18rpx; background: #edf0eb; border: 1rpx solid #dce2dc; }
 .landing-plan-copy { flex: 1; min-width: 0; }
 .landing-plan-eyebrow, .landing-plan-title, .landing-plan-desc { display: block; }
@@ -61,7 +58,6 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .landing-plan-title { margin-top: 8rpx; color: #2c3932; font-size: 29rpx; font-weight: 750; }
 .landing-plan-desc { margin-top: 7rpx; color: #717d75; font-size: 21rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .landing-plan-progress { width: 78rpx; height: 78rpx; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #53695d; background: #fffdf8; border: 5rpx solid #a9b9af; font-size: 20rpx; font-weight: 700; }
-
 .service-list { overflow: hidden; border-radius: 24rpx; background: #fffdf8; border: 1rpx solid #e6dac7; }
 .service-row { display: grid; grid-template-columns: 48rpx 1fr 28rpx; align-items: center; gap: 14rpx; padding: 20rpx; }
 .service-row + .service-row { border-top: 1rpx solid #edf0ee; }
@@ -69,7 +65,6 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .service-row-title { color: #3a463a; font-size: 25rpx; font-weight: 700; }
 .service-row-desc { margin-top: 5rpx; color: #849087; font-size: 20rpx; }
 .row-arrow { color: #a1aaa4; font-size: 34rpx; }
-
 .feature-block { margin-top: 32rpx; }
 .feature-title { display: block; margin-bottom: 16rpx; }
 .feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22rpx 8rpx; padding: 22rpx 10rpx; border-radius: 24rpx; background: #fffdf8; border: 1rpx solid #e6dac7; }
@@ -78,16 +73,13 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
 .feature-icon { font-size: 34rpx; }
 .feature-label { width: 100%; margin-top: 8rpx; color: #59645e; font-size: 19rpx; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bottom-space { height: 20rpx; }
-
 /* 以常见 9:16 竖屏为基线，小屏进一步收紧而不切换桌面布局。 */
 @media (max-width: 340px) {
   .page-content { padding-left: 18rpx; padding-right: 18rpx; }
   .journey-tool-card { padding: 17rpx 14rpx; }
-  .tool-icon-emoji { font-size: 31rpx; }
   .tool-title { font-size: 23rpx; }
   .feature-label { font-size: 18rpx; }
 }
-
 /* 同步状态：让首页看起来是在持续更新的，而不是一张静态图 */
 .sync-line {
   display: flex;
@@ -96,7 +88,6 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
   font-size: 20rpx;
   color: #948779;
 }
-
 /* 实时风险提醒条：数据来自后端 risk_alerts，仅在有效期内有内容时出现 */
 .risk-banner {
   margin-top: 16rpx;
@@ -105,24 +96,20 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
   background: #fff8ec;
   border: 1rpx solid #f0dcb8;
 }
-
 .risk-banner-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .risk-banner-tag {
   font-size: 22rpx;
   font-weight: 700;
   color: #96693a;
 }
-
 .risk-banner-date {
   font-size: 20rpx;
   color: #a98f6d;
 }
-
 .risk-banner-title {
   display: block;
   margin-top: 10rpx;
@@ -130,25 +117,21 @@ page { background: #f7f1e7; color: #2a231c; font-family: -apple-system, BlinkMac
   line-height: 1.45;
   color: #5a452c;
 }
-
 .risk-banner-source {
   display: block;
   margin-top: 8rpx;
   font-size: 20rpx;
   color: #a98f6d;
 }
-
 .risk-high,
 .risk-critical {
   background: #fdf1f1;
   border-color: #f0cccc;
 }
-
 .risk-high .risk-banner-tag,
 .risk-critical .risk-banner-tag {
   color: #a4464b;
 }
-
 .risk-high .risk-banner-title,
 .risk-critical .risk-banner-title {
   color: #6b3134;

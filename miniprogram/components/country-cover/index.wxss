@@ -1,0 +1,60 @@
+/* 目的地封面横幅：内容页顶部的实景图，数据取本地已选目的地 */
+
+.country-cover {
+  position: relative;
+  width: 100%;
+  height: 220rpx;
+  margin-bottom: 22rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #efe4d2;
+  box-shadow: 0 12rpx 28rpx rgba(90, 60, 30, .14);
+}
+
+.country-cover.is-compact {
+  height: 140rpx;
+}
+
+.country-cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 底部压一层暖色渐隐，保证国家名在任何照片上都读得清 */
+.country-cover-veil {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72%;
+  background: linear-gradient(180deg, rgba(42, 35, 28, 0) 0%, rgba(42, 35, 28, .18) 46%, rgba(42, 35, 28, .62) 100%);
+}
+
+.country-cover-meta {
+  position: absolute;
+  left: 26rpx;
+  right: 26rpx;
+  bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.country-cover-eyebrow {
+  font-size: 18rpx;
+  letter-spacing: 4rpx;
+  color: rgba(255, 253, 248, .82);
+}
+
+.country-cover-name {
+  margin-top: 4rpx;
+  font-size: 36rpx;
+  font-weight: 800;
+  letter-spacing: -0.4rpx;
+  color: #fffdf8;
+  text-shadow: 0 2rpx 12rpx rgba(42, 35, 28, .45);
+}
+
+.is-compact .country-cover-meta {
+  display: none;
+}
