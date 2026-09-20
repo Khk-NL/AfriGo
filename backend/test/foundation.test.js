@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { normalizeCountryCode, normalizeCountryName, countryCandidates } = require('../src/countries');
 const { hashToken } = require('../src/auth');
 const { assertImage, createObjectKey, resolveMedia } = require('../src/oss');
-const { loadGuideWorkbook } = require('../src/excel-guide');
+const { loadGuideWorkbook, resolveWorkbookPath, DEFAULT_WORKBOOK_PATH } = require('../src/excel-guide');
 const { withStableIds } = require('../src/export-miniprogram-data');
 const { validateProductionConfig } = require('../src/config');
 const { createRateLimiter } = require('../src/rate-limit');
@@ -58,6 +58,10 @@ test('workbook guides export supported countries with stable content ids', () =>
   const guides = loadGuideWorkbook();
   assert.equal(guides.length, 11);
   assert.ok(guides.every((guide) => /^[A-Z]{2}$/.test(guide.countryCode)));
+  // 部署时工作簿可以放到代码目录之外，避免被带 --delete 的同步删掉
+  assert.equal(resolveWorkbookPath({}), DEFAULT_WORKBOOK_PATH);
+  assert.equal(resolveWorkbookPath({ GUIDE_WORKBOOK_PATH: ' /srv/guide.xlsx ' }), '/srv/guide.xlsx');
+  assert.equal(resolveWorkbookPath({ GUIDE_WORKBOOK_PATH: '  ' }), DEFAULT_WORKBOOK_PATH);
   const kenya = withStableIds(guides.find((guide) => guide.countryCode === 'KE'));
   assert.ok(kenya.attractionsList.length > 0);
   assert.equal(kenya.attractionsList[0].id, 'KE-attraction-1');

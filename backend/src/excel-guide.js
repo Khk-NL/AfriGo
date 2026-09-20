@@ -2,7 +2,20 @@ const path = require('path');
 const XLSX = require('xlsx');
 const { normalizeCountryCode } = require('./countries');
 
-const EXCEL_PATH = path.join(__dirname, '../../整合版.xlsx');
+const DEFAULT_WORKBOOK_PATH = path.join(__dirname, '../../整合版.xlsx');
+
+/**
+ * 国家资料工作簿的位置。
+ * 默认在代码包根目录；部署时建议用 GUIDE_WORKBOOK_PATH 指到部署目录之外，
+ * 因为 deploy.sh 的 rsync 带 --delete，放在代码目录里的文件会被下一次部署删掉。
+ *
+ * @param {object} [env] 环境变量来源，默认 process.env。
+ * @returns {string} 工作簿绝对路径。
+ */
+function resolveWorkbookPath(env = process.env) {
+  const configured = String(env.GUIDE_WORKBOOK_PATH || '').trim();
+  return configured || DEFAULT_WORKBOOK_PATH;
+}
 
 const COVER_MAP = {
   '刚果(金)': '/assets/images/covers/drc.jpg',
@@ -399,7 +412,7 @@ function buildPayload(row, workbook) {
   };
 }
 
-function loadGuideWorkbook(filePath = EXCEL_PATH) {
+function loadGuideWorkbook(filePath = resolveWorkbookPath()) {
   const workbook = XLSX.readFile(filePath, { cellDates: true });
   const sheet = workbook.Sheets.Sheet1;
   const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false });
@@ -412,9 +425,10 @@ function loadGuideWorkbook(filePath = EXCEL_PATH) {
 }
 
 module.exports = {
-  EXCEL_PATH,
+  DEFAULT_WORKBOOK_PATH,
   COVER_MAP,
   normalizeCountry,
   countryCandidates,
-  loadGuideWorkbook
+  loadGuideWorkbook,
+  resolveWorkbookPath
 };

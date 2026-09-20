@@ -52,7 +52,8 @@ log "2/9 同步代码到 $REPO_DIR"
 id -u "$APP_USER" >/dev/null 2>&1 || useradd --system --home "$REPO_DIR" --shell /usr/sbin/nologin "$APP_USER"
 mkdir -p "$REPO_DIR"
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete --exclude node_modules "$SOURCE_DIR"/ "$REPO_DIR"/
+  # protect：国家资料工作簿常放在代码目录里，但不能被下一次部署的 --delete 删掉
+  rsync -a --delete --exclude node_modules --filter='protect *.xlsx' "$SOURCE_DIR"/ "$REPO_DIR"/
 else
   cp -a "$SOURCE_DIR"/. "$REPO_DIR"/
 fi
@@ -73,7 +74,14 @@ log "4/9 初始化数据库"
 ss -ltn 2>/dev/null | grep -q ':3306' || warn "本机 3306 没有监听，确认 DB_HOST 是否可达"
 set -a; . "$ENV_FILE"; set +a
 npm run init-db
-npm run import-excel
+WORKBOOK="${GUIDE_WORKBOOK_PATH:-$REPO_DIR/整合版.xlsx}"
+if [[ -f "$WORKBOOK" ]]; then
+  echo "国家资料工作簿: $WORKBOOK"
+  npm run import-excel
+else
+  warn "找不到国家资料工作簿（$WORKBOOK），跳过 import-excel"
+  warn "已有数据不受影响；需要重新导入时把文件放到 $REPO_DIR 或设置 GUIDE_WORKBOOK_PATH"
+fi
 if grep -q '^DB_ROOT_PASSWORD=.\+' "$ENV_FILE"; then
   sed -i 's/^DB_ROOT_PASSWORD=.*/DB_ROOT_PASSWORD=/' "$ENV_FILE"
   echo "已清空 DB_ROOT_PASSWORD"

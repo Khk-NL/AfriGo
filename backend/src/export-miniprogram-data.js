@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { loadGuideWorkbook, EXCEL_PATH } = require('./excel-guide');
+const { loadGuideWorkbook, resolveWorkbookPath } = require('./excel-guide');
 
 const OUTPUT_PATH = path.join(__dirname, '../../miniprogram/data/country-guides.generated.js');
 
@@ -23,7 +23,8 @@ function withStableIds(guide) {
 }
 
 function main() {
-  const sourceUpdatedAt = fs.statSync(EXCEL_PATH).mtime.toISOString();
+  const workbookPath = resolveWorkbookPath();
+  const sourceUpdatedAt = fs.statSync(workbookPath).mtime.toISOString();
   const guides = loadGuideWorkbook().map((guide) => ({
     ...withStableIds(guide),
     source: {
