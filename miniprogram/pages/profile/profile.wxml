@@ -10,9 +10,12 @@
                 </view>
 
                 <view class="identity-row">
-                    <view class="avatar-shell">
-                        <image wx:if="{{isLogin && userInfo.avatarUrl}}" class="avatar-image" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+                    <button wx:if="{{isLogin}}" class="avatar-shell avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+                        <image wx:if="{{avatarDraft || userInfo.avatarUrl}}" class="avatar-image" src="{{avatarDraft || userInfo.avatarUrl}}" mode="aspectFill"></image>
                         <view wx:else class="avatar-fallback">{{language === 'en' ? 'T' : language === 'fr' ? 'V' : '旅'}}</view>
+                    </button>
+                    <view wx:else class="avatar-shell">
+                        <view class="avatar-fallback">{{language === 'en' ? 'T' : language === 'fr' ? 'V' : '旅'}}</view>
                     </view>
 
                     <view class="identity-copy">
@@ -26,6 +29,19 @@
                 <view wx:else class="hero-status-pill hero-status-guest">{{uiText.guestStatus}}</view>
 
                 <button wx:if="{{!isLogin}}" class="profile-login-btn" bindtap="onLoginTap">{{uiText.loginButton}}</button>
+
+                <view wx:if="{{isLogin}}" class="profile-edit-row">
+                    <input
+                        class="profile-nickname-input"
+                        type="nickname"
+                        value="{{nicknameDraft}}"
+                        placeholder="{{editText.placeholder}}"
+                        placeholder-class="profile-input-placeholder"
+                        bindinput="onNicknameInput"
+                        bindblur="onNicknameInput"
+                    />
+                    <button class="profile-save-btn" loading="{{savingProfile}}" bindtap="onSaveProfile">{{editText.save}}</button>
+                </view>
 
                 <view class="stats-grid">
                     <block wx:for="{{profileStats}}" wx:key="label">

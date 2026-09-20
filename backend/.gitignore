@@ -3,3 +3,5 @@ node_modules/
 *.log
 uploads/
 data/
+# 本地磁盘存储模式写入的上传文件
+var/

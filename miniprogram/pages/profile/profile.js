@@ -1,10 +1,17 @@
 import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
-import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark, syncWeChatLogin } from '../../utils/cloud-service.js';
+import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark, syncWeChatLogin, updateMyProfile, uploadAvatar } from '../../utils/cloud-service.js';
 
 const LOGIN_TEXT = {
     zh: { loading: '登录中', success: '登录成功', failed: '登录失败，请稍后重试' },
     en: { loading: 'Signing in', success: 'Signed in', failed: 'Sign-in failed, please retry' },
     fr: { loading: 'Connexion', success: 'Connecté', failed: 'Échec de la connexion' }
+};
+
+// 微信已不再下发真实头像昵称，只能引导用户自己填写，因此这里给出编辑文案
+const EDIT_TEXT = {
+    zh: { placeholder: '点击填写昵称', save: '保存资料', saving: '保存中', saved: '资料已更新', needName: '请先填写昵称', failed: '保存失败，请稍后重试' },
+    en: { placeholder: 'Tap to set a nickname', save: 'Save', saving: 'Saving', saved: 'Profile updated', needName: 'Please enter a nickname', failed: 'Save failed, please retry' },
+    fr: { placeholder: 'Touchez pour saisir un pseudo', save: 'Enregistrer', saving: 'Enregistrement', saved: 'Profil mis à jour', needName: 'Veuillez saisir un pseudo', failed: 'Échec de l’enregistrement' }
 };
 
 const REMINDER_STORAGE_KEY = 'inAppRemindersEnabled';
@@ -68,7 +75,11 @@ Page({
         languageOptions: LANGUAGE_OPTIONS.map((item) => item.label),
         languageIndex: Math.max(0, LANGUAGE_OPTIONS.findIndex((item) => item.code === getStoredLanguage())),
         remindersEnabled: wx.getStorageSync(REMINDER_STORAGE_KEY) !== false,
-        settingsText: SETTINGS_TEXT[getStoredLanguage()] || SETTINGS_TEXT.zh
+        settingsText: SETTINGS_TEXT[getStoredLanguage()] || SETTINGS_TEXT.zh,
+        editText: EDIT_TEXT[getStoredLanguage()] || EDIT_TEXT.zh,
+        nicknameDraft: '',
+        avatarDraft: '',
+        savingProfile: false
     },
 
     applyLanguage(language, currentCountry = this.data.currentCountry, bookmarksCount = this.data.bookmarks.length, isLogin = this.data.isLogin) {
@@ -78,12 +89,54 @@ Page({
             language: nextLanguage,
             currentCountryLabel,
             uiText: buildProfileText(nextLanguage, currentCountry, currentCountryLabel, bookmarksCount, isLogin),
-            settingsText: SETTINGS_TEXT[nextLanguage] || SETTINGS_TEXT.zh
+            settingsText: SETTINGS_TEXT[nextLanguage] || SETTINGS_TEXT.zh,
+            editText: EDIT_TEXT[nextLanguage] || EDIT_TEXT.zh
         });
     },
 
     onShow() {
         this.refreshProfile();
+    },
+
+    onNicknameInput(event) {
+        const value = event && event.detail ? event.detail.value : '';
+        this.setData({ nicknameDraft: String(value || '') });
+    },
+
+    onChooseAvatar(event) {
+        const tempUrl = event && event.detail ? event.detail.avatarUrl : '';
+        if (tempUrl) {
+            // 只拿到本地临时路径，需要点"保存资料"时才上传，避免误触就产生垃圾文件
+            this.setData({ avatarDraft: tempUrl });
+        }
+    },
+
+    async onSaveProfile() {
+        const text = this.data.editText || EDIT_TEXT.zh;
+        const nickName = String(this.data.nicknameDraft || '').trim();
+        if (!nickName) {
+            wx.showToast({ title: text.needName, icon: 'none' });
+            return;
+        }
+        this.setData({ savingProfile: true });
+        wx.showLoading({ title: text.saving, mask: true });
+        try {
+            let avatarUrl = (this.data.userInfo && this.data.userInfo.avatarUrl) || '';
+            if (this.data.avatarDraft && this.data.avatarDraft !== avatarUrl) {
+                avatarUrl = await uploadAvatar(this.data.avatarDraft);
+            }
+            await updateMyProfile({ nickName, avatarUrl });
+            wx.hideLoading();
+            this.setData({ avatarDraft: '' });
+            await this.refreshProfile();
+            wx.showToast({ title: text.saved, icon: 'success' });
+        } catch (error) {
+            wx.hideLoading();
+            console.error('profile: save profile failed', error);
+            wx.showToast({ title: error.message || text.failed, icon: 'none' });
+        } finally {
+            this.setData({ savingProfile: false });
+        }
     },
 
     async onLoginTap() {
@@ -133,6 +186,7 @@ Page({
             isAdmin,
             currentUser,
             userInfo: userInfo || {},
+            nicknameDraft: (userInfo && userInfo.nickName) || '',
             currentCountry,
             currentCity,
             currentCountryLabel,

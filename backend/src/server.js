@@ -6,7 +6,8 @@ const multer = require('multer');
 const { createPool } = require('./db');
 const { countryCandidates, normalizeCountryCode } = require('./countries');
 const { exchangeWechatCode, issueSession, createAuthMiddleware, requireAdmin, hashToken } = require('./auth');
-const { getObjectUrl, initializeOssClient, uploadImage, resolveMedia } = require('./oss');
+const { initializeStorage, uploadImage, getObjectUrl, resolveMedia, localStorageRoot } = require('./storage');
+const { sanitizeProfilePayload } = require('./profile');
 const { assertProductionConfig } = require('./config');
 const { createRateLimiter } = require('./rate-limit');
 const { sanitizeTripPayload } = require('./trip-plan');
@@ -56,6 +57,8 @@ app.use(cors({
   }
 }));
 app.use(express.json({ limit: '2mb' }));
+// 本地磁盘存储模式下对外提供图片；OSS 模式该目录为空，只会 404。
+app.use('/media', express.static(localStorageRoot(), { index: false, dotfiles: 'deny', maxAge: '7d' }));
 app.use('/api/auth/login', loginLimiter);
 app.use('/api', (req, res, next) => {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
@@ -591,6 +594,20 @@ app.post('/api/auth/logout', authenticate, async (req, res, next) => {
 
 app.get('/api/auth/me', authenticate, (req, res) => {
   res.json({ ok: true, user: mapUser(req.user) });
+});
+
+app.put('/api/auth/profile', authenticate, async (req, res, next) => {
+  try {
+    const payload = sanitizeProfilePayload(req.body || {});
+    await pool.query(
+      'UPDATE users SET nick_name = ?, avatar_url = ? WHERE id = ?',
+      [payload.nickName, payload.avatarUrl, req.user.id]
+    );
+    const [rows] = await pool.query('SELECT * FROM users WHERE id = ? LIMIT 1', [req.user.id]);
+    res.json({ ok: true, user: mapUser(rows[0]) });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.delete('/api/auth/account', authenticate, async (req, res, next) => {
@@ -1274,7 +1291,7 @@ async function startServer() {
   if (process.env.NODE_ENV === 'production') {
     // OSS 是功能依赖：未配置时只告警，不让整个 API 起不来；相关接口调用时返回 503。
     try {
-      await initializeOssClient();
+      await initializeStorage();
       console.log('OSS 客户端已就绪');
     } catch (error) {
       console.warn(`OSS 未就绪，图片上传与签名将返回 503：${error.message}`);

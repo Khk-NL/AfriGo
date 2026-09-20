@@ -15,6 +15,9 @@ const { sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('../src/
 const { translateText, validateTranslationInput } = require('../src/translate');
 const { planNavigationRoute, validateNavigationInput } = require('../src/navigation');
 const { buildHealthPayload, SERVICE_NAME } = require('../src/health');
+const { sanitizeProfilePayload } = require('../src/profile');
+const { useLocalStorage } = require('../src/storage');
+const local = require('../src/local-storage');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -334,6 +337,43 @@ test('missing OSS credentials degrade media instead of blocking startup', () => 
       if (saved[key] === undefined) delete process.env[key];
       else process.env[key] = saved[key];
     }
+  }
+});
+
+test('profile updates validate nickname and avatar URL', () => {
+  assert.deepEqual(
+    sanitizeProfilePayload({ nickName: '  小象  ', avatarUrl: 'https://api.example.com/media/a.jpg' }),
+    { nickName: '小象', avatarUrl: 'https://api.example.com/media/a.jpg' }
+  );
+  assert.deepEqual(sanitizeProfilePayload({ nickName: '小象' }), { nickName: '小象', avatarUrl: '' });
+  assert.throws(() => sanitizeProfilePayload({ nickName: '   ' }), /昵称/);
+  assert.throws(() => sanitizeProfilePayload({ nickName: '象'.repeat(21) }), /20/);
+  // 微信 chooseAvatar 给的是本地临时路径，不能直接存库
+  assert.throws(() => sanitizeProfilePayload({ nickName: '小象', avatarUrl: 'wxfile://tmp_a.jpg' }), /HTTPS/);
+});
+
+test('media storage falls back to local disk when OSS is not configured', () => {
+  assert.equal(useLocalStorage({ STORAGE_PROVIDER: 'local' }), true);
+  assert.equal(useLocalStorage({ STORAGE_PROVIDER: 'oss' }), false);
+  assert.equal(useLocalStorage({}), true);
+  assert.equal(useLocalStorage({
+    OSS_REGION: 'oss-cn-hangzhou',
+    OSS_BUCKET: 'bucket',
+    OSS_CREDENTIAL_MODE: 'environment',
+    OSS_ACCESS_KEY_ID: 'id',
+    OSS_ACCESS_KEY_SECRET: 'secret'
+  }), false);
+
+  const previous = process.env.PUBLIC_BASE_URL;
+  process.env.PUBLIC_BASE_URL = 'https://api.example.com/';
+  try {
+    assert.equal(
+      local.getObjectUrl('community/2026/09/a.jpg'),
+      'https://api.example.com/media/community/2026/09/a.jpg'
+    );
+  } finally {
+    if (previous === undefined) delete process.env.PUBLIC_BASE_URL;
+    else process.env.PUBLIC_BASE_URL = previous;
   }
 });
 

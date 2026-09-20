@@ -120,7 +120,7 @@ async function uploadImage(file) {
   };
 }
 
-function resolveMedia(mediaList) {
+function resolveMedia(mediaList, urlResolver = getObjectUrl) {
   if (!Array.isArray(mediaList)) {
     return [];
   }
@@ -131,7 +131,7 @@ function resolveMedia(mediaList) {
         if (/^https?:\/\//.test(media)) {
           return { objectKey: '', type: 'image', url: media };
         }
-        return { objectKey: media, type: 'image', url: getObjectUrl(media) };
+        return { objectKey: media, type: 'image', url: urlResolver(media) };
       }
       if (!media || !media.objectKey) {
         return null;
@@ -139,12 +139,21 @@ function resolveMedia(mediaList) {
       return {
         objectKey: media.objectKey,
         type: media.type || 'image',
-        url: getObjectUrl(media.objectKey)
+        url: urlResolver(media.objectKey)
       };
     } catch (error) {
       return null;
     }
   }).filter(Boolean);
+}
+
+/** OSS 凭据是否齐全；storage.js 用它决定是否退回本地磁盘存储。 */
+function isConfigured(env = process.env) {
+  if (!env.OSS_REGION || !env.OSS_BUCKET) return false;
+  if ((env.OSS_CREDENTIAL_MODE || 'environment') === 'ecs_ram_role') {
+    return Boolean(env.ALIBABA_CLOUD_ECS_METADATA);
+  }
+  return Boolean(env.OSS_ACCESS_KEY_ID && env.OSS_ACCESS_KEY_SECRET);
 }
 
 module.exports = {
@@ -154,5 +163,6 @@ module.exports = {
   getObjectUrl,
   uploadImage,
   resolveMedia,
-  initializeOssClient
+  initializeOssClient,
+  isConfigured
 };

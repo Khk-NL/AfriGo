@@ -57,6 +57,8 @@ else
   cp -a "$SOURCE_DIR"/. "$REPO_DIR"/
 fi
 chown -R "$APP_USER:$APP_USER" "$REPO_DIR"
+# 本地磁盘存储模式（未配 OSS 凭据时的默认值）需要这个目录可写
+install -d -o "$APP_USER" -g "$APP_USER" "$REPO_DIR/backend/var/uploads"
 echo "已同步（node_modules 不参与同步）"
 
 log "3/9 安装依赖（全量，import-excel 需要 devDependency xlsx）"

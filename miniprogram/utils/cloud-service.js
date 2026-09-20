@@ -212,6 +212,22 @@ async function syncWeChatLogin({ desc = DEFAULT_PROFILE_DESC } = {}) {
   return user;
 }
 
+/** 上传头像，返回可长期使用的绝对地址（本地存储模式会返回完整 HTTPS 的 /media 地址）。 */
+async function uploadAvatar(filePath) {
+  const result = await upload('/api/upload', filePath);
+  const media = result.media || {};
+  return media.url || '';
+}
+
+/** 更新当前用户的昵称与头像；微信已不再下发真实头像昵称，只能由用户自己填写。 */
+async function updateMyProfile({ nickName, avatarUrl }) {
+  const result = await request('/api/auth/profile', {
+    method: 'PUT',
+    data: { nickName, avatarUrl }
+  });
+  return cacheCurrentUser(result.user || null);
+}
+
 async function refreshCurrentUser() {
   try {
     const result = await request('/api/auth/me');
@@ -391,6 +407,8 @@ export {
   callUserCenter,
   syncWeChatLogin,
   refreshCurrentUser,
+  uploadAvatar,
+  updateMyProfile,
   logoutCurrentUser,
   getUserDisplayName,
   loadCollection,
