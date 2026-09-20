@@ -500,6 +500,33 @@
   text-align: center;
 }
 
+.freshness-line {
+  display: block;
+  margin-top: 16rpx;
+  color: #8b968f;
+  font-size: 22rpx;
+}
+
+.skeleton-list {
+  margin-top: 24rpx;
+}
+
+.skeleton-card {
+  height: 180rpx;
+  background: #eef1ef;
+  border-radius: 20rpx;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-card + .skeleton-card {
+  margin-top: 20rpx;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 .feed-list {
   display: flex;
   flex-direction: column;

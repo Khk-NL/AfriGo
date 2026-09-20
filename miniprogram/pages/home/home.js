@@ -1,5 +1,5 @@
 import { ElephantRenderer } from '../../utils/elephant-renderer.js';
-import { createPost, loadCollectionWithFallback } from '../../utils/cloud-service.js';
+import { createPost, loadCollectionWithFallback, loadRiskAlerts } from '../../utils/cloud-service.js';
 import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
 import { getSelectedDestination } from '../../utils/countries.js';
 import { ICON_IMAGES } from '../../config/icons.js';
@@ -19,6 +19,12 @@ const HOME_SERVICES = [
   { key: 'services', icon: '🤝', iconImage: ICON_IMAGES.homeServices.services, title: '经审核的本地服务', description: '酒店、交通、导游与保险咨询' },
   { key: 'trust', icon: '🔎', iconImage: ICON_IMAGES.homeServices.trust, title: '信息来源、风险与纠错', description: '核验时间、有效期与审核进度' }
 ];
+
+const SYNC_TEXT = {
+  zh: { loading: '正在同步最新资料…', synced: (time) => `已同步 · 更新于 ${time} · 下拉可刷新`, refreshed: '已更新' },
+  en: { loading: 'Syncing latest data…', synced: (time) => `Synced · updated ${time} · pull to refresh`, refreshed: 'Updated' },
+  fr: { loading: 'Synchronisation…', synced: (time) => `Synchronisé · ${time} · tirez pour actualiser`, refreshed: 'Mis à jour' }
+};
 
 function buildJourneyTools(language) {
   return JOURNEY_TOOLS.map((item) => ({
@@ -95,6 +101,11 @@ Page({
     attractionsList: [],
     recommendList: [],
     tripPreview: { progress: 0, label: '开始制定行前计划' },
+    loading: true,
+    updatedAtLabel: '',
+    syncText: SYNC_TEXT.zh.loading,
+    riskBanner: null,
+    refreshing: false,
     journeyTools: buildJourneyTools(getStoredLanguage()),
     homeServices: HOME_SERVICES
   },
@@ -127,8 +138,7 @@ Page({
     });
 
     this.applyLanguage(language, countryZh);
-    this.loadHomeCollections(countryZh);
-    this.loadTripPreview(cached.code);
+    this.refreshHome();
   },
 
   onShow() {
@@ -137,10 +147,11 @@ Page({
     const language = getStoredLanguage();
 
     this.applyLanguage(language, countryZh);
-    if (this._homeCollectionsCountry !== countryZh) {
-      this.loadHomeCollections(countryZh);
-    }
+    // 行程进度可能在别处被改过，每次回到首页都重新读一次
     this.loadTripPreview(cached.code);
+    if (this._homeCollectionsCountry !== countryZh) {
+      this.refreshHome();
+    }
   },
 
   loadTripPreview(countryCode) {
@@ -174,6 +185,76 @@ Page({
 
     await this.loadCollectionData('attractions', localAttractionsData, countryZh, 'attractionsList');
     await this.loadCollectionData('recommend', localRecommendData, countryZh, 'recommendList');
+  },
+
+  /** 加载当前国家的有效风险提醒（公开接口，无需登录），让首页显示真实在更新的信息。 */
+  async loadRiskBanner(countryCode) {
+    if (!countryCode) {
+      this.setData({ riskBanner: null });
+      return;
+    }
+    try {
+      const alerts = await loadRiskAlerts(countryCode);
+      const first = Array.isArray(alerts) ? alerts[0] : null;
+      this.setData({
+        riskBanner: first ? {
+          title: first.title,
+          severity: first.severity,
+          sourceName: first.sourceName || '',
+          publishedAt: String(first.publishedAt || '').slice(0, 10)
+        } : null
+      });
+    } catch (error) {
+      // 风险提醒失败不影响首页其余内容
+      this.setData({ riskBanner: null });
+    }
+  },
+
+  /** 首页统一刷新：集合、行程预览、风险提醒一起更新，并记录本次同步时间。 */
+  async refreshHome() {
+    const cached = getSelectedDestination();
+    const countryZh = cached.zhName;
+    const sync = SYNC_TEXT[this.data.language] || SYNC_TEXT.zh;
+    this.setData({ loading: true, syncText: sync.loading });
+    try {
+      await Promise.all([
+        this.loadHomeCollections(countryZh),
+        this.loadTripPreview(cached.code),
+        this.loadRiskBanner(cached.code)
+      ]);
+      const clock = this.formatClock(new Date());
+      this.setData({ updatedAtLabel: clock, syncText: sync.synced(clock) });
+    } finally {
+      this.setData({ loading: false });
+    }
+  },
+
+  formatClock(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  },
+
+  // 页面内容在满屏 scroll-view 里，页面级下拉可能被抢手势，因此同时接 scroll-view 的 refresher
+  async onRefresh() {
+    this.setData({ refreshing: true });
+    try {
+      await this.onPullDownRefresh();
+    } finally {
+      this.setData({ refreshing: false });
+    }
+  },
+
+  async onPullDownRefresh() {
+    try {
+      await this.refreshHome();
+      const sync = SYNC_TEXT[this.data.language] || SYNC_TEXT.zh;
+      wx.showToast({ title: sync.refreshed, icon: 'none' });
+    } catch (error) {
+      console.error('home: pull down refresh failed', error);
+    } finally {
+      wx.stopPullDownRefresh();
+    }
   },
 
   async uploadPost(content) {

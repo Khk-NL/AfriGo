@@ -77,3 +77,19 @@
 
 .recommend-search input { flex: 1; font-size: 24rpx; color: #1f2937; }
 .recommend-search-icon { font-size: 28rpx; }
+
+.freshness-line { display: block; margin-top: 16rpx; color: #8b968f; font-size: 22rpx; }
+
+.skeleton-list { margin-top: 18rpx; }
+.skeleton-card {
+  height: 170rpx;
+  background: #eef1ef;
+  border-radius: 20rpx;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+.skeleton-card + .skeleton-card { margin-top: 18rpx; }
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}

@@ -4,7 +4,8 @@
     <text class="page-back-text">返回上一页</text>
   </view>
 
-  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false"
+    refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-content">
       <view class="hero-card">
         <text class="hero-eyebrow">PLACES TO EXPLORE</text>
@@ -16,6 +17,8 @@
           <text class="hero-chip">可收藏</text>
         </view>
       </view>
+
+      <text wx:if="{{freshnessText}}" class="freshness-line">{{freshnessText}}</text>
 
       <view class="section-card">
         <view class="section-head">
@@ -40,7 +43,12 @@
           <text class="section-title">景点清单</text>
           <text class="section-subtitle">点击卡片查看完整攻略与避坑提示</text>
         </view>
-        <block wx:if="{{list.length}}">
+        <view wx:if="{{loading}}" class="skeleton-list">
+          <view class="skeleton-card"></view>
+          <view class="skeleton-card"></view>
+          <view class="skeleton-card"></view>
+        </view>
+        <block wx:elif="{{list.length}}">
           <block wx:for="{{list}}" wx:key="id">
             <view class="item-card attraction-card" bindtap="onAttrTap" data-id="{{item.id}}">
               <image class="attraction-image" src="{{item.image}}" mode="aspectFill" />

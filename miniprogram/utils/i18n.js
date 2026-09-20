@@ -315,6 +315,8 @@ const COMMUNITY_TEXT = {
     avatarShellTitle: '旅人头像',
     avatarShellMeta: 'soft online glow',
     composeButton: '发布',
+    syncedLabel: '已同步',
+    updatedLabel: '更新于',
     actionTexts: { comment: '评论', save: '收藏', share: '分享' },
     stats: [
       { value: '24.8K', label: '精选动态' },
@@ -346,6 +348,8 @@ const COMMUNITY_TEXT = {
     avatarShellTitle: 'Travelers',
     avatarShellMeta: 'soft online glow',
     composeButton: 'Compose',
+    syncedLabel: 'Synced',
+    updatedLabel: 'Updated',
     actionTexts: { comment: 'Comment', save: 'Save', share: 'Share' },
     stats: [
       { value: '24.8K', label: 'Featured posts' },
@@ -377,6 +381,8 @@ const COMMUNITY_TEXT = {
     avatarShellTitle: 'Portraits de voyageurs',
     avatarShellMeta: 'soft online glow',
     composeButton: 'Publier',
+    syncedLabel: 'Synchronisé',
+    updatedLabel: 'Mis à jour',
     actionTexts: { comment: 'Commenter', save: 'Enregistrer', share: 'Partager' },
     stats: [
       { value: '24.8K', label: 'Publications' },

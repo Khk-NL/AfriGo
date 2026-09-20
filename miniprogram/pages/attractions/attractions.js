@@ -2,8 +2,22 @@
 import { loadCollectionWithFallback } from '../../utils/cloud-service.js';
 import { decorateBookmarks, toggleBookmark } from '../../utils/bookmarks.js';
 import { getSelectedDestination } from '../../utils/countries.js';
+import { getStoredLanguage } from '../../utils/i18n.js';
 
 const attrLib = require('../../data/attractions.js');
+
+const FRESHNESS_LABELS = {
+  zh: { synced: '已同步', updated: '更新于' },
+  en: { synced: 'Synced', updated: 'Updated' },
+  fr: { synced: 'Synchronisé', updated: 'Mis à jour' }
+};
+
+const buildFreshnessText = (hasData, date) => {
+  const labels = FRESHNESS_LABELS[getStoredLanguage()] || FRESHNESS_LABELS.zh;
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hasData ? labels.synced : labels.updated} ${hours}:${minutes}`;
+};
 
 const hasUsableImage = (image) => {
   if (!image || typeof image !== 'string') {
@@ -72,7 +86,10 @@ Page({
     tags: ["全部"],
     activeTag: "全部",
     searchKeyword: "",
-    noData: false
+    noData: false,
+    loading: true,
+    refreshing: false,
+    freshnessText: ""
   },
 
   onLoad: function() {
@@ -87,28 +104,58 @@ Page({
     }
   },
 
-  async loadAttractions(countryZh) {
-    const selected = getSelectedDestination();
-    const coverImage = selected.image;
-    const localFallback = applyCountryCover(pickCountryList(attrLib.attractions, countryZh), coverImage);
-    const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
-    const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);
-    let nextList = cloudList.length ? cloudList : localFallback;
+  // 页面内容在满屏 scroll-view 里，页面级下拉可能被抢手势，因此同时接 scroll-view 的 refresher
+  async onRefresh() {
+    this.setData({ refreshing: true });
     try {
-      nextList = await decorateBookmarks(nextList, 'attraction');
-    } catch (error) {
-      console.warn('attractions: load bookmarks failed', error);
+      await this.onPullDownRefresh();
+    } finally {
+      this.setData({ refreshing: false });
     }
-    const tags = ['全部', ...new Set(nextList.flatMap((item) => Array.isArray(item.tags) ? item.tags : []))];
-    this.setData({
-      currentCountry: countryZh,
-      list: nextList,
-      fullList: nextList,
-      tags,
-      activeTag: '全部',
-      searchKeyword: '',
-      noData: !nextList.length
-    });
+  },
+
+  async onPullDownRefresh() {
+    try {
+      await this.loadAttractions(getSelectedDestination().zhName);
+    } finally {
+      wx.stopPullDownRefresh();
+    }
+  },
+
+  async loadAttractions(countryZh) {
+    const showLoading = !this.data.fullList.length;
+    if (showLoading) {
+      this.setData({ loading: true });
+    }
+    try {
+      const selected = getSelectedDestination();
+      const coverImage = selected.image;
+      const localFallback = applyCountryCover(pickCountryList(attrLib.attractions, countryZh), coverImage);
+      const docs = await loadCollectionWithFallback('attractions', localFallback, countryZh);
+      const cloudList = applyCountryCover(pickCloudCountryList(docs, countryZh), coverImage);
+      let nextList = cloudList.length ? cloudList : localFallback;
+      try {
+        nextList = await decorateBookmarks(nextList, 'attraction');
+      } catch (error) {
+        console.warn('attractions: load bookmarks failed', error);
+      }
+      const tags = ['全部', ...new Set(nextList.flatMap((item) => Array.isArray(item.tags) ? item.tags : []))];
+      this.setData({
+        currentCountry: countryZh,
+        list: nextList,
+        fullList: nextList,
+        tags,
+        activeTag: '全部',
+        searchKeyword: '',
+        noData: !nextList.length,
+        freshnessText: buildFreshnessText(nextList.length > 0, new Date())
+      });
+    } catch (error) {
+      console.error('attractions: load failed', error);
+      this.setData({ noData: !this.data.list.length });
+    } finally {
+      this.setData({ loading: false });
+    }
   },
 
   onSearchInput(e) {

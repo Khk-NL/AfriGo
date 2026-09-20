@@ -9,7 +9,8 @@
     <view class="glass-wash-overlay"></view>
   </view>
 
-  <scroll-view class="community-scroll" scroll-y="true" show-scrollbar="false">
+  <scroll-view class="community-scroll" scroll-y="true" show-scrollbar="false"
+    refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-shell">
       <view class="hero-copy">
         <text class="eyebrow">{{uiText.eyebrow}}</text>
@@ -24,6 +25,8 @@
           <text class="journey-text">{{uiText.journeyNote}}</text>
         </view>
       </view>
+
+      <text wx:if="{{freshnessText}}" class="freshness-line">{{freshnessText}}</text>
 
       <view class="stats-row">
         <block wx:for="{{stats}}" wx:key="id">
@@ -112,7 +115,11 @@
         </view>
       </view>
 
-      <view wx:if="{{isLoading}}" class="feed-state acrylic-card">正在加载社区动态...</view>
+      <view wx:if="{{isLoading}}" class="skeleton-list">
+        <view class="skeleton-card"></view>
+        <view class="skeleton-card"></view>
+        <view class="skeleton-card"></view>
+      </view>
       <view wx:elif="{{loadError}}" class="feed-state acrylic-card" bindtap="onRetryTap">
         {{loadError}} · 点击重试
       </view>

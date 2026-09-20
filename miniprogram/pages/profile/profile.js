@@ -69,8 +69,6 @@ Page({
         uiText: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false),
         bookmarks: [],
         myPosts: [],
-        quickActions: [],
-        serviceEntries: [],
         profileStats: [],
         settingsVisible: false,
         languageOptions: LANGUAGE_OPTIONS.map((item) => item.label),
@@ -197,8 +195,6 @@ Page({
             memberSince,
             bookmarks,
             myPosts,
-            quickActions: this.buildQuickActions(bookmarks.length),
-            serviceEntries: this.buildServiceEntries(currentCountry),
             profileStats: this.buildProfileStats(bookmarks.length, isLogin, currentCountry)
         });
     },
@@ -232,90 +228,8 @@ Page({
         return text.profileStats;
     },
 
-    buildQuickActions(bookmarksCount) {
-        return buildProfileText(this.data.language, this.data.currentCountry, this.data.currentCountryLabel, bookmarksCount, this.data.isLogin).quickActions;
-    },
-
-    buildServiceEntries(currentCountry) {
-        return buildProfileText(this.data.language, currentCountry, this.data.currentCountryLabel, this.data.bookmarks.length, this.data.isLogin).serviceEntries;
-    },
-
-    onQuickActionTap(e) {
-        const { key } = e.currentTarget.dataset;
-
-        if (key === 'visa') {
-            wx.navigateTo({
-                url: '/pages/logs/logs'
-            });
-            return;
-        }
-
-        if (key === 'security') {
-            wx.navigateTo({
-                url: '/pages/security/security'
-            });
-            return;
-        }
-
-        if (key === 'message') {
-            wx.switchTab({
-                url: '/pages/message/message'
-            });
-            return;
-        }
-
-        if (key === 'bookmarks') {
-            wx.showToast({
-                title: this.data.language === 'zh' ? (this.data.bookmarks.length ? '下方可查看收藏清单' : '收藏夹还是空的') : this.data.language === 'en' ? (this.data.bookmarks.length ? 'See your saved list below' : 'No bookmarks yet') : (this.data.bookmarks.length ? 'Voir la liste enregistrée ci-dessous' : 'Aucun favori pour le moment'),
-                icon: 'none'
-            });
-        }
-    },
-
-    onServiceTap(e) {
-        const { action, title } = e.currentTarget.dataset;
-
-        if (action === 'local-info') {
-            wx.navigateTo({
-                url: '/pages/local-info/local-info'
-            });
-            return;
-        }
-
-        if (action === 'visa') {
-            wx.navigateTo({
-                url: '/pages/logs/logs'
-            });
-            return;
-        }
-
-        if (action === 'security') {
-            wx.navigateTo({
-                url: '/pages/security/security'
-            });
-            return;
-        }
-
-        if (action === 'recommend') {
-            wx.navigateTo({
-                url: '/pages/recommend/recommend'
-            });
-            return;
-        }
-
-        if (action === 'phrases') {
-            wx.navigateTo({
-                url: '/pages/phrases/phrases'
-            });
-            return;
-        }
-
-        if (action === 'settings') {
-            this.setData({ settingsVisible: true });
-            return;
-        }
-
-        if (title) wx.showToast({ title, icon: 'none' });
+    onOpenSettings() {
+        this.setData({ settingsVisible: true });
     },
 
     onBookmarkTap(e) {
@@ -333,7 +247,6 @@ Page({
             const bookmarks = this.data.bookmarks.filter((bookmark) => String(bookmark.id) !== String(id));
             this.setData({
                 bookmarks,
-                quickActions: this.buildQuickActions(bookmarks.length),
                 profileStats: this.buildProfileStats(bookmarks.length, this.data.isLogin, this.data.currentCountry)
             });
             wx.showToast({

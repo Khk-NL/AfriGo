@@ -53,26 +53,6 @@
                 </view>
             </view>
 
-            <view class="section-card quick-card">
-                <view class="section-head">
-                    <view>
-                        <text class="section-title">{{uiText.quickTitle}}</text>
-                        <text class="section-subtitle">{{uiText.quickSubtitle}}</text>
-                    </view>
-                </view>
-
-                <view class="quick-grid">
-                    <block wx:for="{{quickActions}}" wx:key="key">
-                        <view class="quick-item quick-{{item.tone}}" bindtap="onQuickActionTap" data-key="{{item.key}}">
-                            <image wx:if="{{item.iconImage}}" class="quick-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
-                            <text wx:else class="quick-icon">{{item.icon}}</text>
-                            <text class="quick-label">{{item.label}}</text>
-                            <text class="quick-meta">{{item.meta}}</text>
-                        </view>
-                    </block>
-                </view>
-            </view>
-
             <view class="section-card journey-card">
                 <view class="section-head">
                     <view>
@@ -91,25 +71,16 @@
                 </view>
             </view>
 
-            <view class="section-card service-card">
-                <view class="section-head">
+            <!-- 原来这里有一整块"服务入口"，与首页功能宫格重复，已移除；
+                 设置入口改为显式一行，避免删掉宫格后进不去设置。 -->
+            <view class="section-card settings-entry-card" bindtap="onOpenSettings">
+                <view class="section-head section-head-row">
                     <view>
-                        <text class="section-title">{{uiText.serviceTitle}}</text>
-                        <text class="section-subtitle">{{uiText.serviceSubtitle}}</text>
+                        <text class="section-title">{{settingsText.title}}</text>
+                        <text class="section-subtitle">{{settingsText.subtitle}}</text>
                     </view>
+                    <text class="service-arrow">›</text>
                 </view>
-
-                <block wx:for="{{serviceEntries}}" wx:key="title">
-                    <view class="service-item" bindtap="onServiceTap" data-action="{{item.action}}" data-title="{{item.title}}">
-                        <image wx:if="{{item.iconImage}}" class="service-icon-image" src="{{item.iconImage}}" mode="aspectFit" />
-                        <text wx:else class="service-icon">{{item.icon}}</text>
-                        <view class="service-copy">
-                            <text class="service-title">{{item.title}}</text>
-                            <text class="service-subtitle">{{item.subtitle}}</text>
-                        </view>
-                        <text class="service-arrow">›</text>
-                    </view>
-                </block>
             </view>
 
             <view wx:if="{{settingsVisible}}" class="section-card settings-card">
@@ -197,17 +168,6 @@
                     <view>
                         <text class="section-title">{{uiText.supportTitle}}</text>
                         <text class="section-subtitle">{{uiText.supportSubtitle}}</text>
-                    </view>
-                </view>
-
-                <view class="support-row">
-                    <view class="support-action support-green" bindtap="onServiceTap" data-action="security" data-title="{{uiText.supportSecurityTitle}}">
-                        <text class="support-title">{{uiText.supportSecurityTitle}}</text>
-                        <text class="support-desc">{{uiText.supportSecurityDesc}}</text>
-                    </view>
-                    <view class="support-action support-sand" bindtap="onServiceTap" data-action="local-info" data-title="{{uiText.supportLocalInfoTitle}}">
-                        <text class="support-title">{{uiText.supportLocalInfoTitle}}</text>
-                        <text class="support-desc">{{uiText.supportLocalInfoDesc}}</text>
                     </view>
                 </view>
 

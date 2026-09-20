@@ -33,6 +33,17 @@ function formatCount(value) {
   return String(count);
 }
 
+function formatClock(date) {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+function buildFreshnessText(uiText, hasServerData) {
+  const label = hasServerData ? uiText.syncedLabel : uiText.updatedLabel;
+  return `${label} ${formatClock(new Date())}`;
+}
+
 Page({
   data: {
     activeTab: 'community',
@@ -51,8 +62,10 @@ Page({
     totalLikes: 0,
     totalComments: 0,
     isLiking: false,
-    isLoading: false,
-    loadError: ''
+    isLoading: true,
+    loadError: '',
+    freshnessText: '',
+    refreshing: false
   },
 
   onLoad() {
@@ -78,8 +91,31 @@ Page({
     this.refreshCommunityFeed();
   },
 
+  // 页面内容在满屏 scroll-view 里，页面级下拉可能被抢手势，因此同时接 scroll-view 的 refresher
+  async onRefresh() {
+    this.setData({ refreshing: true });
+    try {
+      await this.onPullDownRefresh();
+    } finally {
+      this.setData({ refreshing: false });
+    }
+  },
+
+  async onPullDownRefresh() {
+    try {
+      await this.refreshCommunityFeed();
+    } finally {
+      wx.stopPullDownRefresh();
+    }
+  },
+
   async refreshCommunityFeed() {
-    this.setData({ isLoading: true, loadError: '' });
+    const showLoading = !this.data.featuredPost.id;
+    if (showLoading) {
+      this.setData({ isLoading: true, loadError: '' });
+    } else {
+      this.setData({ loadError: '' });
+    }
     try {
       const posts = await loadCollection('posts');
       const normalizedPosts = posts.map((post) => {
@@ -145,14 +181,16 @@ Page({
           isSaved: Boolean(engagement.isSaved),
           savesText: engagement.isSaved ? '已收藏' : '收藏'
         } : FEATURED_POST,
-        isLoading: false
+        freshnessText: buildFreshnessText(this.data.uiText, normalizedPosts.length > 0),
+        loadError: ''
       });
     } catch (error) {
       console.error('community: load posts failed', error);
       this.setData({
-        isLoading: false,
         loadError: '社区动态加载失败，请稍后重试'
       });
+    } finally {
+      this.setData({ isLoading: false });
     }
   },
 

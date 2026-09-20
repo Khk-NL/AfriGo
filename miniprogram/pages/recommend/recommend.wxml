@@ -4,7 +4,8 @@
     <text class="page-back-text">返回主界面</text>
   </view>
 
-  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false">
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false"
+    refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-content">
       <view class="hero-card">
         <text class="hero-eyebrow">TRAVEL PICKS</text>
@@ -16,6 +17,8 @@
           <text class="hero-chip">可直接参考</text>
         </view>
       </view>
+
+      <text wx:if="{{freshnessText}}" class="freshness-line">{{freshnessText}}</text>
 
       <view class="section-card">
         <view class="section-head">
@@ -45,7 +48,12 @@
           <text class="section-subtitle">点击卡片查看地址与安全提示</text>
         </view>
 
-        <block wx:if="{{displayList.length}}">
+        <view wx:if="{{loading}}" class="skeleton-list">
+          <view class="skeleton-card"></view>
+          <view class="skeleton-card"></view>
+          <view class="skeleton-card"></view>
+        </view>
+        <block wx:elif="{{displayList.length}}">
           <block wx:for="{{displayList}}" wx:key="id">
             <view class="item-card recommend-card" bindtap="onCardTap" data-name="{{item.name}}" data-address="{{item.address}}" data-desc="{{item.desc}}" data-safety-tip="{{item.safetyTip}}">
               <view class="item-head">

@@ -79,3 +79,69 @@ page { background: #f4f5f3; color: #24302a; font-family: -apple-system, BlinkMac
   .tool-title { font-size: 23rpx; }
   .feature-label { font-size: 18rpx; }
 }
+
+/* 同步状态：让首页看起来是在持续更新的，而不是一张静态图 */
+.sync-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  font-size: 20rpx;
+  color: #8b968f;
+}
+
+/* 实时风险提醒条：数据来自后端 risk_alerts，仅在有效期内有内容时出现 */
+.risk-banner {
+  margin-top: 16rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 24rpx;
+  background: #fff8ec;
+  border: 1rpx solid #f0dcb8;
+}
+
+.risk-banner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.risk-banner-tag {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #96693a;
+}
+
+.risk-banner-date {
+  font-size: 20rpx;
+  color: #a98f6d;
+}
+
+.risk-banner-title {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  line-height: 1.45;
+  color: #5a452c;
+}
+
+.risk-banner-source {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #a98f6d;
+}
+
+.risk-high,
+.risk-critical {
+  background: #fdf1f1;
+  border-color: #f0cccc;
+}
+
+.risk-high .risk-banner-tag,
+.risk-critical .risk-banner-tag {
+  color: #a4464b;
+}
+
+.risk-high .risk-banner-title,
+.risk-critical .risk-banner-title {
+  color: #6b3134;
+}

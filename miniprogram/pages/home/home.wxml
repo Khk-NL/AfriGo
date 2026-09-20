@@ -4,8 +4,13 @@
     <view class="destination-pill"><text>📍</text><text>{{currentCountryZh}}</text></view>
   </view>
 
-  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false" enhanced="true">
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false" enhanced="true"
+    refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onRefresh">
     <view class="page-content">
+      <view class="sync-line">
+        <text>{{syncText}}</text>
+      </view>
+
       <view class="ai-hero-container">
         <image wx:if="{{heroCoverImage}}" class="hero-cover-image" src="{{heroCoverImage}}" mode="aspectFill" />
         <view class="hero-cover-mask"></view>
@@ -25,6 +30,15 @@
       <view class="safety-card" bindtap="onOpenSecurityGuide">
         <view class="safety-main"><text class="safety-icon">🛡️</text><view><text class="safety-title">{{uiText.safetyTitle}}</text><text class="safety-level">{{uiText.safetyLevel}} · {{uiText.safetyDate}}</text></view></view>
         <text class="safety-more" catchtap="onMoreTap">{{uiText.safetyMore}} ›</text>
+      </view>
+
+      <view wx:if="{{riskBanner}}" class="risk-banner risk-{{riskBanner.severity}}" bindtap="onOpenSecurityGuide">
+        <view class="risk-banner-head">
+          <text class="risk-banner-tag">实时风险提醒</text>
+          <text class="risk-banner-date">{{riskBanner.publishedAt}}</text>
+        </view>
+        <text class="risk-banner-title">{{riskBanner.title}}</text>
+        <text class="risk-banner-source" wx:if="{{riskBanner.sourceName}}">来源：{{riskBanner.sourceName}}</text>
       </view>
 
       <view class="home-section">
