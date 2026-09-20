@@ -37,6 +37,16 @@
         </block>
       </view>
 
+      <!-- 我的动态：只放自己发的内容，从社区进比塞在"我的"里更符合直觉 -->
+      <view class="my-posts-entry acrylic-card" bindtap="onOpenMyPosts">
+        <view class="af-icon af-icon-review"></view>
+        <view class="my-posts-copy">
+          <text class="my-posts-title">我的动态</text>
+          <text class="my-posts-desc">管理你发布的旅行记录</text>
+        </view>
+        <text class="my-posts-arrow">›</text>
+      </view>
+
       <view wx:if="{{avatars.length}}" class="avatar-shell acrylic-card">
         <view class="avatar-shell-head">
           <text class="avatar-shell-title">{{uiText.avatarShellTitle}}</text>

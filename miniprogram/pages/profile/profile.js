@@ -1,5 +1,5 @@
 import { buildProfileText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
-import { deleteCurrentAccount, deleteMyPost, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, loadMyPosts, logoutCurrentUser, removeBookmark, syncWeChatLogin, updateMyProfile, uploadAvatar } from '../../utils/cloud-service.js';
+import { deleteCurrentAccount, getStoredCurrentUser, isAdminUser, isLoggedIn, loadBookmarks, logoutCurrentUser, removeBookmark, syncWeChatLogin, updateMyProfile, uploadAvatar } from '../../utils/cloud-service.js';
 
 const LOGIN_TEXT = {
     zh: { loading: '登录中', success: '登录成功', failed: '登录失败，请稍后重试' },
@@ -22,9 +22,9 @@ const LANGUAGE_OPTIONS = [
 ];
 
 const SETTINGS_TEXT = {
-    zh: { title: '偏好与设置', subtitle: '设置仅影响当前设备上的小程序体验', close: '关闭', language: '界面语言', reminders: '应用内未读提醒', remindersDesc: '关闭后消息仍保留，但不显示未读红点', privacy: '隐私与数据说明', privacyDesc: '查看本地与服务端保存的数据', deleteAccount: '删除账号及关联数据' },
-    en: { title: 'Preferences & settings', subtitle: 'These settings apply to this device', close: 'Close', language: 'Interface language', reminders: 'In-app unread reminders', remindersDesc: 'Messages remain available when unread dots are hidden', privacy: 'Privacy & data', privacyDesc: 'Review locally and remotely stored data', deleteAccount: 'Delete account and related data' },
-    fr: { title: 'Préférences & réglages', subtitle: 'Ces réglages s’appliquent à cet appareil', close: 'Fermer', language: 'Langue de l’interface', reminders: 'Rappels non lus intégrés', remindersDesc: 'Les messages restent disponibles sans pastille rouge', privacy: 'Confidentialité et données', privacyDesc: 'Voir les données locales et distantes', deleteAccount: 'Supprimer le compte et ses données' }
+    zh: { title: '偏好与设置', subtitle: '设置仅影响当前设备上的小程序体验', language: '界面语言', reminders: '应用内未读提醒', remindersDesc: '关闭后消息仍保留，但不显示未读红点', privacy: '隐私与数据说明', privacyDesc: '查看本地与服务端保存的数据', deleteAccount: '删除账号及关联数据' },
+    en: { title: 'Preferences & settings', subtitle: 'These settings apply to this device', language: 'Interface language', reminders: 'In-app unread reminders', remindersDesc: 'Messages remain available when unread dots are hidden', privacy: 'Privacy & data', privacyDesc: 'Review locally and remotely stored data', deleteAccount: 'Delete account and related data' },
+    fr: { title: 'Préférences & réglages', subtitle: 'Ces réglages s’appliquent à cet appareil', language: 'Langue de l’interface', reminders: 'Rappels non lus intégrés', remindersDesc: 'Les messages restent disponibles sans pastille rouge', privacy: 'Confidentialité et données', privacyDesc: 'Voir les données locales et distantes', deleteAccount: 'Supprimer le compte et ses données' }
 };
 
 const COUNTRY_CITY_MAP = {
@@ -68,7 +68,6 @@ Page({
         riskLabel: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false).riskLabel,
         uiText: buildProfileText(getStoredLanguage(), '肯尼亚', getCountryName('肯尼亚', getStoredLanguage()), 0, false),
         bookmarks: [],
-        myPosts: [],
         profileStats: [],
         settingsVisible: false,
         languageOptions: LANGUAGE_OPTIONS.map((item) => item.label),
@@ -163,7 +162,6 @@ Page({
         const currentCountry = selectedDestination.zhName || '肯尼亚';
         const currentCity = COUNTRY_CITY_MAP[currentCountry] || '主要城市';
         let bookmarks = [];
-        let myPosts = [];
         const memberSince = this.ensureMemberSince();
         const isLogin = isLoggedIn(currentUser);
         const isAdmin = isAdminUser(currentUser);
@@ -171,9 +169,8 @@ Page({
 
         if (isLogin) {
             try {
-                const [remoteBookmarks, remotePosts] = await Promise.all([loadBookmarks(), loadMyPosts()]);
+                const remoteBookmarks = await loadBookmarks();
                 bookmarks = this.normalizeBookmarks(remoteBookmarks);
-                myPosts = remotePosts;
             } catch (error) {
                 console.error('profile: load personal data failed', error);
             }
@@ -194,7 +191,6 @@ Page({
             riskLabel: this.data.uiText.riskLabel,
             memberSince,
             bookmarks,
-            myPosts,
             profileStats: this.buildProfileStats(bookmarks.length, isLogin, currentCountry)
         });
     },
@@ -228,8 +224,8 @@ Page({
         return text.profileStats;
     },
 
-    onOpenSettings() {
-        this.setData({ settingsVisible: true });
+    onToggleSettings() {
+        this.setData({ settingsVisible: !this.data.settingsVisible });
     },
 
     onBookmarkTap(e) {
@@ -281,10 +277,6 @@ Page({
         });
     },
 
-    onCloseSettings() {
-        this.setData({ settingsVisible: false });
-    },
-
     onDeleteAccount() {
         wx.showModal({
             title: '删除账号及数据',
@@ -300,24 +292,6 @@ Page({
                     wx.showToast({ title: '账号已删除', icon: 'success' });
                 } catch (error) {
                     wx.showToast({ title: error.message || '删除失败', icon: 'none' });
-                }
-            }
-        });
-    },
-
-    onDeletePost(e) {
-        const { id } = e.currentTarget.dataset;
-        wx.showModal({
-            title: '删除动态',
-            content: '确认删除这条动态吗？',
-            success: async (result) => {
-                if (!result.confirm) return;
-                try {
-                    await deleteMyPost(id);
-                    this.setData({ myPosts: this.data.myPosts.filter((post) => String(post.id) !== String(id)) });
-                    wx.showToast({ title: '已删除', icon: 'success' });
-                } catch (error) {
-                    wx.showToast({ title: '删除失败，请稍后重试', icon: 'none' });
                 }
             }
         });

@@ -154,13 +154,9 @@ const PROFILE_TEXT = {
     guestSubcopy: '登录后可同步收藏夹、目的地与常用提醒，把出行信息收成一页。',
     loginButton: '微信一键登录',
     loggedInStatus: '已同步微信身份',
-    heroSubcopy: '安全同行账户',
-    quickTitle: '高频入口',
-    quickSubtitle: '把最常用的四个动作收进这张旅途仪表盘',
+    heroSubcopy: '安全同行账户',
     journeyTitle: '旅途画像',
-    journeySubtitle: '保持页面气质统一，但信息表达更像一张随身卡片',
-    serviceTitle: '服务总览',
-    serviceSubtitle: '把签证、安全、资讯和设置串在一页里，不必来回找入口',
+    journeySubtitle: '保持页面气质统一，但信息表达更像一张随身卡片',
     bookmarkTitle: '收藏清单',
     bookmarkSubtitle: '以后你在各页标记的重点内容，都可以回到这里统一回看',
     bookmarkEmptyTitle: '收藏夹还没有内容',
@@ -172,13 +168,7 @@ const PROFILE_TEXT = {
     statusReady: '已激活',
     statusPending: '待登录',
     bookmarkCountSuffix: '条',
-    logout: '退出当前账号',
-    supportTitle: '收尾动作',
-    supportSubtitle: '把应急入口和身份管理放在页面底部，逻辑更清晰',
-    supportSecurityTitle: '安全中心',
-    supportSecurityDesc: '应急提醒',
-    supportLocalInfoTitle: '本地资讯',
-    supportLocalInfoDesc: '城市速览',
+    logout: '退出当前账号',
     loggedInNote: '你的微信身份、收藏夹和旅途服务都已经汇总到这张随身面板里。',
     guestStatus: '当前未登录，点击下方按钮即可微信登录。',
     adminEntrance: '管理员入口',
@@ -205,13 +195,9 @@ const PROFILE_TEXT = {
     guestSubcopy: 'Sign in to sync bookmarks, destinations, and reminders into one neat travel card.',
     loginButton: 'Sign in with WeChat',
     loggedInStatus: 'WeChat identity synced',
-    heroSubcopy: 'Safety travel account',
-    quickTitle: 'Quick Access',
-    quickSubtitle: 'Keep the four most used actions in one travel dashboard',
+    heroSubcopy: 'Safety travel account',
     journeyTitle: 'Journey Snapshot',
-    journeySubtitle: 'Keep the visual tone unified while the content feels like a portable card',
-    serviceTitle: 'Service Overview',
-    serviceSubtitle: 'Connect visa, safety, info, and settings without hunting for entry points',
+    journeySubtitle: 'Keep the visual tone unified while the content feels like a portable card',
     bookmarkTitle: 'Bookmarks',
     bookmarkSubtitle: 'Everything you save in other pages will be collected here for review later.',
     bookmarkEmptyTitle: 'No bookmarks yet',
@@ -223,13 +209,7 @@ const PROFILE_TEXT = {
     statusReady: 'Active',
     statusPending: 'Pending sign-in',
     bookmarkCountSuffix: 'items',
-    logout: 'Sign out',
-    supportTitle: 'Final actions',
-    supportSubtitle: 'Place emergency and account controls at the bottom for a cleaner layout',
-    supportSecurityTitle: 'Safety Center',
-    supportSecurityDesc: 'Alerts',
-    supportLocalInfoTitle: 'Local Info',
-    supportLocalInfoDesc: 'City snapshot',
+    logout: 'Sign out',
     loggedInNote: 'Your WeChat identity, bookmarks, and travel services are all gathered into this portable panel.',
     guestStatus: 'Not signed in yet. Tap the button below to sign in with WeChat.',
     adminEntrance: 'Admin portal',
@@ -256,13 +236,9 @@ const PROFILE_TEXT = {
     guestSubcopy: 'Connectez-vous pour synchroniser favoris, destinations et rappels dans une carte de voyage.',
     loginButton: 'Connexion WeChat',
     loggedInStatus: 'Identité WeChat synchronisée',
-    heroSubcopy: 'Compte de voyage sécurisé',
-    quickTitle: 'Accès rapide',
-    quickSubtitle: 'Regroupez les quatre actions les plus utiles dans un seul tableau de bord',
+    heroSubcopy: 'Compte de voyage sécurisé',
     journeyTitle: 'Aperçu du voyage',
-    journeySubtitle: 'Conservez une harmonie visuelle tout en gardant une lecture façon carte de poche',
-    serviceTitle: 'Aperçu des services',
-    serviceSubtitle: 'Reliez visa, sécurité, infos et réglages sans chercher les entrées',
+    journeySubtitle: 'Conservez une harmonie visuelle tout en gardant une lecture façon carte de poche',
     bookmarkTitle: 'Favoris',
     bookmarkSubtitle: 'Tout ce que vous enregistrez ailleurs sera réuni ici pour consultation.',
     bookmarkEmptyTitle: 'Aucun favori',
@@ -274,13 +250,7 @@ const PROFILE_TEXT = {
     statusReady: 'Actif',
     statusPending: 'Connexion requise',
     bookmarkCountSuffix: 'éléments',
-    logout: 'Se déconnecter',
-    supportTitle: 'Actions finales',
-    supportSubtitle: 'Placez l’urgence et la gestion du compte en bas pour plus de clarté',
-    supportSecurityTitle: 'Centre de sécurité',
-    supportSecurityDesc: 'Alertes',
-    supportLocalInfoTitle: 'Infos locales',
-    supportLocalInfoDesc: 'Aperçu urbain',
+    logout: 'Se déconnecter',
     loggedInNote: 'Votre identité WeChat, vos favoris et vos services de voyage sont regroupés dans ce panneau portable.',
     guestStatus: 'Pas encore connecté. Touchez le bouton ci-dessous pour vous connecter.',
     adminEntrance: 'Accès administrateur',
@@ -786,21 +756,11 @@ function buildProfileText(language, currentCountryZh = '肯尼亚', currentCount
     riskLabel: riskLabelMap[locale] || riskLabelMap.zh,
     destinationBanner: `${country} ${base.journeyBadgePrefix}`,
     journeyTitle: base.journeyTitle,
-    journeySubtitle: base.journeySubtitle,
-    quickTitle: base.quickTitle,
-    quickSubtitle: base.quickSubtitle,
-    serviceTitle: base.serviceTitle,
-    serviceSubtitle: base.serviceSubtitle,
+    journeySubtitle: base.journeySubtitle,
     bookmarkTitle: base.bookmarkTitle,
     bookmarkSubtitle: base.bookmarkSubtitle,
     bookmarkEmptyTitle: base.bookmarkEmptyTitle,
-    bookmarkEmptyDesc: base.bookmarkEmptyDesc,
-    supportTitle: base.supportTitle,
-    supportSubtitle: base.supportSubtitle,
-    supportSecurityTitle: base.supportSecurityTitle,
-    supportSecurityDesc: base.supportSecurityDesc,
-    supportLocalInfoTitle: base.supportLocalInfoTitle,
-    supportLocalInfoDesc: base.supportLocalInfoDesc,
+    bookmarkEmptyDesc: base.bookmarkEmptyDesc,
     loginButton: base.loginButton,
     loggedInStatus: base.loggedInStatus,
     logout: base.logout,

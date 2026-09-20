@@ -1,0 +1,44 @@
+<view class="page-root">
+  <view class="page-back-btn" bindtap="onBack">
+    <text class="page-back-icon">←</text>
+    <text class="page-back-text">返回社区</text>
+  </view>
+
+  <scroll-view class="page-scroll" scroll-y="true" show-scrollbar="false"
+    refresher-enabled="{{true}}" refresher-triggered="{{loading}}" bindrefresherrefresh="onPullDownRefresh">
+    <view class="page-content">
+      <view class="hero-card">
+        <text class="hero-eyebrow">{{text.eyebrow}}</text>
+        <text class="hero-title">{{text.title}}</text>
+        <text class="hero-summary">{{text.summary}}</text>
+      </view>
+
+      <block wx:if="{{isLogin}}">
+        <block wx:if="{{posts.length}}">
+          <view class="posts-head"><text class="posts-count">{{posts.length}}{{text.countSuffix}}</text></view>
+          <view wx:for="{{posts}}" wx:key="id" class="section-card post-card">
+            <text class="post-body">{{item.content || text.imagePost}}</text>
+            <view class="post-foot">
+              <text class="post-time">{{item.createTime}}</text>
+              <text class="post-delete" data-id="{{item.id}}" bindtap="onDeletePost">{{text.delete}}</text>
+            </view>
+          </view>
+        </block>
+
+        <view wx:elif="{{!loading}}" class="section-card empty-state" bindtap="onGoCommunity">
+          <text class="empty-title">{{text.emptyTitle}}</text>
+          <text class="empty-desc">{{text.emptyDesc}}</text>
+        </view>
+      </block>
+
+      <view wx:else class="section-card empty-state">
+        <text class="empty-title">{{text.loginRequired}}</text>
+        <view class="login-btn" bindtap="onGoLogin"><text>{{text.goLogin}}</text></view>
+      </view>
+
+      <view class="bottom-space"></view>
+    </view>
+  </scroll-view>
+
+  <elephant-pet />
+</view>

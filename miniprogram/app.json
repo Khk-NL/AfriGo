@@ -6,6 +6,7 @@
     "pages/customs/customs",
     "pages/security/security",
     "pages/community/community",
+    "pages/my-posts/my-posts",
     "pages/admin/admin",
     "pages/local-info/local-info",
     "pages/publish/publish",

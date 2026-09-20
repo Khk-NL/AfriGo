@@ -1,0 +1,55 @@
+@import "../../templates/content-shell.wxss";
+
+.posts-head {
+  margin: 26rpx 4rpx 10rpx;
+}
+
+.posts-count {
+  font-size: 22rpx;
+  color: #948779;
+}
+
+.post-card {
+  margin-top: 14rpx;
+  padding: 26rpx 26rpx 20rpx;
+}
+
+.post-body {
+  display: block;
+  font-size: 28rpx;
+  line-height: 1.65;
+  color: #2a231c;
+  word-break: break-word;
+}
+
+.post-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #efe6d8;
+}
+
+.post-time {
+  font-size: 22rpx;
+  color: #948779;
+}
+
+.post-delete {
+  padding: 8rpx 20rpx;
+  border-radius: 999rpx;
+  background: #f6ece5;
+  color: #8c3f22;
+  font-size: 22rpx;
+}
+
+.login-btn {
+  display: inline-block;
+  margin-top: 20rpx;
+  padding: 16rpx 42rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(150deg, #b4552f, #8c3f22);
+  color: #fffdf8;
+  font-size: 26rpx;
+}

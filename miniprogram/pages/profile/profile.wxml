@@ -72,41 +72,32 @@
                 </view>
             </view>
 
-            <!-- 原来这里有一整块"服务入口"，与首页功能宫格重复，已移除；
-                 设置入口改为显式一行，避免删掉宫格后进不去设置。 -->
-            <view class="section-card settings-entry-card" bindtap="onOpenSettings">
-                <view class="section-head section-head-row">
+            <!-- 设置：入口和内容合成一张卡，不再"点一下又多出一张卡" -->
+            <view class="section-card settings-card">
+                <view class="section-head section-head-row" bindtap="onToggleSettings">
                     <view>
                         <text class="section-title">{{settingsText.title}}</text>
                         <text class="section-subtitle">{{settingsText.subtitle}}</text>
                     </view>
-                    <text class="service-arrow">›</text>
+                    <text class="service-arrow {{settingsVisible ? 'is-open' : ''}}">›</text>
                 </view>
-            </view>
-
-            <view wx:if="{{settingsVisible}}" class="section-card settings-card">
-                <view class="section-head section-head-row">
-                    <view>
-                        <text class="section-title">{{settingsText.title}}</text>
-                        <text class="section-subtitle">{{settingsText.subtitle}}</text>
-                    </view>
-                    <text class="settings-close" bindtap="onCloseSettings">{{settingsText.close}}</text>
-                </view>
-                <picker mode="selector" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="onLanguageChange">
+                <block wx:if="{{settingsVisible}}">
+                    <picker mode="selector" range="{{languageOptions}}" value="{{languageIndex}}" bindchange="onLanguageChange">
+                        <view class="settings-row">
+                            <view><text class="settings-title">{{settingsText.language}}</text><text class="settings-desc">{{languageOptions[languageIndex]}}</text></view>
+                            <text class="service-arrow">›</text>
+                        </view>
+                    </picker>
                     <view class="settings-row">
-                        <view><text class="settings-title">{{settingsText.language}}</text><text class="settings-desc">{{languageOptions[languageIndex]}}</text></view>
+                        <view><text class="settings-title">{{settingsText.reminders}}</text><text class="settings-desc">{{settingsText.remindersDesc}}</text></view>
+                        <switch checked="{{remindersEnabled}}" bindchange="onReminderChange" color="#b4552f" />
+                    </view>
+                    <view class="settings-row" bindtap="onPrivacyTap">
+                        <view><text class="settings-title">{{settingsText.privacy}}</text><text class="settings-desc">{{settingsText.privacyDesc}}</text></view>
                         <text class="service-arrow">›</text>
                     </view>
-                </picker>
-                <view class="settings-row">
-                    <view><text class="settings-title">{{settingsText.reminders}}</text><text class="settings-desc">{{settingsText.remindersDesc}}</text></view>
-                    <switch checked="{{remindersEnabled}}" bindchange="onReminderChange" color="#58c796" />
-                </view>
-                <view class="settings-row" bindtap="onPrivacyTap">
-                    <view><text class="settings-title">{{settingsText.privacy}}</text><text class="settings-desc">{{settingsText.privacyDesc}}</text></view>
-                    <text class="service-arrow">›</text>
-                </view>
-                <button wx:if="{{isLogin}}" class="delete-account-btn" bindtap="onDeleteAccount">{{settingsText.deleteAccount}}</button>
+                    <button wx:if="{{isLogin}}" class="delete-account-btn" bindtap="onDeleteAccount">{{settingsText.deleteAccount}}</button>
+                </block>
             </view>
 
             <view class="section-card bookmark-card">
@@ -140,38 +131,7 @@
                 </block>
             </view>
 
-            <view wx:if="{{isLogin}}" class="section-card bookmark-card">
-                <view class="section-head section-head-row">
-                    <view>
-                        <text class="section-title">我的动态</text>
-                        <text class="section-subtitle">管理你发布的旅行记录</text>
-                    </view>
-                    <text class="section-pill">{{myPosts.length}} 条</text>
-                </view>
-                <view wx:if="{{myPosts.length === 0}}" class="empty-bookmarks">
-                    <text class="empty-title">还没有发布动态</text>
-                </view>
-                <block wx:else>
-                    <block wx:for="{{myPosts}}" wx:key="id">
-                        <view class="bookmark-item">
-                            <view class="bookmark-main">
-                                <text class="bookmark-title">{{item.content || '图片动态'}}</text>
-                                <text class="bookmark-date">{{item.createTime}}</text>
-                            </view>
-                            <view class="bookmark-remove" bindtap="onDeletePost" data-id="{{item.id}}">删除</view>
-                        </view>
-                    </block>
-                </block>
-            </view>
-
             <view class="section-card support-card">
-                <view class="section-head">
-                    <view>
-                        <text class="section-title">{{uiText.supportTitle}}</text>
-                        <text class="section-subtitle">{{uiText.supportSubtitle}}</text>
-                    </view>
-                </view>
-
                 <button wx:if="{{isLogin}}" class="ghost-logout-btn" bindtap="onLogout">{{uiText.logout}}</button>
 
                 <view wx:if="{{isAdmin}}" class="admin-entry-card" bindtap="onAdminCenterTap">

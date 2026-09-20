@@ -7,7 +7,7 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: #fcfcfc; /* 极简亮白基底 */
+  background: #f7f1e7; /* 极简亮白基底 */
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
 }
 
@@ -31,7 +31,7 @@
 .orb-mint {
   width: 90vw;
   height: 90vw;
-  background: linear-gradient(135deg, #a8ff78 0%, #16db93 100%);
+  background: linear-gradient(135deg, #e6c179 0%, #b4552f 100%);
   top: -20vh;
   left: -25vw;
   animation: liquidDriftMint 16s ease-in-out infinite alternate;
@@ -41,7 +41,7 @@
 .orb-yellow {
   width: 90vw;
   height: 90vw;
-  background: linear-gradient(135deg, #fff9a3 0%, #fed300 100%);
+  background: linear-gradient(135deg, #f3dda6 0%, #d8a13a 100%);
   top: 35vh;
   right: -25vw;
   animation: liquidDriftYellow 18s ease-in-out infinite alternate;
@@ -51,7 +51,7 @@
 .orb-cyan {
   width: 70vw;
   height: 70vw;
-  background: linear-gradient(135deg, #b2ebf2 0%, #80deea 100%);
+  background: linear-gradient(135deg, #cfe0c9 0%, #4f6b52 100%);
   bottom: -5vh;
   left: 10vw;
   animation: liquidDriftCyan 20s ease-in-out infinite alternate;
@@ -317,10 +317,10 @@
   font-weight: 700;
 }
 
-.tone-mint { background: linear-gradient(135deg, #c2eadb 0%, #87cbb0 100%); }
+.tone-mint { background: linear-gradient(135deg, #dfe6d5 0%, #8fae86 100%); }
 .tone-champagne { background: linear-gradient(135deg, #f6e6bf 0%, #e4c991 100%); }
 .tone-peach { background: linear-gradient(135deg, #f7d9cb 0%, #e8af96 100%); }
-.tone-sky { background: linear-gradient(135deg, #d6e8ee 0%, #a7c7d3 100%); }
+.tone-sky { background: linear-gradient(135deg, #e8e0d2 0%, #bfae95 100%); }
 .tone-blush { background: linear-gradient(135deg, #f2dfd8 0%, #d9b1a6 100%); }
 
 /* 瀑布流大卡片模块 */
@@ -547,7 +547,7 @@
 
 .feed-card-content {
   display: block;
-  color: #29342f;
+  color: #2a231c;
   font-size: 29rpx;
   line-height: 1.75;
 }
@@ -564,11 +564,48 @@
 .fluid-stage { display: none; }
 .page-shell { padding: calc(var(--safe-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 176rpx); }
 .hero-title { color: #2a231c; font-size: 46rpx; }
-.hero-subtitle { color: #526058; font-size: 27rpx; }
-.hero-desc { color: #758078; }
-.eyebrow, .journey-pill { background: #ecefeb; border: 1rpx solid #e6dac7; box-shadow: none; }
+.hero-subtitle { color: #5c5247; font-size: 27rpx; }
+.hero-desc { color: #7b6f62; }
+.eyebrow, .journey-pill { background: #f2ece2; border: 1rpx solid #e6dac7; box-shadow: none; }
 .acrylic-card { background: #fffdf8; border: 1rpx solid #e6dac7; box-shadow: none; backdrop-filter: none; border-radius: 24rpx; }
 .tone-mint, .tone-champagne, .tone-peach, .tone-sky, .tone-blush { background: #f2ece2; }
 .feature-card, .feed-card { border-radius: 24rpx; }
 .feature-action-primary, .feature-action-secondary { background: #f2ece2; box-shadow: none; }
-.feature-action-liked { background: #eee7e8; }
+.feature-action-liked { background: #f0e6df; }
+
+/* 我的动态入口：从社区进入，不再塞在「我的」里 */
+.my-posts-entry {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 20rpx;
+  padding: 24rpx 26rpx;
+  border-radius: 24rpx;
+  border-left: 6rpx solid #b4552f;
+  position: relative;
+  z-index: 2;
+}
+
+.my-posts-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.my-posts-title {
+  font-size: 28rpx;
+  font-weight: 800;
+  color: #2a231c;
+}
+
+.my-posts-desc {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #7b6f62;
+}
+
+.my-posts-arrow {
+  font-size: 30rpx;
+  color: #948779;
+}

@@ -210,6 +210,10 @@ Page({
     });
   },
 
+  onOpenMyPosts() {
+    wx.navigateTo({ url: '/pages/my-posts/my-posts' });
+  },
+
   onAvatarTap(e) {
     const { name } = e.currentTarget.dataset;
     wx.showToast({
