@@ -37,6 +37,15 @@ log "1/9 检查环境变量"
 grep -q '^NODE_ENV=production' "$ENV_FILE"   || warn "NODE_ENV 不是 production"
 grep -q '^HOST=127.0.0.1' "$ENV_FILE"        || warn "HOST 不是 127.0.0.1（会对所有网卡监听）"
 grep -q '^DB_APP_HOST=%' "$ENV_FILE"         || warn "DB_APP_HOST 建议为 %（容器化 MySQL 以 docker 网关 IP 连接）"
+if grep -q '^OSS_CREDENTIAL_MODE=ecs_ram_role' "$ENV_FILE"; then
+  oss_role="$(curl -s --max-time 3 http://100.100.100.200/latest/meta-data/ram/security-credentials/ 2>/dev/null || true)"
+  if [[ -z "$oss_role" ]]; then
+    warn "OSS 走 ecs_ram_role，但本机取不到实例元数据（轻量应用服务器 SAS 不支持实例 RAM 角色）"
+    warn "请改为：OSS_CREDENTIAL_MODE=environment + 只授 community/* 的 RAM 用户 AccessKey"
+  else
+    echo "检测到实例 RAM Role: $oss_role"
+  fi
+fi
 chmod 600 "$ENV_FILE"; chown root:root "$ENV_FILE"
 
 log "2/9 同步代码到 $REPO_DIR"

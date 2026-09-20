@@ -16,6 +16,7 @@
 1. 复制 `.env.example` 的字段到 `/etc/afrigo/api.env` 并填写真实值。
 2. 为 ECS 绑定实例 RAM Role，只授予目标 Bucket 的 `community/*` 前缀所需权限：把 `ram-oss-policy.json` 里的 `<your-bucket>` 换成真实 Bucket 名后作为该角色的自定义权限策略；对象只读写 `community/` 前缀，不使用长期 AccessKey。
 3. 正式环境设置 `OSS_CREDENTIAL_MODE=ecs_ram_role`、`ALIBABA_CLOUD_ECS_METADATA=<角色名>` 和 `ALIBABA_CLOUD_IMDSV1_DISABLE=true`；不要配置长期 AccessKey。SDK 会从实例元数据获取并自动刷新 STS 凭据。
+   **轻量应用服务器（SAS）不支持实例 RAM 角色**（`CreateInstances` 没有 `RamRoleName` 参数，也取不到实例元数据），必须改用 `OSS_CREDENTIAL_MODE=environment` + 一对只授 `community/*` 的 RAM 用户 AccessKey。缺 AccessKey 不再阻断启动：启动日志告警，图片相关接口返回 503，其余功能正常。
    如需开启旅中翻译，先开通阿里云机器翻译，再把 `ram-translate-policy.json` 中的最小权限追加给同一 ECS RAM Role，最后设置 `ALIYUN_TRANSLATE_ENABLED=true`。
    如需开启海外路线预估，用 `NAVIGATION_PROVIDER` 选择地图服务：`amap-overseas`（需企业开发者认证并工单开通海外 LBS 权限，配合 `AMAP_NAVIGATION_ENABLED=true` 与 `AMAP_WEB_SERVICE_KEY`）、`mapbox`（配合 `MAPBOX_ACCESS_TOKEN`，自助开通）、`google-directions`（配合 `GOOGLE_MAPS_API_KEY`）或 `disabled`。Key 只保存在 ECS 环境文件中；切换 Provider 不需要改动小程序。
 4. 配置反向代理：机器上用 Nginx 就改 `nginx.conf.example`（域名与证书路径），用 Caddy 就把 `Caddyfile.example` 的站点块追加到 `/etc/caddy/Caddyfile`。Caddy 会自动申请证书；`reverse_proxy` 指向 `127.0.0.1:3001`。若这台机器上已有其它站点，务必只**追加**新站点块，不要改动已有站点——`api.<域名>` 这类看起来"没用过"的 hostname 可能正被其它应用占用。

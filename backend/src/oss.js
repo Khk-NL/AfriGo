@@ -125,20 +125,25 @@ function resolveMedia(mediaList) {
     return [];
   }
   return mediaList.slice(0, 4).map((media) => {
-    if (typeof media === 'string') {
-      if (/^https?:\/\//.test(media)) {
-        return { objectKey: '', type: 'image', url: media };
+    // 单条媒体签名失败（例如 OSS 未配置）不应让整个列表返回 503：丢弃该条即可。
+    try {
+      if (typeof media === 'string') {
+        if (/^https?:\/\//.test(media)) {
+          return { objectKey: '', type: 'image', url: media };
+        }
+        return { objectKey: media, type: 'image', url: getObjectUrl(media) };
       }
-      return { objectKey: media, type: 'image', url: getObjectUrl(media) };
-    }
-    if (!media || !media.objectKey) {
+      if (!media || !media.objectKey) {
+        return null;
+      }
+      return {
+        objectKey: media.objectKey,
+        type: media.type || 'image',
+        url: getObjectUrl(media.objectKey)
+      };
+    } catch (error) {
       return null;
     }
-    return {
-      objectKey: media.objectKey,
-      type: media.type || 'image',
-      url: getObjectUrl(media.objectKey)
-    };
   }).filter(Boolean);
 }
 

@@ -1271,7 +1271,15 @@ app.use((error, _req, res, _next) => {
 
 async function startServer() {
   assertProductionConfig();
-  if (process.env.NODE_ENV === 'production') await initializeOssClient();
+  if (process.env.NODE_ENV === 'production') {
+    // OSS 是功能依赖：未配置时只告警，不让整个 API 起不来；相关接口调用时返回 503。
+    try {
+      await initializeOssClient();
+      console.log('OSS 客户端已就绪');
+    } catch (error) {
+      console.warn(`OSS 未就绪，图片上传与签名将返回 503：${error.message}`);
+    }
+  }
   const host = process.env.HOST || (process.env.NODE_ENV === 'production' ? '127.0.0.1' : '0.0.0.0');
   return app.listen(port, host, () => {
     console.log(`API listening at http://${host}:${port}`);

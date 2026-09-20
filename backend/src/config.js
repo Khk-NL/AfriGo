@@ -30,12 +30,11 @@ function validateProductionConfig(env = process.env) {
   const credentialMode = env.OSS_CREDENTIAL_MODE || 'ecs_ram_role';
   if (credentialMode === 'ecs_ram_role') {
     if (isPlaceholder(env.ALIBABA_CLOUD_ECS_METADATA)) errors.push('ECS RAM Role 名称未配置');
-  } else if (credentialMode === 'environment') {
-    if (isPlaceholder(env.OSS_ACCESS_KEY_ID)) errors.push('OSS_ACCESS_KEY_ID 未配置');
-    if (isPlaceholder(env.OSS_ACCESS_KEY_SECRET)) errors.push('OSS_ACCESS_KEY_SECRET 未配置');
-  } else {
+  } else if (credentialMode !== 'environment') {
     errors.push('OSS_CREDENTIAL_MODE 仅支持 ecs_ram_role 或 environment');
   }
+  // environment 模式下缺少 AccessKey 不再阻断启动：OSS 是功能依赖而非核心依赖，
+  // 启动时给出告警，相关接口在调用时返回 503（oss.js），其余功能不受影响。
   return errors;
 }
 

@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 
 const { normalizeCountryCode, normalizeCountryName, countryCandidates } = require('../src/countries');
 const { hashToken } = require('../src/auth');
-const { assertImage, createObjectKey } = require('../src/oss');
+const { assertImage, createObjectKey, resolveMedia } = require('../src/oss');
 const { loadGuideWorkbook } = require('../src/excel-guide');
 const { withStableIds } = require('../src/export-miniprogram-data');
 const { validateProductionConfig } = require('../src/config');
@@ -293,6 +293,48 @@ test('each navigation provider normalizes its own response shape', async () => {
     }),
     (error) => error.statusCode === 502
   );
+});
+
+test('missing OSS credentials degrade media instead of blocking startup', () => {
+  const base = {
+    NODE_ENV: 'production',
+    PUBLIC_BASE_URL: 'https://api.example.com',
+    DB_HOST: '127.0.0.1',
+    DB_NAME: 'app',
+    DB_USER: 'app',
+    DB_PASSWORD: 'strong-password',
+    WECHAT_APP_ID: 'wx-example-id',
+    WECHAT_APP_SECRET: 'strong-secret',
+    OSS_REGION: 'oss-cn-hangzhou',
+    OSS_BUCKET: 'private-bucket',
+    OSS_CREDENTIAL_MODE: 'environment'
+  };
+  assert.deepEqual(validateProductionConfig(base), []);
+  assert.match(
+    validateProductionConfig({ ...base, OSS_CREDENTIAL_MODE: 'ecs_ram_role' }).join('；'),
+    /ECS RAM Role/
+  );
+  assert.match(
+    validateProductionConfig({ ...base, OSS_CREDENTIAL_MODE: 'ak' }).join('；'),
+    /OSS_CREDENTIAL_MODE/
+  );
+
+  const keys = ['OSS_PUBLIC_BASE_URL', 'OSS_ACCESS_KEY_ID', 'OSS_ACCESS_KEY_SECRET', 'OSS_CREDENTIAL_MODE'];
+  const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+  keys.forEach((key) => delete process.env[key]);
+  process.env.OSS_CREDENTIAL_MODE = 'environment';
+  try {
+    assert.deepEqual(
+      resolveMedia(['https://example.com/a.jpg']),
+      [{ objectKey: '', type: 'image', url: 'https://example.com/a.jpg' }]
+    );
+    assert.deepEqual(resolveMedia([{ objectKey: 'community/2026/09/x.jpg' }]), []);
+  } finally {
+    for (const key of keys) {
+      if (saved[key] === undefined) delete process.env[key];
+      else process.env[key] = saved[key];
+    }
+  }
 });
 
 test('health payload identifies the running build without exposing secrets', () => {
