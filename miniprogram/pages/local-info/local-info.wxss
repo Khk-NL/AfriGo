@@ -24,15 +24,15 @@ page {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 253, 248, 0.92);
   box-shadow: 0 12rpx 28rpx rgba(155, 101, 36, 0.08);
 }
 
 .back-arrow {
   width: 18rpx;
   height: 18rpx;
-  border-left: 4rpx solid #2d3748;
-  border-bottom: 4rpx solid #2d3748;
+  border-left: 4rpx solid #3c332a;
+  border-bottom: 4rpx solid #3c332a;
   transform: rotate(45deg);
   margin-left: 8rpx;
 }
@@ -40,7 +40,7 @@ page {
 .hero-card,
 .section-card {
   border-radius: 32rpx;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 253, 248, 0.9);
   border: 1rpx solid rgba(255, 255, 255, 0.65);
   box-shadow: 0 20rpx 48rpx rgba(84, 70, 51, 0.08);
   backdrop-filter: blur(14px);
@@ -66,7 +66,7 @@ page {
   margin-top: 18rpx;
   font-size: 54rpx;
   line-height: 1.12;
-  color: #1f2937;
+  color: #2a231c;
   font-weight: 800;
 }
 
@@ -82,7 +82,7 @@ page {
   display: block;
   margin-top: 22rpx;
   font-size: 26rpx;
-  color: #4b5563;
+  color: #5c5247;
   line-height: 1.7;
 }
 
@@ -114,7 +114,7 @@ page {
   display: block;
   font-size: 34rpx;
   font-weight: 700;
-  color: #1f2937;
+  color: #2a231c;
 }
 
 .section-subtitle {
@@ -146,7 +146,7 @@ page {
   display: block;
   margin-top: 16rpx;
   font-size: 30rpx;
-  color: #202938;
+  color: #2a231c;
   font-weight: 700;
   line-height: 1.4;
 }
@@ -155,7 +155,7 @@ page {
   display: block;
   margin-top: 12rpx;
   font-size: 24rpx;
-  color: #4b5563;
+  color: #5c5247;
   line-height: 1.7;
 }
 
@@ -189,7 +189,7 @@ page {
 .service-title {
   display: block;
   font-size: 28rpx;
-  color: #202938;
+  color: #2a231c;
   font-weight: 700;
 }
 
@@ -197,7 +197,7 @@ page {
   display: block;
   margin-top: 8rpx;
   font-size: 22rpx;
-  color: #6b7280;
+  color: #7b6f62;
   line-height: 1.5;
 }
 
@@ -228,7 +228,7 @@ page {
 .tip-title {
   display: block;
   font-size: 28rpx;
-  color: #202938;
+  color: #2a231c;
   font-weight: 700;
 }
 
@@ -236,14 +236,14 @@ page {
   display: block;
   margin-top: 10rpx;
   font-size: 23rpx;
-  color: #6b7280;
+  color: #7b6f62;
   line-height: 1.7;
 }
 
 /* 9:16 mobile minimal theme */
 page,
 .news-page {
-  background: #f4f5f3;
+  background: #f7f1e7;
 }
 
 .news-content {
@@ -254,7 +254,7 @@ page,
   width: 60rpx;
   height: 60rpx;
   border-radius: 18rpx;
-  border: 1rpx solid #dde3df;
+  border: 1rpx solid #e6dac7;
   box-shadow: none;
 }
 
@@ -264,7 +264,7 @@ page,
   margin-left: 0;
   border: 0;
   transform: none;
-  color: #34463d;
+  color: #3a463a;
   font-size: 30rpx;
   line-height: 1;
 }
@@ -272,8 +272,8 @@ page,
 .hero-card,
 .section-card {
   border-radius: 24rpx;
-  background: #ffffff;
-  border-color: #e0e5e1;
+  background: #fffdf8;
+  border-color: #e6dac7;
   box-shadow: none;
   backdrop-filter: none;
 }
@@ -291,13 +291,13 @@ page,
 
 .hero-title {
   font-size: 44rpx;
-  color: #27332d;
+  color: #2a231c;
 }
 
 .hero-chip,
 .pulse-tag {
   color: #526159;
-  background: #edf1ee;
+  background: #f2ece2;
 }
 
 .pulse-card {
@@ -314,7 +314,7 @@ page,
 
 .service-icon {
   border-radius: 18rpx;
-  background: #edf1ee;
+  background: #f2ece2;
 }
 
 .service-icon-image {

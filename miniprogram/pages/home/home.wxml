@@ -14,12 +14,15 @@
       <view class="ai-hero-container">
         <image wx:if="{{heroCoverImage}}" class="hero-cover-image" src="{{heroCoverImage}}" mode="aspectFill" />
         <view class="hero-cover-mask"></view>
+        <view class="hero-horizon"></view>
         <view class="hero-text-area">
-          <text class="hero-kicker">SAFE LANDING</text>
+          <text class="hero-kicker">AFRIGO · 非行智航</text>
           <text class="hero-title">{{uiText.welcomeTitle}}</text>
           <text class="hero-subtitle">{{uiText.welcomeSubtitle}}</text>
         </view>
       </view>
+
+      <view class="africa-band hero-band"></view>
 
       <view class="safety-card" bindtap="onOpenSecurityGuide">
         <view class="safety-main"><text class="safety-icon">🛡️</text><view><text class="safety-title">{{uiText.safetyTitle}}</text><text class="safety-level">{{uiText.safetyLevel}} · {{uiText.safetyDate}}</text></view></view>

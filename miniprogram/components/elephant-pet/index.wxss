@@ -24,7 +24,7 @@
   z-index: 9410;
   padding: 18rpx 22rpx;
   border-radius: 22rpx 22rpx 6rpx 22rpx;
-  background: rgba(255, 255, 255, .98);
+  background: rgba(255, 253, 248, .98);
   border: 1rpx solid #e2e8e3;
   box-shadow: 0 12rpx 28rpx rgba(45, 58, 50, .14);
   color: #3f4d44;
@@ -142,7 +142,7 @@
 .quick-chip {
   padding: 18rpx 22rpx;
   border-radius: 18rpx;
-  background: #ffffff;
+  background: #fffdf8;
   border: 1rpx solid #e6ebe6;
   color: #3f4d44;
   font-size: 25rpx;
@@ -177,7 +177,7 @@
 }
 
 .panel-bubble-assistant {
-  background: #ffffff;
+  background: #fffdf8;
   color: #2b3630;
   border: 1rpx solid #e8ede8;
   border-bottom-left-radius: 8rpx;
@@ -197,7 +197,7 @@
   gap: 14rpx;
   padding: 16rpx 22rpx 20rpx;
   border-top: 1rpx solid #edf1ed;
-  background: #ffffff;
+  background: #fffdf8;
 }
 
 .panel-input {

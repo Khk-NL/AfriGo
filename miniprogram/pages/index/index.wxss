@@ -62,7 +62,7 @@ page {
   top: 6px;
   left: 6px;
   z-index: 2;
-  background: #FFFFFF;
+  background: #fffdf8;
   color: #1A1A1A;
   border: 1.5px solid #1A1A1A;
 }
@@ -71,7 +71,7 @@ page {
   top: 0;
   left: 12px;
   z-index: 1;
-  background: #FFFFFF;
+  background: #fffdf8;
   color: #1A1A1A;
   border: 1.5px solid #1A1A1A;
 }
@@ -182,13 +182,13 @@ page {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 253, 248, 0.42);
 }
 
 .cover-dot.active {
   width: 16px;
   border-radius: 999px;
-  background: #ffffff;
+  background: #fffdf8;
 }
 
 .square-glass-info {
@@ -253,7 +253,7 @@ page {
   border-radius: 20px;
   padding: 16px 18px 18px;
   margin-bottom: 18px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 253, 248, 0.72);
   border: 1px solid rgba(40, 37, 33, 0.08);
   box-shadow: 0 12px 26px rgba(80, 60, 42, 0.08);
 }
@@ -562,7 +562,7 @@ page {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #fffdf8;
   color: #3a342c;
   font-size: 12px;
   font-weight: 700;
@@ -593,16 +593,16 @@ page {
 }
 
 /* 9:16 mobile minimal theme */
-page, .page-root { background: #f4f5f3; }
+page, .page-root { background: #f7f1e7; }
 .page-root { padding-left: 18px; padding-right: 18px; }
 .top-main { width: 100%; max-width: none; padding-top: calc(var(--safe-top) + 5vh); }
 .header-section { margin-bottom: 20px; }
 .square-card { border-radius: 22px; background: #dfe3df; }
-.auth-card { border-radius: 18px; background: #fff; border-color: #e1e5e2; box-shadow: none; }
-.status-live, .status-off { color: #59675f; background: #eef1ef; }
+.auth-card { border-radius: 18px; background: #fffdf8; border-color: #e6dac7; box-shadow: none; }
+.status-live, .status-off { color: #59675f; background: #f2ece2; }
 .auth-admin-badge { background: #617168; }
-.auth-action-login { background: #61786b; }
+.auth-action-login { background: #4d5b49; }
 .auth-action-logout { color: #6e5d53; background: #f2efec; }
-.primary-button { background: #dfe6e1; color: #334139; box-shadow: none; }
+.primary-button { background: #dfe6e1; color: #3a463a; box-shadow: none; }
 .country-sheet { background: #f7f8f6; }
-.sheet-confirm-btn { background: #61786b; box-shadow: none; }
+.sheet-confirm-btn { background: #4d5b49; box-shadow: none; }

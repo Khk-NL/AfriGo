@@ -2,29 +2,29 @@
 
 .review-hero { background: #ecefea; }
 .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
-.summary-cell { padding: 18rpx 10rpx; text-align: center; border-radius: 18rpx; background: #f7faf8; color: #6b7280; font-size: 20rpx; }
+.summary-cell { padding: 18rpx 10rpx; text-align: center; border-radius: 18rpx; background: #f7faf8; color: #7b6f62; font-size: 20rpx; }
 .summary-value { display: block; margin-top: 8rpx; color: #273746; font-size: 26rpx; font-weight: 700; }
 .summary-cell.accent { background: #fff5e8; }
-.category-row { display: flex; justify-content: space-between; padding: 16rpx 4rpx; border-bottom: 1rpx solid #edf1f4; color: #52606d; font-size: 23rpx; }
+.category-row { display: flex; justify-content: space-between; padding: 16rpx 4rpx; border-bottom: 1rpx solid #f2ece2; color: #52606d; font-size: 23rpx; }
 .expense-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14rpx; }
-.form-field { box-sizing: border-box; width: 100%; min-height: 76rpx; padding: 18rpx 20rpx; border: 1rpx solid #e2e8f0; border-radius: 18rpx; background: #f8fafc; color: #334155; font-size: 24rpx; }
+.form-field { box-sizing: border-box; width: 100%; min-height: 76rpx; padding: 18rpx 20rpx; border: 1rpx solid #e6dac7; border-radius: 18rpx; background: #fbf7f0; color: #4a4038; font-size: 24rpx; }
 .form-field.wide { margin-top: 14rpx; }
 .primary-button, .secondary-button { border: none; border-radius: 999rpx; font-size: 24rpx; }
 .primary-button::after, .secondary-button::after { border: none; }
 .primary-button { margin-top: 18rpx; color: #fff; background: #4b8f70; }
 .secondary-button { color: #4b6f60; background: #edf7f1; }
 .expense-list { margin-top: 18rpx; }
-.expense-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; padding: 18rpx 0; border-bottom: 1rpx solid #edf1f4; }
+.expense-row { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; padding: 18rpx 0; border-bottom: 1rpx solid #f2ece2; }
 .expense-name, .expense-date { display: block; }
-.expense-name { color: #293845; font-size: 24rpx; }
+.expense-name { color: #3c332a; font-size: 24rpx; }
 .expense-date { margin-top: 6rpx; color: #8a94a0; font-size: 20rpx; }
-.expense-actions { text-align: right; color: #334155; font-size: 23rpx; }
+.expense-actions { text-align: right; color: #4a4038; font-size: 23rpx; }
 .delete-link { display: block; margin-top: 8rpx; color: #b45364; font-size: 20rpx; }
 .rating-row { display: flex; justify-content: center; gap: 16rpx; margin-bottom: 16rpx; }
 .star { color: #d9dce1; font-size: 54rpx; }
 .star.active { color: #e2a93b; }
-.review-input { box-sizing: border-box; width: 100%; height: 150rpx; margin-top: 14rpx; padding: 18rpx 20rpx; border-radius: 18rpx; background: #f8fafc; border: 1rpx solid #e2e8f0; font-size: 24rpx; line-height: 1.6; }
+.review-input { box-sizing: border-box; width: 100%; height: 150rpx; margin-top: 14rpx; padding: 18rpx 20rpx; border-radius: 18rpx; background: #fbf7f0; border: 1rpx solid #e6dac7; font-size: 24rpx; line-height: 1.6; }
 .dual-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14rpx; margin-top: 16rpx; }
 .dual-actions button { margin: 0; }
-.empty-desc { display: block; margin: 12rpx 0 20rpx; color: #7b8490; font-size: 22rpx; line-height: 1.6; }
+.empty-desc { display: block; margin: 12rpx 0 20rpx; color: #7b6f62; font-size: 22rpx; line-height: 1.6; }
 .bottom-space { height: 50rpx; }

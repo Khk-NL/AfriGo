@@ -10,12 +10,12 @@
 .bookmark-action { margin-top: 18rpx; color: #7a6848; font-size: 26rpx; }
 .bookmark-action.bookmarked { color: #c28a24; }
 
-.freshness-line { display: block; margin-top: 16rpx; color: #8b968f; font-size: 22rpx; }
+.freshness-line { display: block; margin-top: 16rpx; color: #948779; font-size: 22rpx; }
 
 .skeleton-list { margin-top: 18rpx; }
 .skeleton-card {
   height: 200rpx;
-  background: #eef1ef;
+  background: #f2ece2;
   border-radius: 20rpx;
   animation: skeletonPulse 1.4s ease-in-out infinite;
 }

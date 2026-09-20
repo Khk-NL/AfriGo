@@ -6,7 +6,7 @@ page {
   margin-top: 80rpx;
   padding: 72rpx 36rpx;
   border-radius: 28rpx;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 253, 248, 0.94);
   text-align: center;
   box-shadow: 0 14rpx 30rpx rgba(16, 185, 129, 0.1);
 }
@@ -15,15 +15,15 @@ page {
 .health-empty-title,
 .health-empty-desc { display: block; }
 .health-empty-icon { font-size: 48rpx; }
-.health-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #243447; }
-.health-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #6b7280; }
+.health-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #3c332a; }
+.health-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #7b6f62; }
 
 .health-page {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
   padding-top: calc(var(--safe-top) + 80px);
-  background: linear-gradient(140deg, #F0F7F4 0%, #F6FBF8 46%, #FFFDF2 100%);
+  background: linear-gradient(140deg, #F0F7F4 0%, #f4f1e6 46%, #FFFDF2 100%);
   background-size: 180% 180%;
   animation: dawnFlow 12s ease-in-out infinite;
 }
@@ -75,7 +75,7 @@ page {
   width: 64rpx;
   height: 64rpx;
   border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 253, 248, 0.9);
   border: 1rpx solid rgba(196, 220, 248, 0.9);
   box-shadow: 0 8rpx 18rpx rgba(27, 94, 32, 0.12);
   display: flex;
@@ -157,7 +157,7 @@ page {
 }
 
 .floating-card {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 253, 248, 0.85);
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
@@ -247,7 +247,7 @@ page {
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 14rpx;
-  background: #F6FBF8;
+  background: #f4f1e6;
   border-radius: 18rpx;
   padding: 16rpx;
 }
@@ -283,7 +283,7 @@ page {
 
 .accordion-head {
   border-radius: 16rpx;
-  background: #F6FBF8;
+  background: #f4f1e6;
   padding: 16rpx;
   display: flex;
   justify-content: space-between;
@@ -467,7 +467,7 @@ page {
 /* 9:16 mobile minimal theme */
 page,
 .health-page {
-  background: #f4f5f3;
+  background: #f7f1e7;
 }
 
 .health-page {
@@ -485,7 +485,7 @@ page,
   width: 60rpx;
   height: 60rpx;
   border-radius: 18rpx;
-  border-color: #dde3df;
+  border-color: #e6dac7;
   box-shadow: none;
 }
 
@@ -495,14 +495,14 @@ page,
   margin-left: 0;
   border: 0;
   transform: none;
-  color: #34463d;
+  color: #3a463a;
   font-size: 30rpx;
   line-height: 1;
 }
 
 .nav-title,
 .ticker-text {
-  color: #34463d;
+  color: #3a463a;
 }
 
 .ticker-wrap {
@@ -517,7 +517,7 @@ page,
 .floating-card,
 .health-empty {
   border-radius: 24rpx;
-  background: #ffffff;
+  background: #fffdf8;
   border: 1rpx solid #e2e6e3;
   box-shadow: none;
   backdrop-filter: none;

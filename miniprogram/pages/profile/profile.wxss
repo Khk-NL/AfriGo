@@ -29,7 +29,7 @@ page {
     padding: 34rpx 30rpx 30rpx;
     background:
         radial-gradient(circle at top right, rgba(255, 255, 255, 0.8) 0, rgba(255, 255, 255, 0) 34%),
-        linear-gradient(140deg, #dff6ec 0%, #f6fbf8 44%, #fff8ed 100%);
+        linear-gradient(140deg, #dff6ec 0%, #f4f1e6 44%, #fff8ed 100%);
 }
 
 .hero-topline {
@@ -53,7 +53,7 @@ page {
     padding: 10rpx 18rpx;
     font-size: 20rpx;
     color: #0f766e;
-    background: rgba(255, 255, 255, 0.86);
+    background: rgba(255, 253, 248, 0.86);
     letter-spacing: 2rpx;
 }
 
@@ -75,7 +75,7 @@ page {
     width: 132rpx;
     height: 132rpx;
     border-radius: 38rpx;
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 253, 248, 0.72);
     box-shadow: inset 0 2rpx 8rpx rgba(255, 255, 255, 0.85);
     display: flex;
     align-items: center;
@@ -111,7 +111,7 @@ page {
     font-size: 44rpx;
     line-height: 1.12;
     font-weight: 800;
-    color: #1f2937;
+    color: #2a231c;
 }
 
 .hero-subcopy {
@@ -174,7 +174,7 @@ page {
 .stat-card {
     padding: 24rpx;
     border-radius: 26rpx;
-    background: rgba(255, 255, 255, 0.76);
+    background: rgba(255, 253, 248, 0.76);
 }
 
 .stat-emerald {
@@ -202,20 +202,20 @@ page {
     font-size: 32rpx;
     line-height: 1.25;
     font-weight: 700;
-    color: #1f2937;
+    color: #2a231c;
 }
 
 .stat-label {
     display: block;
     margin-top: 10rpx;
     font-size: 22rpx;
-    color: #6b7280;
+    color: #7b6f62;
 }
 
 .section-card {
     margin-top: 24rpx;
     padding: 30rpx;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 253, 248, 0.92);
     backdrop-filter: blur(14px);
 }
 
@@ -235,7 +235,7 @@ page {
     font-size: 34rpx;
     line-height: 1.25;
     font-weight: 700;
-    color: #1f2937;
+    color: #2a231c;
 }
 
 .section-subtitle {
@@ -287,7 +287,7 @@ page {
     width: 72rpx;
     height: 72rpx;
     border-radius: 24rpx;
-    background: rgba(255, 255, 255, 0.84);
+    background: rgba(255, 253, 248, 0.84);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -298,7 +298,7 @@ page {
     display: block;
     margin-top: 18rpx;
     font-size: 28rpx;
-    color: #1f2937;
+    color: #2a231c;
     font-weight: 700;
 }
 
@@ -306,7 +306,7 @@ page {
     display: block;
     margin-top: 10rpx;
     font-size: 22rpx;
-    color: #7b8492;
+    color: #7b6f62;
     line-height: 1.5;
 }
 
@@ -322,7 +322,7 @@ page {
     display: block;
     font-size: 34rpx;
     font-weight: 700;
-    color: #1f2937;
+    color: #2a231c;
 }
 
 .journey-desc {
@@ -387,7 +387,7 @@ page {
 .service-title {
     display: block;
     font-size: 28rpx;
-    color: #1f2937;
+    color: #2a231c;
     font-weight: 700;
 }
 
@@ -395,7 +395,7 @@ page {
     display: block;
     margin-top: 8rpx;
     font-size: 22rpx;
-    color: #7b8492;
+    color: #7b6f62;
     line-height: 1.5;
 }
 
@@ -428,7 +428,7 @@ page {
     display: block;
     margin-top: 18rpx;
     font-size: 28rpx;
-    color: #1f2937;
+    color: #2a231c;
     font-weight: 700;
 }
 
@@ -436,7 +436,7 @@ page {
     display: block;
     margin-top: 10rpx;
     font-size: 22rpx;
-    color: #7b8492;
+    color: #7b6f62;
     line-height: 1.65;
 }
 
@@ -460,7 +460,7 @@ page {
 .bookmark-title {
     display: block;
     font-size: 28rpx;
-    color: #1f2937;
+    color: #2a231c;
     font-weight: 700;
     line-height: 1.45;
 }
@@ -517,7 +517,7 @@ page {
 .support-title {
     display: block;
     font-size: 28rpx;
-    color: #1f2937;
+    color: #2a231c;
     font-weight: 700;
 }
 
@@ -525,7 +525,7 @@ page {
     display: block;
     margin-top: 8rpx;
     font-size: 22rpx;
-    color: #7b8492;
+    color: #7b6f62;
 }
 
 .ghost-logout-btn {
@@ -534,7 +534,7 @@ page {
     line-height: 84rpx;
     border-radius: 999rpx;
     background: rgba(247, 250, 252, 0.96);
-    color: #4b5563;
+    color: #5c5247;
     font-size: 26rpx;
     font-weight: 600;
 }
@@ -543,7 +543,7 @@ page {
     margin-top: 18rpx;
     padding: 24rpx 26rpx;
     border-radius: 28rpx;
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    background: linear-gradient(135deg, #2a231c 0%, #374151 100%);
     display: flex;
     align-items: center;
     gap: 18rpx;
@@ -575,28 +575,28 @@ page {
     line-height: 1;
 }
 
-.settings-close { color: #6b7280; font-size: 23rpx; }
+.settings-close { color: #7b6f62; font-size: 23rpx; }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24rpx; padding: 24rpx 0; border-bottom: 1rpx solid rgba(148, 163, 184, 0.18); }
 .settings-title, .settings-desc { display: block; }
-.settings-title { color: #1f2937; font-size: 27rpx; font-weight: 700; }
-.settings-desc { margin-top: 8rpx; color: #7b8492; font-size: 21rpx; }
+.settings-title { color: #2a231c; font-size: 27rpx; font-weight: 700; }
+.settings-desc { margin-top: 8rpx; color: #7b6f62; font-size: 21rpx; }
 .delete-account-btn { margin-top: 24rpx; border-radius: 999rpx; background: #fff3f5; color: #c2415d; font-size: 24rpx; }
 .delete-account-btn::after { border: 0; }
 
 /* 9:16 mobile minimal theme */
-page { background: #f4f5f3; }
+page { background: #f7f1e7; }
 .profile-content { padding: calc(var(--safe-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
-.profile-hero, .section-card { border-radius: 24rpx; background: #fff; border: 1rpx solid #e1e5e2; box-shadow: none; }
+.profile-hero, .section-card { border-radius: 24rpx; background: #fffdf8; border: 1rpx solid #e6dac7; box-shadow: none; }
 .profile-hero { padding: 28rpx 24rpx; }
-.hero-badge, .hero-date, .hero-status-pill { color: #5f6f66; background: #eef1ef; }
-.avatar-shell { border-radius: 24rpx; background: #eef1ef; box-shadow: none; }
+.hero-badge, .hero-date, .hero-status-pill { color: #5f6f66; background: #f2ece2; }
+.avatar-shell { border-radius: 24rpx; background: #f2ece2; box-shadow: none; }
 .avatar-fallback { border-radius: 20rpx; background: #71877b; }
-.hero-name, .section-title { color: #27332d; }
-.stat-card, .quick-item { background: #f0f2f0; border: 1rpx solid #e2e6e3; }
+.hero-name, .section-title { color: #2a231c; }
+.stat-card, .quick-item { background: #f2ece2; border: 1rpx solid #e2e6e3; }
 .stat-emerald, .stat-sand, .stat-sky, .stat-rose, .stat-gold,
-.quick-sky, .quick-emerald, .quick-sand, .quick-rose { background: #f0f2f0; }
-.journey-banner, .admin-entry-card { background: #e9edea; box-shadow: none; }
-.admin-entry-title { color: #334139; }
+.quick-sky, .quick-emerald, .quick-sand, .quick-rose { background: #f2ece2; }
+.journey-banner, .admin-entry-card { background: #f2ece2; box-shadow: none; }
+.admin-entry-title { color: #3a463a; }
 .admin-entry-desc, .admin-entry-arrow { color: #66736b; }
 .quick-icon-image, .service-icon-image { width: 44rpx; height: 44rpx; flex-shrink: 0; }
 .delete-account-btn { border-radius: 20rpx; background: #f3eeee; color: #855d64; }
@@ -607,7 +607,7 @@ page { background: #f4f5f3; }
     height: 88rpx;
     line-height: 88rpx;
     border-radius: 22rpx;
-    background: #587565;
+    background: #4f6b52;
     color: #ffffff;
     font-size: 30rpx;
     font-weight: 600;
@@ -625,9 +625,9 @@ page { background: #f4f5f3; }
     height: 84rpx;
     padding: 0 24rpx;
     border-radius: 20rpx;
-    background: #ffffff;
-    border: 1rpx solid #dfe4e0;
-    color: #27332d;
+    background: #fffdf8;
+    border: 1rpx solid #e6dac7;
+    color: #2a231c;
     font-size: 28rpx;
     box-sizing: border-box;
 }
@@ -639,7 +639,7 @@ page { background: #f4f5f3; }
     line-height: 84rpx;
     padding: 0 28rpx;
     border-radius: 20rpx;
-    background: #587565;
+    background: #4f6b52;
     color: #ffffff;
     font-size: 28rpx;
     font-weight: 600;

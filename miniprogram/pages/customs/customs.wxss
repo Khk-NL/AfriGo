@@ -8,7 +8,7 @@
   margin: 36rpx 24rpx;
   padding: 72rpx 36rpx;
   border-radius: 28rpx;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 253, 248, 0.94);
   text-align: center;
   box-shadow: 0 14rpx 30rpx rgba(84, 70, 51, 0.08);
 }
@@ -18,7 +18,7 @@
 .customs-empty-desc { display: block; }
 .customs-empty-icon { font-size: 48rpx; }
 .customs-empty-title { margin-top: 16rpx; font-size: 30rpx; font-weight: 700; color: #282521; }
-.customs-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #6b7280; }
+.customs-empty-desc { margin-top: 12rpx; font-size: 24rpx; line-height: 1.7; color: #7b6f62; }
 
 .bg-watermark {
   position: absolute;
@@ -55,7 +55,7 @@
   width: 64rpx;
   height: 64rpx;
   border-radius: 18rpx;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 253, 248, 0.86);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +78,7 @@
   border-radius: 999rpx;
   font-size: 22rpx;
   color: #5F5F5F;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 253, 248, 0.72);
   border: 1rpx solid rgba(200, 121, 101, 0.22);
 }
 
@@ -100,7 +100,7 @@
 }
 
 .card {
-  background: #FFFFFF;
+  background: #fffdf8;
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   padding: 20rpx;
@@ -146,7 +146,7 @@
   flex: 1;
   font-size: 24rpx;
   line-height: 1.6;
-  color: #6B7280;
+  color: #7b6f62;
 }
 
 .swatch-row {
@@ -163,7 +163,7 @@
 }
 
 .swatch-white {
-  background: #FFFFFF;
+  background: #fffdf8;
   border: 1px solid #D8D1CA;
 }
 
@@ -178,7 +178,7 @@
 .swatch-text {
   font-size: 22rpx;
   line-height: 1.6;
-  color: #6B7280;
+  color: #7b6f62;
 }
 
 .dress-card {
@@ -209,7 +209,7 @@
   display: block;
   font-size: 22rpx;
   line-height: 1.6;
-  color: #6B7280;
+  color: #7b6f62;
 }
 
 .dress-sub {
@@ -252,7 +252,7 @@
 
 .chip {
   font-size: 22rpx;
-  color: #4B5563;
+  color: #5c5247;
   background: #F3F4F6;
   border-radius: 50px;
   padding: 8rpx 14rpx;
@@ -263,7 +263,7 @@
   margin-top: 12rpx;
   font-size: 24rpx;
   line-height: 1.7;
-  color: #6B7280;
+  color: #7b6f62;
 }
 
 .sub-title {
@@ -279,7 +279,7 @@
   margin-bottom: 10rpx;
   font-size: 21rpx;
   line-height: 1.6;
-  color: #6B7280;
+  color: #7b6f62;
   word-break: break-all;
 }
 
@@ -290,7 +290,7 @@
 /* 9:16 mobile minimal theme */
 page,
 .customs-page {
-  background: #f4f5f3;
+  background: #f7f1e7;
 }
 
 .bg-watermark {
@@ -316,7 +316,7 @@ page,
   margin-left: 0;
   border: 0;
   transform: none;
-  color: #34463d;
+  color: #3a463a;
   font-size: 30rpx;
   line-height: 1;
 }
@@ -324,7 +324,7 @@ page,
 .hero-title {
   font-family: inherit;
   font-size: 42rpx;
-  color: #27332d;
+  color: #2a231c;
 }
 
 .lang-tag,

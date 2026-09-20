@@ -5,13 +5,13 @@
 .form-textarea,
 .picker-field,
 .inline-field,
-.budget-field { box-sizing: border-box; border: 1rpx solid #e2e8f0; border-radius: 20rpx; background: #f8fafc; }
+.budget-field { box-sizing: border-box; border: 1rpx solid #e6dac7; border-radius: 20rpx; background: #fbf7f0; }
 .form-input { width: 100%; height: 82rpx; padding: 0 20rpx; font-size: 26rpx; }
 .choice-row { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 18rpx; }
 .choice-pill { padding: 13rpx 22rpx; border-radius: 999rpx; background: #f2f6fa; color: #566071; font-size: 23rpx; }
-.choice-pill.active { color: #fff; background: #61786b; }
+.choice-pill.active { color: #fff; background: #4d5b49; }
 .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14rpx; margin-top: 18rpx; }
-.picker-field { padding: 18rpx 20rpx; color: #334155; font-size: 24rpx; }
+.picker-field { padding: 18rpx 20rpx; color: #4a4038; font-size: 24rpx; }
 .field-label { display: block; margin-bottom: 8rpx; color: #8b7a67; font-size: 21rpx; }
 .inline-field { display: flex; align-items: center; justify-content: space-between; margin-top: 16rpx; padding: 16rpx 20rpx; }
 .inline-field .field-label { margin: 0; }
@@ -21,15 +21,15 @@
 .form-textarea.itinerary { height: 300rpx; }
 .progress-track { height: 14rpx; border-radius: 999rpx; background: #e8eef2; overflow: hidden; margin-bottom: 18rpx; }
 .progress-fill { height: 100%; border-radius: inherit; background: #80998b; }
-.check-row { display: flex; align-items: flex-start; gap: 14rpx; padding: 18rpx 0; color: #334155; font-size: 24rpx; line-height: 1.5; border-bottom: 1rpx solid #edf1f4; }
+.check-row { display: flex; align-items: flex-start; gap: 14rpx; padding: 18rpx 0; color: #4a4038; font-size: 24rpx; line-height: 1.5; border-bottom: 1rpx solid #f2ece2; }
 .check-row.done { color: #789083; }
-.check-box { width: 34rpx; height: 34rpx; flex-shrink: 0; border-radius: 10rpx; border: 2rpx solid #87a997; display: flex; align-items: center; justify-content: center; color: #fff; background: #fff; }
+.check-box { width: 34rpx; height: 34rpx; flex-shrink: 0; border-radius: 10rpx; border: 2rpx solid #87a997; display: flex; align-items: center; justify-content: center; color: #fff; background: #fffdf8; }
 .check-row.done .check-box { background: #65a985; }
 .budget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14rpx; }
-.budget-field { padding: 16rpx 18rpx; color: #6b7280; font-size: 22rpx; }
-.budget-field input { margin-top: 8rpx; color: #1f2937; font-size: 27rpx; }
-.save-button { margin-top: 28rpx; height: 88rpx; border-radius: 22rpx; color: #fff; background: #61786b; font-size: 28rpx; font-weight: 700; }
+.budget-field { padding: 16rpx 18rpx; color: #7b6f62; font-size: 22rpx; }
+.budget-field input { margin-top: 8rpx; color: #2a231c; font-size: 27rpx; }
+.save-button { margin-top: 28rpx; height: 88rpx; border-radius: 22rpx; color: #fff; background: #4d5b49; font-size: 28rpx; font-weight: 700; }
 .save-button::after { border: none; }
-.review-link-button { margin-top: 16rpx; border: none; border-radius: 22rpx; color: #56645c; background: #e9edea; font-size: 25rpx; }
+.review-link-button { margin-top: 16rpx; border: none; border-radius: 22rpx; color: #56645c; background: #f2ece2; font-size: 25rpx; }
 .review-link-button::after { border: none; }
 .bottom-space { height: 50rpx; }

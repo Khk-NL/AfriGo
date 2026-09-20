@@ -1,7 +1,7 @@
 /* Shared travel content shell */
 page {
-  background: #f4f5f3;
-  color: #27332d;
+  background: #f7f1e7;
+  color: #2a231c;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', sans-serif;
 }
 
@@ -9,7 +9,7 @@ page {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: #f4f5f3;
+  background: #f7f1e7;
 }
 
 .page-scroll {
@@ -32,8 +32,8 @@ page {
   padding: 0 18rpx 0 14rpx;
   box-sizing: border-box;
   border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1rpx solid #dfe4e0;
+  background: rgba(255, 253, 248, 0.96);
+  border: 1rpx solid #e6dac7;
   display: inline-flex;
   align-items: center;
   gap: 12rpx;
@@ -45,7 +45,7 @@ page {
 
 .page-back-icon {
   width: 28rpx;
-  color: #536158;
+  color: #4d5b49;
   font-size: 28rpx;
   line-height: 1;
   flex-shrink: 0;
@@ -54,26 +54,46 @@ page {
 .page-back-text {
   font-size: 24rpx;
   font-weight: 700;
-  color: #536158;
+  color: #4d5b49;
 }
 
 .hero-card,
 .section-card,
 .empty-state {
   border-radius: 24rpx;
-  background: #fff;
-  border: 1rpx solid #e1e5e2;
+  background: #fffdf8;
+  border: 1rpx solid #e6dac7;
+  box-shadow: 0 10rpx 24rpx rgba(90, 60, 30, .07);
 }
 
+/* hero 卡片：左侧一条陶土色书脊 + 底部草原天际线 */
 .hero-card {
-  padding: 32rpx 30rpx 28rpx;
+  position: relative;
+  overflow: hidden;
+  padding: 32rpx 30rpx 76rpx;
+  border-left: 6rpx solid #b4552f;
+}
+
+.hero-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 96rpx;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 100%;
+  opacity: .55;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3NTAgMjAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48Y2lyY2xlIGN4PSI1NjYiIGN5PSI3MiIgcj0iNDYiIGZpbGw9IiNkOGExM2EiIG9wYWNpdHk9IjAuNDIiLz48ZyBmaWxsPSIjOGM1YTM0IiBvcGFjaXR5PSIwLjMwIj48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iMTEyIiByeD0iNTgiIHJ5PSIxMSIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSI5OSIgcng9IjM2IiByeT0iOSIvPjxwYXRoIGQ9Ik0xNDcgMTIxIGwtNCA0NyBoMTAgbC00IC00NyB6Ii8+PC9nPjxnIGZpbGw9IiM4YzVhMzQiIG9wYWNpdHk9IjAuMjIiPjxlbGxpcHNlIGN4PSIzMzAiIGN5PSIxMzIiIHJ4PSI0MiIgcnk9IjgiLz48ZWxsaXBzZSBjeD0iMzMwIiBjeT0iMTIyIiByeD0iMjYiIHJ5PSI3Ii8+PHBhdGggZD0iTTMyOCAxNDEgbC0zIDI3IGg4IGwtMyAtMjcgeiIvPjwvZz48ZyBmaWxsPSIjOGM1YTM0IiBvcGFjaXR5PSIwLjM0Ij48ZWxsaXBzZSBjeD0iNjM2IiBjeT0iMTI0IiByeD0iNjYiIHJ5PSIxMiIvPjxlbGxpcHNlIGN4PSI2MzYiIGN5PSIxMTAiIHJ4PSI0MiIgcnk9IjEwIi8+PHBhdGggZD0iTTYzMyAxMzMgbC00IDM1IGgxMSBsLTQgLTM1IHoiLz48L2c+PHBhdGggZD0iTTAgMTY4IHEgOTQgLTEwIDE4OCAwIHQgMTg4IDAgdCAxODggMCB0IDE4NiAwIHYgMzIgaCAtNzUwIHoiIGZpbGw9IiM4YzVhMzQiIG9wYWNpdHk9IjAuMTYiLz48L3N2Zz4=");
 }
 
 .hero-eyebrow {
   display: block;
   font-size: 20rpx;
   letter-spacing: 4rpx;
-  color: #758178;
+  color: #b4552f;
 }
 
 .hero-title {
@@ -81,7 +101,7 @@ page {
   margin-top: 14rpx;
   font-size: 42rpx;
   line-height: 1.16;
-  color: #27332d;
+  color: #2a231c;
   font-weight: 800;
 }
 
@@ -89,7 +109,7 @@ page {
   display: block;
   margin-top: 12rpx;
   font-size: 24rpx;
-  color: #748078;
+  color: #7b6f62;
   line-height: 1.5;
 }
 
@@ -97,7 +117,7 @@ page {
   display: block;
   margin-top: 18rpx;
   font-size: 26rpx;
-  color: #59645e;
+  color: #5c5247;
   line-height: 1.7;
 }
 
@@ -132,7 +152,7 @@ page {
 
 .hero-chip {
   color: #5f7066;
-  background: #edf1ee;
+  background: #f2ece2;
 }
 
 .section-card {
@@ -148,7 +168,7 @@ page {
   display: block;
   font-size: 30rpx;
   font-weight: 700;
-  color: #27332d;
+  color: #2a231c;
 }
 
 .section-subtitle {
@@ -162,8 +182,8 @@ page {
 .search-shell {
   height: 74rpx;
   border-radius: 20rpx;
-  background: #fff;
-  border: 1rpx solid #e1e5e2;
+  background: #fffdf8;
+  border: 1rpx solid #e6dac7;
   display: flex;
   align-items: center;
   padding: 0 20rpx;
@@ -180,7 +200,7 @@ page {
   flex: 1;
   height: 74rpx;
   font-size: 28rpx;
-  color: #243447;
+  color: #3c332a;
 }
 
 .search-placeholder {
@@ -207,8 +227,8 @@ page {
 .tag-pill {
   flex-shrink: 0;
   color: #5f6b64;
-  background: #eef1ef;
-  border: 1rpx solid #e0e5e1;
+  background: #f2ece2;
+  border: 1rpx solid #e6dac7;
 }
 
 .tag-pill:active {
@@ -218,8 +238,8 @@ page {
 .item-card {
   padding: 26rpx;
   border-radius: 22rpx;
-  background: #fff;
-  border: 1rpx solid #e1e5e2;
+  background: #fffdf8;
+  border: 1rpx solid #e6dac7;
 }
 
 .item-card + .item-card {
@@ -237,7 +257,7 @@ page {
   display: block;
   font-size: 32rpx;
   line-height: 1.35;
-  color: #27332d;
+  color: #2a231c;
   font-weight: 700;
 }
 
@@ -253,7 +273,7 @@ page {
   display: block;
   margin-top: 12rpx;
   font-size: 24rpx;
-  color: #4b5563;
+  color: #5c5247;
   line-height: 1.7;
 }
 
@@ -282,14 +302,14 @@ page {
   margin-top: 12rpx;
   font-size: 30rpx;
   font-weight: 700;
-  color: #243447;
+  color: #3c332a;
 }
 
 .empty-desc {
   display: block;
   margin-top: 10rpx;
   font-size: 24rpx;
-  color: #6b7280;
+  color: #7b6f62;
   line-height: 1.6;
 }
 

@@ -1,8 +1,8 @@
 @import "../../templates/content-shell.wxss";
 
-.service-hero { background: #e9edea; }
+.service-hero { background: #f2ece2; }
 .category-strip { display: flex; gap: 12rpx; margin: 22rpx 0; overflow-x: auto; }
-.category-pill { flex-shrink: 0; padding: 13rpx 22rpx; border-radius: 999rpx; color: #5c6670; background: #edf1f4; font-size: 22rpx; }
+.category-pill { flex-shrink: 0; padding: 13rpx 22rpx; border-radius: 999rpx; color: #5c6670; background: #f2ece2; font-size: 22rpx; }
 .category-pill.active { color: #fff; background: #4b8f70; }
 .provider-list { display: block; }
 .provider-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16rpx; }
@@ -10,21 +10,21 @@
 .provider-name { color: #263746; font-size: 30rpx; font-weight: 800; }
 .provider-category { margin-top: 8rpx; color: #5f8c76; font-size: 21rpx; }
 .verified-mark { width: 48rpx; height: 48rpx; border-radius: 50%; color: #fff; background: #55a17b; text-align: center; line-height: 48rpx; }
-.provider-summary { margin-top: 18rpx; color: #4b5563; font-size: 24rpx; line-height: 1.7; }
+.provider-summary { margin-top: 18rpx; color: #5c5247; font-size: 24rpx; line-height: 1.7; }
 .provider-note { margin-top: 12rpx; color: #735f49; font-size: 22rpx; line-height: 1.6; }
 .provider-meta { display: flex; justify-content: space-between; gap: 14rpx; margin-top: 16rpx; color: #8a94a0; font-size: 20rpx; }
 .source-link { color: #526fa0; }
 .consult-button { margin-top: 18rpx; border: none; border-radius: 999rpx; color: #fff; background: #4b8f70; font-size: 24rpx; }
 .consult-button::after, .cancel-button::after, .submit-button::after { border: none; }
-.empty-desc { display: block; margin-top: 12rpx; color: #7b8490; font-size: 22rpx; line-height: 1.65; }
-.form-field, .lead-textarea { box-sizing: border-box; width: 100%; margin-top: 14rpx; padding: 18rpx 20rpx; border: 1rpx solid #e2e8f0; border-radius: 18rpx; background: #f8fafc; font-size: 24rpx; }
+.empty-desc { display: block; margin-top: 12rpx; color: #7b6f62; font-size: 22rpx; line-height: 1.65; }
+.form-field, .lead-textarea { box-sizing: border-box; width: 100%; margin-top: 14rpx; padding: 18rpx 20rpx; border: 1rpx solid #e6dac7; border-radius: 18rpx; background: #fbf7f0; font-size: 24rpx; }
 .form-field { height: 78rpx; }
 .lead-textarea { height: 180rpx; line-height: 1.6; }
 .lead-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 14rpx; margin-top: 18rpx; }
 .lead-actions button { margin: 0; border: none; border-radius: 999rpx; font-size: 24rpx; }
 .cancel-button { color: #64748b; background: #eef2f5; }
 .submit-button { color: #fff; background: #4b8f70; }
-.lead-row { display: flex; justify-content: space-between; gap: 18rpx; padding: 18rpx 0; border-bottom: 1rpx solid #edf1f4; }
+.lead-row { display: flex; justify-content: space-between; gap: 18rpx; padding: 18rpx 0; border-bottom: 1rpx solid #f2ece2; }
 .lead-name, .lead-request { display: block; }
 .lead-name { color: #263746; font-size: 24rpx; font-weight: 700; }
 .lead-request { margin-top: 6rpx; color: #737d88; font-size: 21rpx; line-height: 1.5; }

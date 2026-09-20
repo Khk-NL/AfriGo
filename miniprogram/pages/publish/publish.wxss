@@ -307,7 +307,7 @@
     margin-top: 34rpx;
     padding: 32rpx;
     border-radius: 38rpx;
-    background: rgba(255, 255, 255, 0.34);
+    background: rgba(255, 253, 248, 0.34);
     border: 1rpx solid rgba(255, 255, 255, 0.42);
     box-shadow: 0 36rpx 80rpx rgba(160, 108, 67, 0.2), 0 12rpx 30rpx rgba(255, 255, 255, 0.22), inset 0 1rpx 0 rgba(255, 255, 255, 0.46);
 }
@@ -479,7 +479,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 253, 248, 0.18);
     border: 1rpx solid rgba(255, 255, 255, 0.28);
 }
 
@@ -539,20 +539,20 @@
 }
 
 /* 9:16 mobile minimal theme */
-.publish-page { background: #f4f5f3; }
+.publish-page { background: #f7f1e7; }
 .sunset-flow, .ambient, .light-ray { display: none; }
 .publish-shell { padding: calc(var(--safe-top) + 24rpx) 24rpx calc(env(safe-area-inset-bottom) + 190rpx); }
 .top-nav-caption { color: #758078; }
-.top-nav-title { color: #27332d; font-size: 46rpx; }
+.top-nav-title { color: #2a231c; font-size: 46rpx; }
 .top-nav-subtitle { color: #6f7a73; }
-.draft-chip { background: #ecefeb; border: 1rpx solid #dfe4e0; box-shadow: none; }
+.draft-chip { background: #ecefeb; border: 1rpx solid #e6dac7; box-shadow: none; }
 .draft-chip-text { color: #68756d; }
-.compose-card { padding: 26rpx; border-radius: 24rpx; background: #fff; border: 1rpx solid #e1e5e2; box-shadow: none; }
-.compose-label, .media-title, .upload-label { color: #536158; }
-.compose-textarea { color: #27332d; font-size: 29rpx; }
+.compose-card { padding: 26rpx; border-radius: 24rpx; background: #fffdf8; border: 1rpx solid #e6dac7; box-shadow: none; }
+.compose-label, .media-title, .upload-label { color: #4d5b49; }
+.compose-textarea { color: #2a231c; font-size: 29rpx; }
 .upload-cell { border-radius: 20rpx; }
 .upload-cell-empty { background: #f1f3f1; border-color: #cfd7d1; }
 .upload-plus { color: #667b6f; }
-.submit-btn { border-radius: 22rpx; background: #61786b; box-shadow: none; }
-.publish-btn { background: #61786b; box-shadow: none; }
+.submit-btn { border-radius: 22rpx; background: #4d5b49; box-shadow: none; }
+.publish-btn { background: #4d5b49; box-shadow: none; }
 .publish-text { color: #647169; }

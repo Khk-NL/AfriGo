@@ -22,10 +22,26 @@
     padding: 0 12rpx;
     box-sizing: border-box;
     border-radius: 24rpx;
-    background: rgba(255, 255, 255, 0.97);
-    border: 1rpx solid #dfe4e0;
-    box-shadow: 0 8rpx 20rpx rgba(45, 58, 50, 0.08);
+    background: rgba(255, 253, 248, 0.97);
+    border: 1rpx solid #e6dac7;
+    box-shadow: 0 10rpx 26rpx rgba(90, 60, 30, 0.12);
     pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-pill::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 5rpx;
+    background-image:
+        repeating-linear-gradient(135deg, #b4552f 0 6rpx, transparent 6rpx 12rpx),
+        repeating-linear-gradient(45deg, #d8a13a 0 6rpx, transparent 6rpx 12rpx),
+        linear-gradient(90deg, #2f4a3c, #2f4a3c);
+    opacity: .75;
 }
 
 .tab-item {
@@ -34,7 +50,7 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    color: #7a857e;
+    color: #7b6f62;
     font-size: 12px;
     position: relative;
     transition: color 0.25s ease;
@@ -42,7 +58,7 @@
 
 /* 当前页：加深加粗 + 图标上浮放大 + 下方指示条，确保一眼看出在哪一页 */
 .tab-item.active {
-    color: #2f4a3c;
+    color: #8c3f22;
     font-weight: 700;
 }
 
@@ -60,7 +76,7 @@
     height: 6rpx;
     margin-left: -13rpx;
     border-radius: 999rpx;
-    background: #61786b;
+    background: linear-gradient(90deg, #b4552f, #d8a13a);
 }
 
 /* 中间的发布按钮本身有底色，不再叠加指示条 */
@@ -113,8 +129,8 @@
     width: 56rpx;
     height: 56rpx;
     border-radius: 50%;
-    background: #61786b;
-    box-shadow: none;
+    background: linear-gradient(150deg, #b4552f, #8c3f22);
+    box-shadow: 0 8rpx 16rpx rgba(140, 63, 34, .28);
 }
 
 .publish-plus {
@@ -126,5 +142,5 @@
 .publish-text {
     font-size: 20rpx;
     margin-top: 4rpx;
-    color: #4a5568;
+    color: #7b6f62;
 }

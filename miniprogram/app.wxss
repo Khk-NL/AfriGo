@@ -1,15 +1,42 @@
 /**app.wxss**/
-page {
-  background-color: #f4f5f3;
-  color: #27332d;
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
-  /* 顶部安全区统一变量。
-     env(safe-area-inset-top) 只在 iOS 刘海屏有值，Android 与开发者工具模拟器恒为 0，
-     直接用它会让自定义导航栏被状态栏（时间、电量）压住。
-     这里用 max() 兜一个 24px 下限：iOS 取真实刘海高度，其他机型至少留出状态栏高度。
-     各页面统一写 calc(var(--safe-top) + X)。 */
+/* ------------------------------------------------------------------
+ * 设计变量：暖砂底 + 大地色强调。
+ * 底色不再是冷灰，强调色用陶土与赭黄，绿色保留为品牌主色。
+ * 想调整强弱只改这一段。
+ * ------------------------------------------------------------------ */
+page {
   --safe-top: max(env(safe-area-inset-top), 24px);
+
+  /* 底色与描边 */
+  --sand-50: #fffdf8;
+  --sand-100: #f7f1e7;
+  --sand-200: #f2ece2;
+  --sand-300: #e6dac7;
+  --sand-400: #d9c9b1;
+
+  /* 文字 */
+  --ink-900: #2a231c;
+  --ink-700: #3c332a;
+  --ink-600: #5c5247;
+  --ink-500: #7b6f62;
+  --ink-400: #948779;
+
+  /* 品牌与大地色 */
+  --acacia: #2f4a3c;
+  --acacia-soft: #4f6b52;
+  --clay: #b4552f;
+  --clay-soft: #c9714a;
+  --ochre: #d8a13a;
+  --ochre-soft: #e6c179;
+
+  /* 阴影用暖褐，不用灰 */
+  --shadow-soft: 0 10rpx 24rpx rgba(90, 60, 30, .08);
+  --shadow-card: 0 14rpx 34rpx rgba(90, 60, 30, .10);
+
+  background-color: var(--sand-100);
+  color: var(--ink-900);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
 .container {
@@ -19,4 +46,57 @@ page {
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-} 
+}
+
+/* ------------------------------------------------------------------
+ * 非洲母题
+ * ------------------------------------------------------------------ */
+
+/* 织物几何条：Kente 风格的锯齿编织，纯 CSS，不需要图片 */
+.africa-band {
+  height: 12rpx;
+  border-radius: 999rpx;
+  background-image:
+    repeating-linear-gradient(135deg, var(--clay) 0 7rpx, transparent 7rpx 14rpx),
+    repeating-linear-gradient(45deg, var(--ochre) 0 7rpx, transparent 7rpx 14rpx),
+    linear-gradient(90deg, var(--acacia), var(--acacia));
+  opacity: .9;
+}
+
+/* 细分隔线：一排菱形点，替代普通的 1rpx 直线 */
+.africa-divider {
+  height: 8rpx;
+  background-image: repeating-linear-gradient(90deg, var(--sand-400) 0 4rpx, transparent 4rpx 16rpx);
+  opacity: .8;
+}
+
+/* 稀树草原天际线：金合欢剪影 + 落日，放在卡片底部当装饰 */
+.africa-horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 150rpx;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 100% 100%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3NTAgMjAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48Y2lyY2xlIGN4PSI1NjYiIGN5PSI3MiIgcj0iNDYiIGZpbGw9IiNkOGExM2EiIG9wYWNpdHk9IjAuNDIiLz48ZyBmaWxsPSIjOGM1YTM0IiBvcGFjaXR5PSIwLjMwIj48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iMTEyIiByeD0iNTgiIHJ5PSIxMSIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSI5OSIgcng9IjM2IiByeT0iOSIvPjxwYXRoIGQ9Ik0xNDcgMTIxIGwtNCA0NyBoMTAgbC00IC00NyB6Ii8+PC9nPjxnIGZpbGw9IiM4YzVhMzQiIG9wYWNpdHk9IjAuMjIiPjxlbGxpcHNlIGN4PSIzMzAiIGN5PSIxMzIiIHJ4PSI0MiIgcnk9IjgiLz48ZWxsaXBzZSBjeD0iMzMwIiBjeT0iMTIyIiByeD0iMjYiIHJ5PSI3Ii8+PHBhdGggZD0iTTMyOCAxNDEgbC0zIDI3IGg4IGwtMyAtMjcgeiIvPjwvZz48ZyBmaWxsPSIjOGM1YTM0IiBvcGFjaXR5PSIwLjM0Ij48ZWxsaXBzZSBjeD0iNjM2IiBjeT0iMTI0IiByeD0iNjYiIHJ5PSIxMiIvPjxlbGxpcHNlIGN4PSI2MzYiIGN5PSIxMTAiIHJ4PSI0MiIgcnk9IjEwIi8+PHBhdGggZD0iTTYzMyAxMzMgbC00IDM1IGgxMSBsLTQgLTM1IHoiLz48L2c+PHBhdGggZD0iTTAgMTY4IHEgOTQgLTEwIDE4OCAwIHQgMTg4IDAgdCAxODggMCB0IDE4NiAwIHYgMzIgaCAtNzUwIHoiIGZpbGw9IiM4YzVhMzQiIG9wYWNpdHk9IjAuMTYiLz48L3N2Zz4=");
+}
+
+/* 落日暖光：hero 顶部一层赭黄、左下角一层陶土 */
+.africa-glow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 82% 12%, rgba(216, 161, 58, .30) 0%, rgba(216, 161, 58, 0) 62%),
+    radial-gradient(90% 70% at 6% 96%, rgba(180, 85, 47, .16) 0%, rgba(180, 85, 47, 0) 60%);
+}
+
+.africa-eyebrow {
+  color: var(--clay);
+}
