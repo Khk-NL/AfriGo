@@ -19,7 +19,8 @@
    **轻量应用服务器（SAS）不支持实例 RAM 角色**（`CreateInstances` 没有 `RamRoleName` 参数，也取不到实例元数据），必须改用 `OSS_CREDENTIAL_MODE=environment` + 一对只授 `community/*` 的 RAM 用户 AccessKey。缺 AccessKey 不再阻断启动：启动日志告警，媒体自动落到本地磁盘。
    **媒体存储**由 `STORAGE_PROVIDER` 选择：`oss`（私有 Bucket + 签名 URL）或 `local`（服务器本地磁盘，经 `/media` 前缀对外提供）。留空时自动判断——OSS 凭据齐全走 `oss`，否则退回 `local`，因此没有云凭据也能先用图片与头像功能。本地模式的文件在 `<代码目录>/backend/var/uploads/`，备份时记得一并备份。
    如需开启旅中翻译，先开通阿里云机器翻译，再把 `ram-translate-policy.json` 中的最小权限追加给同一 ECS RAM Role，最后设置 `ALIYUN_TRANSLATE_ENABLED=true`。
-   如需开启海外路线预估，用 `NAVIGATION_PROVIDER` 选择地图服务：`amap-overseas`（需企业开发者认证并工单开通海外 LBS 权限，配合 `AMAP_NAVIGATION_ENABLED=true` 与 `AMAP_WEB_SERVICE_KEY`）、`mapbox`（配合 `MAPBOX_ACCESS_TOKEN`，自助开通）、`google-directions`（配合 `GOOGLE_MAPS_API_KEY`）或 `disabled`。Key 只保存在 ECS 环境文件中；切换 Provider 不需要改动小程序。
+   如需开启大象 AI 对话，注册 DeepSeek 开放平台并设置 `AI_PROVIDER=deepseek` 与 `DEEPSEEK_API_KEY`（Key 只存在服务端，不下发小程序）；未配置时 `/api/chat` 返回 503，其余功能不受影响。
+   如需开启海外路线预估，用 `NAVIGATION_PROVIDER` 选择地图服务：`amap-overseas`（需企业开发者认证并工单开通海外 LBS 权限，配合 `AMAP_NAVIGATION_ENABLED=true` 与 `AMAP_WEB_SERVICE_KEY`）、`mapbox`（配合 `MAPBOX_ACCESS_TOKEN`，自助开通）、`google-directions`（配合 `GOOGLE_MAPS_API_KEY`）、`tencent`（配合 `TENCENT_MAP_KEY`，控制台自助申请 Key、有免费配额）或 `disabled`。Key 只保存在 ECS 环境文件中；切换 Provider 不需要改动小程序。
 4. 配置反向代理：机器上用 Nginx 就改 `nginx.conf.example`（域名与证书路径），用 Caddy 就把 `Caddyfile.example` 的站点块追加到 `/etc/caddy/Caddyfile`。Caddy 会自动申请证书；`reverse_proxy` 指向 `127.0.0.1:3001`。若这台机器上已有其它站点，务必只**追加**新站点块，不要改动已有站点——`api.<域名>` 这类看起来"没用过"的 hostname 可能正被其它应用占用。
 5. 把 `afrigo-api.service.example` 安装为 systemd service。
 6. 运行 `npm ci`、`npm run init-db`，再按需运行 `npm run import-excel`；导入完成后执行 `npm prune --omit=dev`，生产进程不加载仅用于可信工作簿导入的 `xlsx`。升级版本后也要重新执行 `npm run init-db`，用于创建新增表；初始化脚本使用 `CREATE TABLE IF NOT EXISTS`，不会删除已有数据。

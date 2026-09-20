@@ -4,6 +4,7 @@ import { getStoredCurrentUser, isLoggedIn, loadNotifications, markNotificationRe
 Page({
     data: {
         language: getStoredLanguage(),
+        activeTab: 'message',
         uiText: buildMessageText(getStoredLanguage()),
         notices: [],
         isLoading: false,

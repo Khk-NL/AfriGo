@@ -54,6 +54,7 @@ const COUNTRY_CITY_MAP = {
 Page({
     data: {
         language: getStoredLanguage(),
+        activeTab: 'profile',
         isLogin: false,
         isAdmin: false,
         currentUser: null,

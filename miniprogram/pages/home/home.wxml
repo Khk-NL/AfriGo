@@ -17,7 +17,7 @@
         <view class="elephant-interaction-area {{isElephantRevealed ? 'revealed' : 'hidden'}}">
           <view class="elephant-wrapper" bindtap="handleTapElephant">
             <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:112px;height:112px;margin:0 auto;" />
-            <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}"><text>{{uiText.tooltip}}</text></view>
+            <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}" catchtap="onOpenElephantChat"><text>{{uiText.tooltip}}</text></view>
           </view>
         </view>
       </view>
@@ -68,11 +68,11 @@
 
   <view class="custom-tabbar">
     <view class="tab-pill">
-      <view class="tab-item active" bindtap="onTabTap" data-tab="home"><image wx:if="{{uiText.tabIconImages.home}}" class="tab-icon-image" src="{{uiText.tabIconImages.home}}" mode="aspectFit" /><text wx:else class="tab-icon">🏠</text><text class="tab-text">{{uiText.tabLabels.home}}</text></view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="community"><image wx:if="{{uiText.tabIconImages.community}}" class="tab-icon-image" src="{{uiText.tabIconImages.community}}" mode="aspectFit" /><text wx:else class="tab-icon">💬</text><text class="tab-text">{{uiText.tabLabels.community}}</text></view>
+      <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="onTabTap" data-tab="home"><image wx:if="{{uiText.tabIconImages.home}}" class="tab-icon-image" src="{{uiText.tabIconImages.home}}" mode="aspectFit" /><text wx:else class="tab-icon">🏠</text><text class="tab-text">{{uiText.tabLabels.home}}</text></view>
+      <view class="tab-item {{activeTab === 'community' ? 'active' : ''}}" bindtap="onTabTap" data-tab="community"><image wx:if="{{uiText.tabIconImages.community}}" class="tab-icon-image" src="{{uiText.tabIconImages.community}}" mode="aspectFit" /><text wx:else class="tab-icon">💬</text><text class="tab-text">{{uiText.tabLabels.community}}</text></view>
       <view class="tab-item center-item" bindtap="onTabTap" data-tab="publish"><view class="publish-btn"><image wx:if="{{uiText.tabIconImages.publish}}" class="publish-icon-image" src="{{uiText.tabIconImages.publish}}" mode="aspectFit" /><text wx:else class="publish-plus">＋</text></view><text class="publish-text">{{uiText.tabLabels.publish}}</text></view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="message"><image wx:if="{{uiText.tabIconImages.message}}" class="tab-icon-image" src="{{uiText.tabIconImages.message}}" mode="aspectFit" /><text wx:else class="tab-icon">🔔</text><text class="tab-text">{{uiText.tabLabels.message}}</text></view>
-      <view class="tab-item" bindtap="onTabTap" data-tab="profile"><image wx:if="{{uiText.tabIconImages.profile}}" class="tab-icon-image" src="{{uiText.tabIconImages.profile}}" mode="aspectFit" /><text wx:else class="tab-icon">👤</text><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
+      <view class="tab-item {{activeTab === 'message' ? 'active' : ''}}" bindtap="onTabTap" data-tab="message"><image wx:if="{{uiText.tabIconImages.message}}" class="tab-icon-image" src="{{uiText.tabIconImages.message}}" mode="aspectFit" /><text wx:else class="tab-icon">🔔</text><text class="tab-text">{{uiText.tabLabels.message}}</text></view>
+      <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile"><image wx:if="{{uiText.tabIconImages.profile}}" class="tab-icon-image" src="{{uiText.tabIconImages.profile}}" mode="aspectFit" /><text wx:else class="tab-icon">👤</text><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
     </view>
   </view>
 </view>

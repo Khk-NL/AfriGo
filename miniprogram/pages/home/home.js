@@ -89,6 +89,7 @@ Page({
     isChatOpen: false,
     isElephantRevealed: false,
     currentCountryZh: '肯尼亚',
+    activeTab: 'home',
     heroCoverImage: '/assets/images/covers/kenya.jpg',
     uiText: buildHomeText(getStoredLanguage(), '肯尼亚'),
     attractionsList: [],
@@ -341,6 +342,10 @@ Page({
       title,
       icon: 'none'
     });
+  },
+
+  onOpenElephantChat() {
+    wx.navigateTo({ url: '/pages/chat/chat' });
   },
 
   onHomeBackTap() {

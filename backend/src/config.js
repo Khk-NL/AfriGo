@@ -1,4 +1,5 @@
 const { listProviderIds } = require('./navigation/providers');
+const { listProviderIds: listAiProviderIds } = require('./chat/providers');
 
 function isPlaceholder(value) {
   return !value || /^(replace-with|change-me|example)/i.test(String(value).trim());
@@ -25,6 +26,12 @@ function validateProductionConfig(env = process.env) {
   const knownNavigationProviders = [...listProviderIds(), 'disabled'];
   if (!knownNavigationProviders.includes(navigationProvider)) {
     errors.push(`NAVIGATION_PROVIDER 仅支持 ${knownNavigationProviders.join(' / ')}`);
+  }
+
+  const aiProvider = String(env.AI_PROVIDER || 'deepseek').trim().toLowerCase();
+  const knownAiProviders = [...listAiProviderIds(), 'disabled'];
+  if (!knownAiProviders.includes(aiProvider)) {
+    errors.push(`AI_PROVIDER 仅支持 ${knownAiProviders.join(' / ')}`);
   }
 
   const credentialMode = env.OSS_CREDENTIAL_MODE || 'ecs_ram_role';

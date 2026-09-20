@@ -554,6 +554,5 @@
 .upload-cell-empty { background: #f1f3f1; border-color: #cfd7d1; }
 .upload-plus { color: #667b6f; }
 .submit-btn { border-radius: 22rpx; background: #61786b; box-shadow: none; }
-.tab-item.active { color: #4f6659; }
 .publish-btn { background: #61786b; box-shadow: none; }
 .publish-text { color: #647169; }

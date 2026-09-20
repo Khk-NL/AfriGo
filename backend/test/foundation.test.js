@@ -18,6 +18,7 @@ const { buildHealthPayload, SERVICE_NAME } = require('../src/health');
 const { sanitizeProfilePayload } = require('../src/profile');
 const { useLocalStorage } = require('../src/storage');
 const local = require('../src/local-storage');
+const { sendChatMessage, sanitizeChatMessages } = require('../src/chat');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -78,6 +79,8 @@ test('production config requires HTTPS and ECS role credentials', () => {
   assert.match(validateProductionConfig({ ...base, AMAP_NAVIGATION_ENABLED: 'true' }).join('；'), /AMAP_WEB_SERVICE_KEY/);
   assert.match(validateProductionConfig({ ...base, NAVIGATION_PROVIDER: 'amap' }).join('；'), /NAVIGATION_PROVIDER/);
   assert.deepEqual(validateProductionConfig({ ...base, NAVIGATION_PROVIDER: 'mapbox' }), []);
+  assert.match(validateProductionConfig({ ...base, AI_PROVIDER: 'gpt' }).join('；'), /AI_PROVIDER/);
+  assert.deepEqual(validateProductionConfig({ ...base, AI_PROVIDER: 'deepseek' }), []);
 });
 
 test('rate limiter rejects requests after the configured limit', () => {
@@ -225,6 +228,10 @@ test('navigation provider is swappable, disabled-aware and fails loud on unknown
     () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'google-directions' } }),
     (error) => error.statusCode === 503 && /GOOGLE_MAPS_API_KEY/.test(error.message)
   );
+  await assert.rejects(
+    () => planNavigationRoute(payload, { env: { NAVIGATION_PROVIDER: 'tencent' } }),
+    (error) => error.statusCode === 503 && /TENCENT_MAP_KEY/.test(error.message)
+  );
 });
 
 test('each navigation provider normalizes its own response shape', async () => {
@@ -288,6 +295,57 @@ test('each navigation provider normalizes its own response shape', async () => {
   assert.equal(googleRoute.paths[0].distanceMeters, 2100);
   assert.equal(googleRoute.paths[0].durationSeconds, 601);
   assert.equal(googleRoute.paths[0].steps[0].instruction, '向东 行驶');
+
+  const tencentRoute = await planNavigationRoute(input, {
+    env: { NAVIGATION_PROVIDER: 'tencent', TENCENT_MAP_KEY: 'test-key' },
+    fetchImpl: async (url) => {
+      assert.match(url, /^https:\/\/apis\.map\.qq\.com\/ws\/direction\/v1\/walking\/\?/);
+      assert.match(url, /from=-1\.29(%2C|,)36\.82/);
+      assert.match(url, /to=-1\.28(%2C|,)36\.81/);
+      assert.match(url, /key=test-key/);
+      return {
+        ok: true,
+        async json() {
+          return {
+            status: 0,
+            message: 'query ok',
+            result: {
+              routes: [{
+                distance: 2100,
+                duration: 10,
+                restriction: { status: 0 },
+                steps: [{ instruction: '沿 Kenyatta Ave 步行2100米,到达终点', road_name: 'Kenyatta Ave', distance: 2100, duration: 10 }]
+              }]
+            }
+          };
+        }
+      };
+    }
+  });
+  assert.equal(tencentRoute.provider, 'tencent');
+  assert.equal(tencentRoute.providerLabel, '腾讯地图路线');
+  assert.equal(tencentRoute.paths[0].distanceMeters, 2100);
+  assert.equal(tencentRoute.paths[0].durationSeconds, 600);
+  assert.equal(tencentRoute.paths[0].restriction, '');
+  assert.deepEqual(tencentRoute.paths[0].steps[0], {
+    instruction: '沿 Kenyatta Ave 步行2100米,到达终点',
+    road: 'Kenyatta Ave',
+    distanceMeters: 2100,
+    durationSeconds: 600
+  });
+
+  await assert.rejects(
+    () => planNavigationRoute(input, {
+      env: { NAVIGATION_PROVIDER: 'tencent', TENCENT_MAP_KEY: 'bad-key' },
+      fetchImpl: async () => ({
+        ok: true,
+        async json() {
+          return { status: 311, message: 'key格式错误' };
+        }
+      })
+    }),
+    (error) => error.statusCode === 502 && /key格式错误/.test(error.message)
+  );
 
   await assert.rejects(
     () => planNavigationRoute(input, {
@@ -375,6 +433,57 @@ test('media storage falls back to local disk when OSS is not configured', () => 
     if (previous === undefined) delete process.env.PUBLIC_BASE_URL;
     else process.env.PUBLIC_BASE_URL = previous;
   }
+});
+
+test('chat injects the elephant persona and hides provider failures', async () => {
+  assert.deepEqual(sanitizeChatMessages([{ role: 'user', content: ' 你好 ' }]), [{ role: 'user', content: '你好' }]);
+  assert.throws(() => sanitizeChatMessages([]), /请输入/);
+  assert.throws(() => sanitizeChatMessages([{ role: 'assistant', content: 'hi' }]), /最后一条/);
+
+  await assert.rejects(
+    () => sendChatMessage([{ role: 'user', content: '你好' }], { env: {} }),
+    (error) => error.statusCode === 503 && /DEEPSEEK_API_KEY/.test(error.message)
+  );
+
+  let captured = null;
+  const result = await sendChatMessage([{ role: 'user', content: '内罗毕安全吗' }], {
+    env: { DEEPSEEK_API_KEY: 'test-key' },
+    fetchImpl: async (url, init) => {
+      captured = { url, init };
+      return {
+        ok: true,
+        async json() {
+          return {
+            model: 'deepseek-chat',
+            choices: [{ message: { content: '夜间尽量避免单独出行。' } }],
+            usage: { total_tokens: 12 }
+          };
+        }
+      };
+    }
+  });
+  assert.equal(captured.url, 'https://api.deepseek.com/chat/completions');
+  assert.match(captured.init.headers.Authorization, /^Bearer test-key$/);
+  const body = JSON.parse(captured.init.body);
+  assert.equal(body.model, 'deepseek-chat');
+  assert.equal(body.messages[0].role, 'system');
+  assert.match(body.messages[0].content, /非洲象/);
+  assert.deepEqual(body.messages[1], { role: 'user', content: '内罗毕安全吗' });
+  assert.equal(result.reply, '夜间尽量避免单独出行。');
+
+  await assert.rejects(
+    () => sendChatMessage([{ role: 'user', content: 'hi' }], {
+      env: { DEEPSEEK_API_KEY: 'bad' },
+      fetchImpl: async () => ({
+        ok: false,
+        status: 401,
+        async json() {
+          return { error: { message: 'Authentication Fails' } };
+        }
+      })
+    }),
+    (error) => error.statusCode === 502 && /鉴权失败/.test(error.message)
+  );
 });
 
 test('health payload identifies the running build without exposing secrets', () => {

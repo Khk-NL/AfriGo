@@ -1,6 +1,7 @@
 const amapOverseas = require('./amap-overseas');
 const mapbox = require('./mapbox');
 const googleDirections = require('./google-directions');
+const tencent = require('./tencent');
 
 /**
  * 路线 Provider 契约。新增地图服务只需实现本形状并注册到 PROVIDERS，
@@ -17,7 +18,7 @@ const googleDirections = require('./google-directions');
  *   只负责拼 URL 与解析响应；超时、HTTP 错误、路径归一化由调用方统一处理。
  */
 
-const PROVIDERS = Object.freeze([amapOverseas, mapbox, googleDirections]);
+const PROVIDERS = Object.freeze([amapOverseas, mapbox, googleDirections, tencent]);
 const BY_ID = new Map(PROVIDERS.map((provider) => [provider.id, provider]));
 
 /** 显式关闭路线能力的取值；与"未配置"区分，便于运维确认是有意关闭。 */

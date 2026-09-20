@@ -20,7 +20,8 @@
     "pages/travel-tools/travel-tools",
     "pages/trip-review/trip-review",
     "pages/services/services",
-    "pages/content-trust/content-trust"
+    "pages/content-trust/content-trust",
+    "pages/chat/chat"
   ],
   "window": {
     "navigationBarTextStyle": "black",

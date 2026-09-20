@@ -212,6 +212,15 @@ async function syncWeChatLogin({ desc = DEFAULT_PROFILE_DESC } = {}) {
   return user;
 }
 
+/** 让大象（AI）回复一段对话；messages 为 [{role, content}]，key 只在服务端。 */
+async function sendChatMessage(messages) {
+  const result = await request('/api/chat', {
+    method: 'POST',
+    data: { messages }
+  });
+  return result.data || { reply: '' };
+}
+
 /** 上传头像，返回可长期使用的绝对地址（本地存储模式会返回完整 HTTPS 的 /media 地址）。 */
 async function uploadAvatar(filePath) {
   const result = await upload('/api/upload', filePath);
@@ -409,6 +418,7 @@ export {
   refreshCurrentUser,
   uploadAvatar,
   updateMyProfile,
+  sendChatMessage,
   logoutCurrentUser,
   getUserDisplayName,
   loadCollection,

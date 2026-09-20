@@ -36,22 +36,49 @@
     flex: 1;
     color: #7a857e;
     font-size: 12px;
-    transition: color 0.3s ease;
+    position: relative;
+    transition: color 0.25s ease;
 }
 
+/* 当前页：加深加粗 + 图标上浮放大 + 下方指示条，确保一眼看出在哪一页 */
 .tab-item.active {
-    color: #4f6659;
+    color: #2f4a3c;
+    font-weight: 700;
+}
+
+.tab-item.active .tab-icon,
+.tab-item.active .tab-icon-image {
+    transform: translateY(-3rpx) scale(1.14);
+}
+
+.tab-item.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -4rpx;
+    width: 26rpx;
+    height: 6rpx;
+    margin-left: -13rpx;
+    border-radius: 999rpx;
+    background: #61786b;
+}
+
+/* 中间的发布按钮本身有底色，不再叠加指示条 */
+.tab-item.center-item.active::after {
+    display: none;
 }
 
 .tab-icon {
     font-size: 20px;
     margin-bottom: 4rpx;
+    transition: transform 0.25s ease;
 }
 
 .tab-icon-image {
     width: 32rpx;
     height: 32rpx;
     margin-bottom: 4rpx;
+    transition: transform 0.25s ease;
 }
 
 .publish-icon-image {

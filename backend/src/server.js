@@ -16,6 +16,7 @@ const { LEAD_STATUSES, sanitizeLeadPayload, sanitizeProviderPayload } = require(
 const { CORRECTION_STATUSES, sanitizeCorrectionPayload, sanitizeRiskAlertPayload } = require('./content-trust');
 const { translateText } = require('./translate');
 const { planNavigationRoute } = require('./navigation');
+const { sendChatMessage } = require('./chat');
 const { SERVICE_NAME, buildHealthPayload } = require('./health');
 
 const app = express();
@@ -26,6 +27,7 @@ const loginLimiter = createRateLimiter({ windowMs: 10 * 60_000, max: 20, prefix:
 const mutationLimiter = createRateLimiter({ windowMs: 60_000, max: 120, prefix: 'mutation' });
 const translateLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'translate' });
 const navigationLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'navigation' });
+const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 20, prefix: 'chat' });
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -947,6 +949,15 @@ app.put('/api/trips/:id/review', authenticate, async (req, res, next) => {
 app.post('/api/translate', authenticate, translateLimiter, async (req, res, next) => {
   try {
     const data = await translateText(req.body || {});
+    res.json({ ok: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/chat', authenticate, chatLimiter, async (req, res, next) => {
+  try {
+    const data = await sendChatMessage((req.body || {}).messages);
     res.json({ ok: true, data });
   } catch (error) {
     next(error);

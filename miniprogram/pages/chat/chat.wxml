@@ -1,0 +1,64 @@
+<view class="chat-page">
+  <view class="chat-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="chat-back" bindtap="onBack"><text class="chat-back-icon">←</text></view>
+    <view class="chat-title-wrap">
+      <text class="chat-title">{{text.title}}</text>
+      <text class="chat-subtitle">{{text.subtitle}}</text>
+    </view>
+    <view class="chat-clear" bindtap="onClear"><text>{{text.clear}}</text></view>
+  </view>
+
+  <scroll-view
+    class="chat-scroll"
+    scroll-y="true"
+    scroll-with-animation="true"
+    scroll-into-view="{{scrollTo}}"
+    show-scrollbar="false"
+  >
+    <view class="chat-body">
+      <view class="chat-hero">
+        <canvas id="chat-elephant" type="2d" class="chat-elephant"></canvas>
+        <text class="chat-hero-tip">{{text.empty}}</text>
+      </view>
+
+      <view wx:if="{{!messages.length}}" class="chat-quick">
+        <view wx:for="{{text.quick}}" wx:key="*this" class="chat-quick-item" data-text="{{item}}" bindtap="onQuickAsk">
+          <text>{{item}}</text>
+        </view>
+      </view>
+
+      <view wx:for="{{messages}}" wx:key="id" id="msg-{{index}}" class="chat-row chat-row-{{item.role}}">
+        <view class="chat-bubble chat-bubble-{{item.role}}">
+          <text selectable="true">{{item.content}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{sending}}" class="chat-row chat-row-assistant">
+        <view class="chat-bubble chat-bubble-assistant chat-bubble-typing">
+          <text>{{text.thinking}}</text>
+        </view>
+      </view>
+
+      <view class="chat-bottom-space"></view>
+    </view>
+  </scroll-view>
+
+  <view class="chat-input-bar">
+    <block wx:if="{{isLogin}}">
+      <input
+        class="chat-input"
+        value="{{draft}}"
+        placeholder="{{text.placeholder}}"
+        placeholder-class="chat-input-placeholder"
+        confirm-type="send"
+        bindinput="onInput"
+        bindconfirm="onSend"
+      />
+      <button class="chat-send {{draft ? '' : 'disabled'}}" bindtap="onSend">{{text.send}}</button>
+    </block>
+    <block wx:else>
+      <view class="chat-login-hint"><text>{{text.loginRequired}}</text></view>
+      <button class="chat-send" bindtap="onGoLogin">{{text.goLogin}}</button>
+    </block>
+  </view>
+</view>

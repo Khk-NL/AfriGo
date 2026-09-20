@@ -19,7 +19,8 @@
 - 小程序内已使用 `wx.chooseLocation`、`wx.getLocation` 和 `wx.openLocation` 完成位置选择与地图打开，无需把密钥下发到客户端。
 - 已实现 Express 代理接口：`POST /api/navigation/routes`，请求字段为 `origin`、`destination` 和 `mode`，接口需登录且有独立限流。
 - 供应商选择改为 Provider 抽象（`backend/src/navigation/`）：用 `NAVIGATION_PROVIDER` 切换，新增服务只需实现 `plan()` 并注册进 `providers/index.js`；响应回传 `provider` 与 `providerLabel`，小程序不硬编码地图品牌。
-- 已内置 `amap-overseas`（高德海外 Web Service，需企业开发者认证并工单开通海外 LBS 权限，文档 https://lbs.amap.com/api/web-service/guide/routes）、`mapbox`（Mapbox Directions，自助注册、全球覆盖）、`google-directions`（Google Directions，需 Google Cloud 项目与结算账号），以及显式关闭用的 `disabled`。
+- 已内置 `amap-overseas`（高德海外 Web Service，需企业开发者认证并工单开通海外 LBS 权限，文档 https://lbs.amap.com/api/web-service/guide/routes）、`mapbox`（Mapbox Directions，自助注册、全球覆盖）、`google-directions`（Google Directions，需 Google Cloud 项目与结算账号）、`tencent`（腾讯位置服务 Direction，控制台自助申请 Key、有免费配额），以及显式关闭用的 `disabled`。
+  腾讯返回的 `duration` 单位是分钟，Provider 内已换算成秒，保证四种服务的 `durationSeconds` 口径一致。
 - 各 Provider 的 Key 只放在服务端环境变量，由 Express 代理请求；未配置时接口明确返回 503，微信原生选点和地图打开仍可使用。
 
 ### 翻译
@@ -54,6 +55,18 @@
 - 风险提醒存储 `sourceUrl`、`sourceName`、`publishedAt`、`verifiedAt`、`expiresAt` 和 `status`；`GET /api/risk-alerts` 只返回已发布且未过期内容。
 - 用户纠错：`POST /api/content-corrections`、`GET /api/me/content-corrections`，登录用户可查看采纳或驳回说明。
 - 管理后台新增 `risk_alerts` 与 `content_corrections`，用于发布风险信息和审核纠错；旅中工具同步显示有效提醒。
+
+## 已实现：AI 陪伴（大象）
+
+- 后端 `POST /api/chat` 代理大模型（`AI_PROVIDER=deepseek`，默认 DeepSeek），Key 只存服务端，接口需登录且有独立限流（20 次/分钟）。
+- 人设由服务端注入，可用 `AI_SYSTEM_PROMPT` 覆盖：一只叫「小象」的非洲象向导，回答控制在 200 字内，涉及签证、安全、医疗与法律时提示以官方渠道为准。
+- 小程序 `pages/chat/chat`：复用动态小象 Canvas 作头像，气泡对话、快捷提问、本地历史（最多 40 条）与一键清空；未登录时引导去登录。
+- 未配置 Key 时接口返回 503，其余功能不受影响；新增模型服务只需实现 `complete()` 并注册进 `chat/providers/index.js`。
+
+## 已实现：媒体存储与个人资料
+
+- 媒体存储做成可替换 Provider（`backend/src/storage.js`）：`STORAGE_PROVIDER=oss` 用阿里云私有 Bucket + 签名 URL，`local` 用服务器本地磁盘并经 `/media` 前缀提供；留空时自动判断，因此没有云凭据也能使用图片与头像。
+- 个人中心支持自助修改头像与昵称：头像用微信原生 `open-type="chooseAvatar"`，昵称用 `<input type="nickname">`，保存时先上传头像再调用 `PUT /api/auth/profile`。
 
 ## 后置项
 
