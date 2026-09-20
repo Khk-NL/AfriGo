@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "旅中工具箱"
+  "navigationBarTitleText": "旅中工具箱",
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

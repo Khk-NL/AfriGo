@@ -19,6 +19,12 @@ const { sanitizeProfilePayload } = require('../src/profile');
 const { useLocalStorage } = require('../src/storage');
 const local = require('../src/local-storage');
 const { sendChatMessage, sanitizeChatMessages } = require('../src/chat');
+const { buildSystemPrompt } = require('../src/chat/persona');
+const {
+  MAX_CONTEXT_CHARS,
+  buildTravelContext,
+  loadTravelContext
+} = require('../src/chat/travel-context');
 
 test('country names resolve to stable ISO codes', () => {
   assert.equal(normalizeCountryCode('肯尼亚'), 'KE');
@@ -484,6 +490,82 @@ test('chat injects the elephant persona and hides provider failures', async () =
     }),
     (error) => error.statusCode === 502 && /鉴权失败/.test(error.message)
   );
+});
+
+test('chat grounds the elephant in the country guide and live risk alerts', async () => {
+  const guide = {
+    countryZh: '肯尼亚',
+    countryCode: 'KE',
+    region: '东非',
+    officialLanguage: '斯瓦希里语 / 英语',
+    visa: { types: '旅游签', mode: '电子签', time: '3 个工作日', fee: '51 美元', validity: '90 天', policy: '需提供行程单' },
+    security: {
+      overallCrimeIndex: 55,
+      highRiskAreas: ['内罗毕东区', '蒙巴萨老城'],
+      specialRisk: '夜间避免单独出行。',
+      embassyWarning: '关注使馆安全提醒。',
+      embassyPhone: '+254-20-2711222',
+      policePhone: '999',
+      travelTips: ['白天出行', '证件分开存放']
+    },
+    customs: { etiquetteText: '左手不用于递物。', dressMen: '正式场合正装', dressWomen: '宗教场所保守着装' },
+    health: { entryMustDesc: '需黄热病疫苗证书。', tickerText: '注意疟疾防护。', malariaTips: ['使用蚊帐'] },
+    laborList: [{ title: '工作许可', content: '需雇主提前申请' }],
+    localInfo: { summary: '内罗毕交通拥堵。' },
+    extras: { officialSites: 'http://ke.china-embassy.gov.cn', embassy: '中国驻肯尼亚使馆' }
+  };
+  const alerts = [{
+    severity: 'high',
+    title: '内罗毕示威',
+    summary: '市中心有游行',
+    source_name: '使馆公告',
+    published_at: '2025-05-01 00:00:00',
+    expires_at: '2025-06-01 00:00:00'
+  }];
+
+  assert.equal(buildTravelContext({}), '');
+  const context = buildTravelContext({ guide, alerts, updatedAt: '2025-05-02 10:00:00' });
+  assert.match(context, /国家：肯尼亚/);
+  assert.match(context, /报警 999/);
+  assert.match(context, /使领馆 \+254-20-2711222/);
+  assert.match(context, /高风险区域 内罗毕东区、蒙巴萨老城/);
+  assert.match(context, /工作许可：需雇主提前申请/);
+  assert.match(context, /\[高\] 内罗毕示威/);
+  assert.match(context, /有效至 2025-06-01/);
+  assert.ok(context.length <= MAX_CONTEXT_CHARS + 1);
+
+  // 没有选国家时，人设仍然完整，并明确告诉模型这次没有该国资料。
+  const bare = buildSystemPrompt({});
+  assert.match(bare, /非洲象/);
+  assert.match(bare, /没有附带国家资料/);
+  assert.equal(buildSystemPrompt({ travelContext: context }).endsWith(context), true);
+  assert.equal(buildSystemPrompt({ override: '自定义人设' }), '自定义人设');
+
+  const queries = [];
+  const query = async (sql, params) => {
+    queries.push({ sql, params });
+    if (/country_guides/.test(sql)) return [[{ payload: guide, updated_at: '2025-05-02' }]];
+    return [alerts];
+  };
+  const loaded = await loadTravelContext('ke', { query });
+  assert.equal(queries.length, 2);
+  assert.deepEqual(queries[0].params, ['KE']);
+  assert.match(loaded, /内罗毕示威/);
+  assert.equal(await loadTravelContext('', { query }), '');
+  assert.equal(await loadTravelContext('KENYA', { query }), '');
+
+  let captured = null;
+  await sendChatMessage([{ role: 'user', content: '内罗毕安全吗' }], {
+    env: { DEEPSEEK_API_KEY: 'test-key' },
+    travelContext: loaded,
+    fetchImpl: async (_url, init) => {
+      captured = JSON.parse(init.body);
+      return { ok: true, async json() { return { choices: [{ message: { content: 'ok' } }] }; } };
+    }
+  });
+  assert.match(captured.messages[0].content, /非洲象/);
+  assert.match(captured.messages[0].content, /报警 999/);
+  assert.deepEqual(captured.messages[1], { role: 'user', content: '内罗毕安全吗' });
 });
 
 test('health payload identifies the running build without exposing secrets', () => {

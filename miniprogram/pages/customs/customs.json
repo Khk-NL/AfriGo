@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "风俗与禁忌指南",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

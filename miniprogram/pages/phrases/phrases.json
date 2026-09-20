@@ -1,4 +1,6 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

@@ -186,3 +186,4 @@
 </view>
 
 <template is="tabbar" data="{{ activeTab: 'profile', tabTexts: uiText.tabLabels, tabIconImages: uiText.tabIconImages }}" />
+<elephant-pet />

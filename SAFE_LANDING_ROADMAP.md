@@ -56,11 +56,13 @@
 - 用户纠错：`POST /api/content-corrections`、`GET /api/me/content-corrections`，登录用户可查看采纳或驳回说明。
 - 管理后台新增 `risk_alerts` 与 `content_corrections`，用于发布风险信息和审核纠错；旅中工具同步显示有效提醒。
 
-## 已实现：AI 陪伴（大象）
+## 已实现：AI 陪伴（非洲象 · 旅行小助手）
 
 - 后端 `POST /api/chat` 代理大模型（`AI_PROVIDER=deepseek`，默认 DeepSeek），Key 只存服务端，接口需登录且有独立限流（20 次/分钟）。
-- 人设由服务端注入，可用 `AI_SYSTEM_PROMPT` 覆盖：一只叫「小象」的非洲象向导，回答控制在 200 字内，涉及签证、安全、医疗与法律时提示以官方渠道为准。
-- 小程序 `pages/chat/chat`：复用动态小象 Canvas 作头像，气泡对话、快捷提问、本地历史（最多 40 条）与一键清空；未登录时引导去登录。
+- 人设由服务端注入（`backend/src/chat/persona.js`），可用 `AI_SYSTEM_PROMPT` 整体覆盖：一只叫「小象」的非洲象旅行小助手，先给结论、默认 200 字内、不用 Markdown 排版，遇签证/安全/医疗/法律先提示以官方渠道为准，不编造电话、地址、政策与价格。
+- 资料注入（`backend/src/chat/travel-context.js`）：请求带上 `countryCode` 后，服务端把该国的签证、治安、紧急电话、健康、风俗、劳务、官方入口和正在生效的风险提醒压成要点，拼进系统提示词；查不到资料时照常回答，只是明确告诉模型没有该国数据。
+- 小程序 `components/elephant-pet`：常驻悬浮的桌宠小象，可拖动、松手吸附屏幕边缘、长按换位置或暂时收起；点一下就地弹出对话卡片，发消息时小象会切到说话/开心状态；卡片内可一键跳到全屏。
+- 全屏页 `pages/chat/chat`：同一个桌宠的历史与文案（`utils/elephant-chat.js` 统一维护），显示当前参考的国家资料，未登录时引导去登录。
 - 未配置 Key 时接口返回 503，其余功能不受影响；新增模型服务只需实现 `complete()` 并注册进 `chat/providers/index.js`。
 
 ## 已实现：媒体存储与个人资料

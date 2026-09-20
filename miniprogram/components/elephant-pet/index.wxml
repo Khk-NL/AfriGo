@@ -1,0 +1,92 @@
+<!-- 桌宠：面板在下、小象在上，于是小象看起来"坐在"聊天卡片上 -->
+<view wx:if="{{panelOpen}}" class="pet-layer" catchtouchmove="noop">
+  <view class="pet-mask" bindtap="onClosePanel"></view>
+  <view
+    class="pet-panel"
+    style="height:{{panelHeight}}px;padding-bottom:{{bottomInset}}px;"
+    catchtap="onPanelTap"
+    catchtouchmove="noop"
+  >
+    <view class="panel-head">
+      <view class="panel-head-text">
+        <text class="panel-title">{{text.title}}</text>
+        <text class="panel-subtitle">{{text.subtitle}}</text>
+      </view>
+      <view class="panel-actions">
+        <view class="panel-action" bindtap="onExpand"><text>{{text.expand}}</text></view>
+        <view class="panel-action" bindtap="onClear"><text>{{text.clear}}</text></view>
+        <view class="panel-action" bindtap="onClosePanel"><text>{{text.close}}</text></view>
+      </view>
+    </view>
+
+    <scroll-view
+      class="panel-scroll"
+      scroll-y="true"
+      scroll-with-animation="true"
+      scroll-into-view="{{scrollTo}}"
+      show-scrollbar="false"
+    >
+      <view wx:if="{{!messages.length}}" class="panel-quick">
+        <text class="panel-empty">{{text.empty}}</text>
+        <view
+          wx:for="{{text.quick}}"
+          wx:key="*this"
+          class="quick-chip"
+          data-text="{{item}}"
+          bindtap="onQuickAsk"
+        ><text>{{item}}</text></view>
+      </view>
+
+      <view wx:for="{{messages}}" wx:key="id" id="pm-{{index}}" class="panel-row panel-row-{{item.role}}">
+        <view class="panel-bubble panel-bubble-{{item.role}}"><text selectable="true">{{item.content}}</text></view>
+      </view>
+
+      <view wx:if="{{sending}}" class="panel-row panel-row-assistant">
+        <view class="panel-bubble panel-bubble-assistant panel-bubble-typing"><text>{{text.thinking}}</text></view>
+      </view>
+
+      <view class="panel-bottom-space"></view>
+    </scroll-view>
+
+    <view class="panel-input-bar">
+      <block wx:if="{{isLogin}}">
+        <input
+          class="panel-input"
+          value="{{draft}}"
+          placeholder="{{text.placeholder}}"
+          placeholder-class="panel-input-placeholder"
+          confirm-type="send"
+          cursor-spacing="24"
+          bindinput="onInput"
+          bindconfirm="onSend"
+        />
+        <view class="panel-send {{draft ? '' : 'disabled'}}" bindtap="onSend"><text>{{text.send}}</text></view>
+      </block>
+      <block wx:else>
+        <view class="panel-login"><text>{{text.loginRequired}}</text></view>
+        <view class="panel-send" bindtap="onGoLogin"><text>{{text.goLogin}}</text></view>
+      </block>
+    </view>
+  </view>
+</view>
+
+<block wx:if="{{visible}}">
+  <view
+    wx:if="{{bubbleShow}}"
+    class="pet-bubble"
+    style="{{bubbleStyle}}"
+    catchtap="openPanel"
+  ><text>{{bubbleText}}</text></view>
+
+  <view
+    class="pet-body {{dragging ? 'dragging' : ''}}"
+    style="left:{{x}}px;top:{{y}}px;width:{{size}}px;height:{{size}}px;"
+    catchtouchstart="onTouchStart"
+    catchtouchmove="onTouchMove"
+    catchtouchend="onTouchEnd"
+    catchtouchcancel="onTouchCancel"
+    bindlongpress="onLongPress"
+  >
+    <canvas id="pet-canvas" type="2d" class="pet-canvas" style="width:{{size}}px;height:{{size}}px;"></canvas>
+  </view>
+</block>

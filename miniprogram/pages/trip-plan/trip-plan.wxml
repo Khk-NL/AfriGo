@@ -61,3 +61,4 @@
     </view>
   </scroll-view>
 </view>
+<elephant-pet />

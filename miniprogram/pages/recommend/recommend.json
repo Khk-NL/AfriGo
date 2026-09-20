@@ -1,6 +1,8 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {},
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  },
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark"
 }

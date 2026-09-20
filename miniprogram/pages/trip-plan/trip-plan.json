@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "安全落地计划"
+  "navigationBarTitleText": "安全落地计划",
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

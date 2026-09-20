@@ -102,7 +102,6 @@ const HOME_TEXT = {
   zh: {
     welcomePrefix: '欢迎来到',
     welcomeFallbackSubtitle: '签证与出行',
-    tooltip: '您可以尝试问我“签证”或“大使馆”',
     safetyTitle: '旅行安全出行',
     safetyMore: '更多 >',
     safetyLevel: '安全等级：中等风险',
@@ -118,7 +117,6 @@ const HOME_TEXT = {
   en: {
     welcomePrefix: 'Welcome to',
     welcomeFallbackSubtitle: 'Visas & Travel',
-    tooltip: 'Try asking me about “visas” or the “embassy”',
     safetyTitle: 'Travel Safety',
     safetyMore: 'More >',
     safetyLevel: 'Risk level: Moderate',
@@ -134,7 +132,6 @@ const HOME_TEXT = {
   fr: {
     welcomePrefix: 'Bienvenue à',
     welcomeFallbackSubtitle: 'Visa et transport',
-    tooltip: 'Vous pouvez me demander “visa” ou “ambassade”',
     safetyTitle: 'Sécurité du voyage',
     safetyMore: 'Plus >',
     safetyLevel: 'Niveau de risque : modéré',

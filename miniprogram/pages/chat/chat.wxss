@@ -83,14 +83,22 @@
 }
 
 .chat-elephant {
-    width: 128rpx;
-    height: 128rpx;
+    display: block;
 }
 
 .chat-hero-tip {
     margin-top: 8rpx;
     font-size: 22rpx;
     color: #8b968f;
+}
+
+.chat-context {
+    margin-top: 10rpx;
+    padding: 8rpx 20rpx;
+    border-radius: 999rpx;
+    background: #eef3ef;
+    color: #5c7a68;
+    font-size: 20rpx;
 }
 
 .chat-quick {

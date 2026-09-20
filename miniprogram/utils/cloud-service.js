@@ -212,11 +212,26 @@ async function syncWeChatLogin({ desc = DEFAULT_PROFILE_DESC } = {}) {
   return user;
 }
 
-/** 让大象（AI）回复一段对话；messages 为 [{role, content}]，key 只在服务端。 */
-async function sendChatMessage(messages) {
+/**
+ * 让大象（AI）回复一段对话。
+ * 带上 countryCode 后，服务端会把该国的签证、安全、风险提醒注入系统提示词；
+ * AI 的 key 只在服务端，小程序永远拿不到。
+ *
+ * @param {Array<{role: string, content: string}>} messages 历史消息。
+ * @param {{countryCode?: string, country?: string}} [options]
+ * @returns {Promise<{reply: string, model?: string}>}
+ */
+async function sendChatMessage(messages, options = {}) {
+  const data = { messages };
+  if (options.countryCode) {
+    data.countryCode = options.countryCode;
+  }
+  if (options.country) {
+    data.country = options.country;
+  }
   const result = await request('/api/chat', {
     method: 'POST',
-    data: { messages }
+    data
   });
   return result.data || { reply: '' };
 }

@@ -2,5 +2,7 @@
   "navigationStyle": "custom",
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark",
-  "usingComponents": {}
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

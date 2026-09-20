@@ -17,6 +17,7 @@ const { CORRECTION_STATUSES, sanitizeCorrectionPayload, sanitizeRiskAlertPayload
 const { translateText } = require('./translate');
 const { planNavigationRoute } = require('./navigation');
 const { sendChatMessage } = require('./chat');
+const { loadTravelContext } = require('./chat/travel-context');
 const { SERVICE_NAME, buildHealthPayload } = require('./health');
 
 const app = express();
@@ -957,7 +958,20 @@ app.post('/api/translate', authenticate, translateLimiter, async (req, res, next
 
 app.post('/api/chat', authenticate, chatLimiter, async (req, res, next) => {
   try {
-    const data = await sendChatMessage((req.body || {}).messages);
+    const body = req.body || {};
+    const countryCode = normalizeCountryCode(body.countryCode, body.country);
+    // 国家资料只是增强项：查不到或查询报错都不该让对话失败。
+    let travelContext = '';
+    if (countryCode) {
+      try {
+        travelContext = await loadTravelContext(countryCode, {
+          query: (sql, params) => pool.query(sql, params)
+        });
+      } catch (error) {
+        console.warn(`chat: 旅行上下文读取失败（${countryCode}）：${error.message}`);
+      }
+    }
+    const data = await sendChatMessage(body.messages, { travelContext });
     res.json({ ok: true, data });
   } catch (error) {
     next(error);

@@ -19,12 +19,6 @@
           <text class="hero-title">{{uiText.welcomeTitle}}</text>
           <text class="hero-subtitle">{{uiText.welcomeSubtitle}}</text>
         </view>
-        <view class="elephant-interaction-area {{isElephantRevealed ? 'revealed' : 'hidden'}}">
-          <view class="elephant-wrapper" bindtap="handleTapElephant">
-            <canvas id="lottie-canvas" class="elephant-canvas" type="2d" bindtap="handleTapElephant" style="width:112px;height:112px;margin:0 auto;" />
-            <view class="elephant-tooltip {{isChatOpen ? 'show' : ''}}" catchtap="onOpenElephantChat"><text>{{uiText.tooltip}}</text></view>
-          </view>
-        </view>
       </view>
 
       <view class="safety-card" bindtap="onOpenSecurityGuide">
@@ -89,4 +83,5 @@
       <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="onTabTap" data-tab="profile"><image wx:if="{{uiText.tabIconImages.profile}}" class="tab-icon-image" src="{{uiText.tabIconImages.profile}}" mode="aspectFit" /><text wx:else class="tab-icon">👤</text><text class="tab-text">{{uiText.tabLabels.profile}}</text></view>
     </view>
   </view>
+  <elephant-pet />
 </view>

@@ -1,4 +1,3 @@
-import { ElephantRenderer } from '../../utils/elephant-renderer.js';
 import { createPost, loadCollectionWithFallback, loadRiskAlerts } from '../../utils/cloud-service.js';
 import { buildHomeText, getCountryName, getStoredLanguage, normalizeLanguage, setStoredLanguage } from '../../utils/i18n.js';
 import { getSelectedDestination } from '../../utils/countries.js';
@@ -91,9 +90,6 @@ const pickCloudCountryList = (docs, countryZh) => {
 Page({
   data: {
     language: getStoredLanguage(),
-    isAnimating: false,
-    isChatOpen: false,
-    isElephantRevealed: false,
     currentCountryZh: '肯尼亚',
     activeTab: 'home',
     heroCoverImage: '/assets/images/covers/kenya.jpg',
@@ -266,90 +262,6 @@ Page({
     return createPost({ content: trimmedContent });
   },
 
-  onReady() {
-    wx.createSelectorQuery().select('#lottie-canvas').node(res => {
-      if (!res || !res.node) {
-        console.warn('home: lottie canvas node not found');
-        return;
-      }
-
-      try {
-        const canvas = res.node;
-        const context = canvas.getContext('2d');
-        if (!context) {
-          console.warn('home: canvas 2d context unavailable');
-          return;
-        }
-
-        // 设置高分辨率防锯齿
-        const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
-        const dpr = windowInfo.pixelRatio || 1;
-        const cssWidth = 112;
-        const cssHeight = 112;
-        canvas.width = cssWidth * dpr;
-        canvas.height = cssHeight * dpr;
-        context.scale(dpr, dpr);
-
-        // 渲染器实例不要放入 data，避免 setData 序列化失败
-        const renderer = new ElephantRenderer(canvas, context);
-        renderer.setState('peek');
-        renderer.start();
-        this.elephantRenderer = renderer;
-      } catch (error) {
-        console.error('home: elephant renderer init failed', error);
-      }
-    }).exec();
-  },
-
-  handleTapElephant() {
-    if (this.data.isAnimating) return;
-    
-    // 触觉真实反馈
-    wx.vibrateShort({
-      type: 'medium'
-    });
-
-    const isRevealed = this.data.isElephantRevealed;
-    const renderer = this.elephantRenderer;
-
-    if (!isRevealed) {
-      // 从右侧出来，变成开心状态，打开气泡
-      this.setData({ isElephantRevealed: true, isAnimating: true, isChatOpen: true });
-      if (renderer) {
-        renderer.setState('happy');
-        
-        // 1.5 秒后恢复闲置动画，但依然停留在页面中心
-        setTimeout(() => {
-          renderer.setState('idle');
-          this.setData({ isAnimating: false });
-        }, 1500);
-      } else {
-        this.setData({ isAnimating: false });
-      }
-    } else {
-      // 如果已经出来了，再次点击就收起气泡，并躲回右边去
-      this.setData({ isElephantRevealed: false, isAnimating: true, isChatOpen: false });
-      
-      if (renderer) {
-        // 躲回去的时候不开心了，恢复静默闲置即可
-        renderer.setState('peek');
-        setTimeout(() => {
-          this.setData({ isAnimating: false });
-        }, 800); // 等待 CSS transition 平滑过去
-      } else {
-        this.setData({ isAnimating: false });
-      }
-    }
-  },
-
-  onUnload() {
-    const renderer = this.elephantRenderer;
-    if (renderer) {
-      renderer.stop();
-    }
-    this.elephantRenderer = null;
-  },
-
   onMoreTap() {
     this.onOpenSecurityGuide();
   },
@@ -423,10 +335,6 @@ Page({
       title,
       icon: 'none'
     });
-  },
-
-  onOpenElephantChat() {
-    wx.navigateTo({ url: '/pages/chat/chat' });
   },
 
   onHomeBackTap() {

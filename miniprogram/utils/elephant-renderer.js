@@ -1,12 +1,24 @@
 // 动态小象交互 - Canvas 2D 渲染引擎 (更新版，支持吃东西、全像图、软阴影)
+// 画布坐标系固定为 400x400，绘制时按 size 缩放，因此同一个渲染器可以铺在
+// 首页角落、聊天页头像和全屏桌宠上。
+const DESIGN_SIZE = 400;
+
 export class ElephantRenderer {
-  constructor(canvas, context) {
+  /**
+   * @param {object} canvas 2d canvas 节点，需支持 requestAnimationFrame。
+   * @param {object} context 2d 上下文。
+   * @param {{size?: number, frameIntervalMs?: number}} [options]
+   *   size 为 CSS 像素边长；frameIntervalMs 用于限制帧率，桌宠常驻时省电。
+   */
+  constructor(canvas, context, options = {}) {
     this.canvas = canvas;
     this.ctx = context;
+    this.size = Number(options.size) > 0 ? Number(options.size) : 160;
+    this.frameIntervalMs = Number(options.frameIntervalMs) > 0 ? Number(options.frameIntervalMs) : 0;
     this.state = 'peek'; // 'peek', 'idle', 'happy', 'eating', 'speaking'
     this.time = 0;
     this.animId = null;
-    
+
     // 初始化渐变色
     this.skinGrad = this.ctx.createLinearGradient(80, 0, 320, 400);
     this.skinGrad.addColorStop(0, '#CBD5E1');
@@ -40,13 +52,17 @@ export class ElephantRenderer {
 
   start() {
     let lastTime = Date.now();
+    let lastDraw = 0;
     const loop = () => {
       const now = Date.now();
       const dt = (now - lastTime) / 1000;
       lastTime = now;
       this.time += dt;
-      
-      this.draw();
+
+      if (!this.frameIntervalMs || now - lastDraw >= this.frameIntervalMs) {
+        lastDraw = now;
+        this.draw();
+      }
       this.animId = this.canvas.requestAnimationFrame(loop);
     };
     this.animId = this.canvas.requestAnimationFrame(loop);
@@ -74,7 +90,7 @@ export class ElephantRenderer {
 
   draw() {
     const ctx = this.ctx;
-    ctx.clearRect(0, 0, 400, 400);
+    ctx.clearRect(0, 0, this.size, this.size);
 
     const t = this.time;
     let leftEarRot = 0, rightEarRot = 0, bodyY = 0;
@@ -107,10 +123,11 @@ export class ElephantRenderer {
     }
 
     ctx.save();
-    // 映射缩放
-    ctx.scale(160/400, 160/400);
+    // 映射缩放：设计稿 400x400 -> 实际画布
+    const scale = this.size / DESIGN_SIZE;
+    ctx.scale(scale, scale);
     // 左耳路径会到负坐标，向右平移一点避免被 canvas 左边界裁切
-    ctx.translate(48, 0);
+    ctx.translate(DESIGN_SIZE * 0.12, 0);
 
     // 以双脚附近为旋转轴，让初始状态轻微向右倾斜
     if (bodyTiltDeg !== 0) {

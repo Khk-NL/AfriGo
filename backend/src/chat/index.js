@@ -1,22 +1,13 @@
 const { DISABLED_PROVIDER_ID, getProvider, listProviderIds } = require('./providers');
+const { PERSONA_BODY, PERSONA_TITLE, buildSystemPrompt } = require('./persona');
 
 const DEFAULT_PROVIDER_ID = 'deepseek';
 const DEFAULT_TIMEOUT_MS = 30_000;
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_CHARS = 2000;
 
-/**
- * 大象人设。放在服务端而不是小程序里，改文案不用重新发版，也不会被客户端篡改。
- * 可用 AI_SYSTEM_PROMPT 覆盖。
- */
-const DEFAULT_SYSTEM_PROMPT = [
-  '你是一只名叫「小象」的非洲象，是「非行智航」小程序里陪伴中国旅行者的向导。',
-  '你熟悉非洲各国的签证、安全、健康、风俗、劳务和常用语，也会讲非洲草原上的见闻。',
-  '说话亲切、简短，像朋友聊天，不要用书面报告的口吻。',
-  '回答用中文，尽量控制在 200 字以内。',
-  '涉及签证政策、安全局势、医疗和法律的具体决定时，提醒用户以官方渠道为准。',
-  '不确定的事情直接说不确定，不要编造。'
-].join('');
+/** 未附带国家资料时的人设全文，等价于 buildSystemPrompt({})。 */
+const DEFAULT_SYSTEM_PROMPT = buildSystemPrompt();
 
 function httpError(message, statusCode) {
   return Object.assign(new Error(message), { statusCode });
@@ -97,7 +88,8 @@ function createFetcher(fetchImpl, timeoutMs) {
 /**
  * 让大象回复一段对话。
  * @param {Array} rawMessages 小程序传来的历史消息（user/assistant）。
- * @param {object} [options] env、fetchImpl、timeoutMs，便于测试注入。
+ * @param {object} [options] env、fetchImpl、timeoutMs、travelContext，便于测试注入。
+ *   travelContext 由 loadTravelContext 生成，作为本次对话的国家资料快照。
  * @returns {Promise<{reply: string, model: string, usage: object|null}>}
  */
 async function sendChatMessage(rawMessages, options = {}) {
@@ -124,7 +116,10 @@ async function sendChatMessage(rawMessages, options = {}) {
     throw httpError('当前 Node 运行环境不支持远程请求', 503);
   }
 
-  const systemPrompt = String(env.AI_SYSTEM_PROMPT || DEFAULT_SYSTEM_PROMPT);
+  const systemPrompt = buildSystemPrompt({
+    travelContext: options.travelContext,
+    override: env.AI_SYSTEM_PROMPT
+  });
   const fetcher = createFetcher(fetchImpl, timeoutMs);
   try {
     return await provider.complete([{ role: 'system', content: systemPrompt }, ...messages], {
@@ -140,6 +135,7 @@ module.exports = {
   DEFAULT_PROVIDER_ID,
   DISABLED_PROVIDER_ID,
   DEFAULT_SYSTEM_PROMPT,
+  PERSONA_TITLE,
   MAX_MESSAGES,
   MAX_MESSAGE_CHARS,
   listProviderIds,

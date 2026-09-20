@@ -17,8 +17,10 @@
   >
     <view class="chat-body">
       <view class="chat-hero">
-        <canvas id="chat-elephant" type="2d" class="chat-elephant"></canvas>
+        <canvas id="chat-elephant" type="2d" class="chat-elephant" style="width:{{elephantSize}}px;height:{{elephantSize}}px;"></canvas>
         <text class="chat-hero-tip">{{text.empty}}</text>
+        <text wx:if="{{countryZh}}" class="chat-context">已带上「{{countryZh}}」的签证、安全与风险提醒</text>
+        <text wx:else class="chat-context">选好目的地后，小象会参考该国的签证与风险资料</text>
       </view>
 
       <view wx:if="{{!messages.length}}" class="chat-quick">

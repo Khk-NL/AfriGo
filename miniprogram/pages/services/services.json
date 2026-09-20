@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "本地服务对接"
+  "navigationBarTitleText": "本地服务对接",
+  "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
+  }
 }

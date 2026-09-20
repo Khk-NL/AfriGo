@@ -1,4 +1,5 @@
 {
   "usingComponents": {
+    "elephant-pet": "/components/elephant-pet/index"
   }
 }

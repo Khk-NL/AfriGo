@@ -1,0 +1,234 @@
+/* 桌宠：常驻悬浮的小象 + 就地弹出的对话卡片 */
+
+.pet-body {
+  position: fixed;
+  z-index: 9400;
+  transition: transform .18s ease;
+  will-change: left, top;
+}
+
+.pet-body.dragging {
+  transform: scale(1.08);
+  transition: none;
+}
+
+.pet-canvas {
+  display: block;
+  filter: drop-shadow(0 10rpx 16rpx rgba(45, 58, 50, .18));
+}
+
+.pet-bubble {
+  position: fixed;
+  z-index: 9410;
+  padding: 18rpx 22rpx;
+  border-radius: 22rpx 22rpx 6rpx 22rpx;
+  background: rgba(255, 255, 255, .98);
+  border: 1rpx solid #e2e8e3;
+  box-shadow: 0 12rpx 28rpx rgba(45, 58, 50, .14);
+  color: #3f4d44;
+  font-size: 24rpx;
+  line-height: 1.5;
+  animation: pet-bubble-in .22s ease-out;
+}
+
+@keyframes pet-bubble-in {
+  from { opacity: 0; transform: translateY(8rpx) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- 对话卡片 ---- */
+
+.pet-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9300;
+}
+
+.pet-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 32, 27, .34);
+  animation: pet-mask-in .18s ease-out;
+}
+
+@keyframes pet-mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pet-panel {
+  position: absolute;
+  left: 16rpx;
+  right: 16rpx;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 32rpx 32rpx 0 0;
+  background: #fbfcfa;
+  box-shadow: 0 -12rpx 40rpx rgba(24, 32, 27, .22);
+  animation: pet-panel-in .24s cubic-bezier(.22, .8, .3, 1);
+  overflow: hidden;
+}
+
+@keyframes pet-panel-in {
+  from { transform: translateY(60rpx); opacity: .6; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 26rpx 16rpx;
+  border-bottom: 1rpx solid #edf1ed;
+}
+
+.panel-head-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #23302a;
+}
+
+.panel-subtitle {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #7d8c83;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.panel-action {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: #eef2ee;
+  color: #52605a;
+  font-size: 22rpx;
+}
+
+.panel-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.panel-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 26rpx 26rpx 8rpx;
+}
+
+.panel-empty {
+  font-size: 24rpx;
+  color: #8a978f;
+}
+
+.quick-chip {
+  padding: 18rpx 22rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #e6ebe6;
+  color: #3f4d44;
+  font-size: 25rpx;
+}
+
+.panel-row {
+  display: flex;
+  padding: 10rpx 26rpx;
+}
+
+.panel-row-user {
+  justify-content: flex-end;
+}
+
+.panel-row-assistant {
+  justify-content: flex-start;
+}
+
+.panel-bubble {
+  max-width: 76%;
+  padding: 18rpx 22rpx;
+  border-radius: 22rpx;
+  font-size: 27rpx;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.panel-bubble-user {
+  background: #2f4a3c;
+  color: #ffffff;
+  border-bottom-right-radius: 8rpx;
+}
+
+.panel-bubble-assistant {
+  background: #ffffff;
+  color: #2b3630;
+  border: 1rpx solid #e8ede8;
+  border-bottom-left-radius: 8rpx;
+}
+
+.panel-bubble-typing {
+  color: #8a978f;
+}
+
+.panel-bottom-space {
+  height: 20rpx;
+}
+
+.panel-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 16rpx 22rpx 20rpx;
+  border-top: 1rpx solid #edf1ed;
+  background: #ffffff;
+}
+
+.panel-input {
+  flex: 1;
+  height: 76rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: #f3f6f3;
+  color: #23302a;
+  font-size: 27rpx;
+}
+
+.panel-input-placeholder {
+  color: #a3aea7;
+}
+
+.panel-send {
+  flex-shrink: 0;
+  padding: 0 30rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 999rpx;
+  background: #2f4a3c;
+  color: #ffffff;
+  font-size: 27rpx;
+}
+
+.panel-send.disabled {
+  background: #c3ccc6;
+}
+
+.panel-login {
+  flex: 1;
+  color: #7d8c83;
+  font-size: 24rpx;
+}
