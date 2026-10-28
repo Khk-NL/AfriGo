@@ -1,0 +1,9 @@
+<view class="page">
+  <view class="card">
+    <view class="brand">AfriGo 非行智航</view>
+    <view class="title">确认网页登录</view>
+    <view class="description">你正在使用微信小程序账号登录 afrigo.allezafrique.cn。请确认电脑浏览器的地址是该域名，确认后网页可以查看和发布与你账号关联的内容。</view>
+    <button class="confirm" type="primary" disabled="{{!challengeId || busy}}" loading="{{busy}}" bindtap="confirmLogin">确认登录</button>
+    <view wx:if="{{message}}" class="message">{{message}}</view>
+  </view>
+</view>

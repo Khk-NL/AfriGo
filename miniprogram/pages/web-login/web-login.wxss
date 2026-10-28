@@ -1,0 +1,8 @@
+page { background: #f4f6f2; }
+.page { min-height: 100vh; padding: 100rpx 36rpx; box-sizing: border-box; }
+.card { padding: 56rpx 40rpx; border-radius: 28rpx; background: #fff; box-shadow: 0 16rpx 56rpx rgba(12, 55, 38, .08); }
+.brand { color: #236447; font-size: 26rpx; font-weight: 700; letter-spacing: 2rpx; }
+.title { margin-top: 44rpx; color: #17382c; font-size: 42rpx; font-weight: 700; }
+.description { margin: 28rpx 0 56rpx; color: #53645b; font-size: 29rpx; line-height: 1.7; }
+.confirm { background: #24694a !important; border-radius: 16rpx; }
+.message { margin-top: 32rpx; color: #365946; font-size: 27rpx; line-height: 1.6; }

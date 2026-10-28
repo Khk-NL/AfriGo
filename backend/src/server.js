@@ -19,6 +19,7 @@ const { planNavigationRoute } = require('./navigation');
 const { sendChatMessage } = require('./chat');
 const { loadTravelContext } = require('./chat/travel-context');
 const { SERVICE_NAME, buildHealthPayload } = require('./health');
+const { createWebLoginService } = require('./web-login');
 
 const app = express();
 const pool = createPool();
@@ -29,6 +30,8 @@ const mutationLimiter = createRateLimiter({ windowMs: 60_000, max: 120, prefix: 
 const translateLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'translate' });
 const navigationLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'navigation' });
 const chatLimiter = createRateLimiter({ windowMs: 60_000, max: 20, prefix: 'chat' });
+const webLoginLimiter = createRateLimiter({ windowMs: 60_000, max: 30, prefix: 'web-login' });
+const webLogin = createWebLoginService();
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -597,6 +600,51 @@ app.post('/api/auth/logout', authenticate, async (req, res, next) => {
 
 app.get('/api/auth/me', authenticate, (req, res) => {
   res.json({ ok: true, user: mapUser(req.user) });
+});
+
+app.post('/api/web-login/start', webLoginLimiter, (_req, res, next) => {
+  try {
+    res.set('Cache-Control', 'no-store').json({ ok: true, ...webLogin.start() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/web-login/qr/:id', webLoginLimiter, async (req, res, next) => {
+  try {
+    const result = await webLogin.qr(req.params.id);
+    res.set({ 'Content-Type': result.contentType, 'Cache-Control': 'no-store' }).send(result.image);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/web-login/status/:id', webLoginLimiter, async (req, res, next) => {
+  try {
+    const result = webLogin.poll(req.params.id, req.get('X-Web-Login-Secret'));
+    if (result.status === 'pending') {
+      res.set('Cache-Control', 'no-store').json({ ok: true, status: 'pending' });
+      return;
+    }
+    const [rows] = await pool.query('SELECT * FROM users WHERE id = ? LIMIT 1', [result.userId]);
+    if (!rows[0]) {
+      res.status(410).json({ ok: false, message: '微信账号已失效，请重新扫码' });
+      return;
+    }
+    const token = await issueSession(pool, result.userId);
+    res.set('Cache-Control', 'no-store').json({ ok: true, status: 'approved', token, user: mapUser(rows[0]) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/web-login/confirm', authenticate, (req, res, next) => {
+  try {
+    webLogin.confirm(String(req.body && req.body.id || ''), req.user.id);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.put('/api/auth/profile', authenticate, async (req, res, next) => {
@@ -1305,7 +1353,7 @@ app.use((error, _req, res, _next) => {
   }
   res.status(statusCode).json({
     ok: false,
-    message: statusCode >= 500 && process.env.NODE_ENV === 'production'
+    message: statusCode >= 500 && process.env.NODE_ENV === 'production' && !error.publicMessage
       ? '服务暂时不可用'
       : error.message
   });

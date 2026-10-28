@@ -22,7 +22,8 @@
     "pages/trip-review/trip-review",
     "pages/services/services",
     "pages/content-trust/content-trust",
-    "pages/chat/chat"
+    "pages/chat/chat",
+    "pages/web-login/web-login"
   ],
   "window": {
     "navigationBarTextStyle": "black",

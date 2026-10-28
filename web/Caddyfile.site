@@ -1,0 +1,17 @@
+afrigo.allezafrique.cn {
+  encode zstd gzip
+
+  handle /api/* {
+    reverse_proxy 127.0.0.1:3001
+  }
+
+  handle /media/* {
+    reverse_proxy 127.0.0.1:3001
+  }
+
+  handle {
+    root * /opt/afrigo/web
+    try_files {path} /index.html
+    file_server
+  }
+}
