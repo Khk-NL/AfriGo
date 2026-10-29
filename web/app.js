@@ -3,7 +3,7 @@ const state = {
   countries: [], country: localStorage.getItem('afrigo-country') || 'CI',
   token: sessionStorage.getItem('afrigo-token') || '', user: null,
   guideTab: 'visa', exploreTab: 'attractions', chat: [], login: null, loginTimer: null,
-  routeVersion: 0
+  routeVersion: 0, loginAttempt: 0
 };
 const $ = (selector, root = document) => root.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -118,25 +118,31 @@ function render(){
   window.scrollTo({top:0,behavior:'instant'});
 }
 
-function closeLogin(){clearInterval(state.loginTimer);state.loginTimer=null;if(state.login?.imageUrl)URL.revokeObjectURL(state.login.imageUrl);state.login=null;$('#loginModal').hidden=true;}
+function closeLogin(){state.loginAttempt+=1;clearInterval(state.loginTimer);state.loginTimer=null;if(state.login?.imageUrl)URL.revokeObjectURL(state.login.imageUrl);state.login=null;$('#loginModal').hidden=true;}
 async function openLogin(){
-  closeLogin();$('#loginModal').hidden=false;$('#loginQr').innerHTML='<span class="spinner"></span>';$('#loginStatus').textContent='正在获取二维码…';$('#retryLogin').hidden=true;
+  closeLogin();const attempt=state.loginAttempt;$('#loginModal').hidden=false;$('#loginQr').innerHTML='<span class="spinner"></span>';$('#loginStatus').textContent='正在获取二维码…';$('#retryLogin').hidden=true;
   try{
     const data=await api('/api/web-login/start',{method:'POST',body:'{}'});
-    if($('#loginModal').hidden)return;
+    if(attempt!==state.loginAttempt)return;
     state.login={id:data.id,secret:data.secret,imageUrl:null};
     const response=await fetch(`/api/web-login/qr/${encodeURIComponent(data.id)}`,{cache:'no-store'});
     if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.message||'二维码暂时不可用');}
-    const imageUrl=URL.createObjectURL(await response.blob());state.login.imageUrl=imageUrl;
+    const imageUrl=URL.createObjectURL(await response.blob());
+    if(attempt!==state.loginAttempt){URL.revokeObjectURL(imageUrl);return;}
+    state.login.imageUrl=imageUrl;
     $('#loginQr').innerHTML=`<img src="${imageUrl}" alt="微信小程序扫码登录二维码"/>`;
     $('#loginStatus').textContent='请用微信扫码，并在小程序中确认登录';
+    let polling=false;
     state.loginTimer=setInterval(async()=>{
-      if(!state.login)return;
+      if(attempt!==state.loginAttempt||polling)return;
+      polling=true;
       try{const r=await api(`/api/web-login/status/${encodeURIComponent(data.id)}`,{headers:{'X-Web-Login-Secret':data.secret}});
+        if(attempt!==state.loginAttempt)return;
         if(r.status==='approved'){state.token=r.token;state.user=r.user;sessionStorage.setItem('afrigo-token',r.token);updateAccount();closeLogin();toast('登录成功');render();}
-      }catch(error){closeLogin();toast(error.message,true);}
+      }catch(error){if(attempt===state.loginAttempt){closeLogin();toast(error.message,true);}}
+      finally{polling=false;}
     },2200);
-  }catch(error){$('#loginQr').innerHTML=`<div class="empty">${icon('shield')}<p>二维码暂时不可用</p></div>`;$('#loginStatus').textContent=error.message;$('#retryLogin').hidden=false;}
+  }catch(error){if(attempt===state.loginAttempt){$('#loginQr').innerHTML=`<div class="empty">${icon('shield')}<p>二维码暂时不可用</p></div>`;$('#loginStatus').textContent=error.message;$('#retryLogin').hidden=false;}}
 }
 
 document.addEventListener('click',async(event)=>{
